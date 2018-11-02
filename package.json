@@ -1,11 +1,22 @@
 {
   "name": "uos.app.wallet",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "NPM package to implement UOS wallet",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "u.community",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/gravityprotocol/uos-app-wallet.git"
+  },
+  "keywords": [
+    "UOS",
+    "EOS",
+    "DPOS",
+    "DPOI"
+  ],
+  "homepage": "https://bitbucket.org/gravityprotocol/uos-app-wallet/src/master/README.md",
+  "author": "UOS",
   "license": "MIT"
 }
