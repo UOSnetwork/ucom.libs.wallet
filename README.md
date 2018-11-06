@@ -13,4 +13,5 @@ npm i git+ssh://git@bitbucket.org/gravityprotocol/uos-app-wallet.git#latest
 ```
 
 ## How to use
-TODO
+You should use `WalletApi` only. Other classes are internal and their interface might be changed
+by developer. `WalletApi` interface is stable.

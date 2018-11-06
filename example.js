@@ -1,10 +1,16 @@
 const { WalletApi } = require('./index');
 
-const accountName = 'vlad';
-
 (async () => {
+  const accountNameFrom = 'vlad';
+  const accountNameTo = 'jane';
+  const privateKey = 'vlad_private_key';
+  const amount = '10';
+  const memo = '';
 
-  const accountState = await WalletApi.getAccountState(accountName);
+  const sendTokensResponse = await WalletApi.sendTokens(accountNameFrom, privateKey, accountNameTo, amount, memo);
+  console.dir(sendTokensResponse);
+
+  const accountState = await WalletApi.getAccountState(accountNameFrom);
   console.log(accountState);
 
   const ramToByInBytes = 6000;

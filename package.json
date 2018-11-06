@@ -18,5 +18,9 @@
   ],
   "homepage": "https://bitbucket.org/gravityprotocol/uos-app-wallet/src/master/README.md",
   "author": "UOS",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "eosjs": "20.0.0-beta2",
+    "node-fetch": "2.2.0"
+  }
 }
