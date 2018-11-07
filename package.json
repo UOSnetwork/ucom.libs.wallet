@@ -1,10 +1,10 @@
 {
-  "name": "uos.app.wallet",
+  "name": "uos-app-wallet",
   "version": "0.7.0",
   "description": "NPM package to implement UOS wallet",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --watchAll --verbose --runInBand"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,9 @@
   "dependencies": {
     "eosjs": "20.0.0-beta2",
     "node-fetch": "2.2.0"
+  },
+  "devDependencies": {
+    "jest": "23.6.0",
+    "jest-expect-message": "1.0.2"
   }
 }
