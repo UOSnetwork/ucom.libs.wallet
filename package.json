@@ -1,6 +1,6 @@
 {
   "name": "uos-app-wallet",
-  "version": "0.8.9",
+  "version": "0.9.0",
   "description": "NPM package to implement UOS wallet",
   "main": "index.js",
   "scripts": {
