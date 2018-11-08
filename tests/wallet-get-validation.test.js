@@ -2,8 +2,7 @@ const { WalletApi } = require('../index');
 
 const helper = require('./helper');
 
-WalletApi.setNodeJsEnv();
-WalletApi.initForTestEnv();
+helper.initForTestEnv();
 
 const accountName = helper.getTesterAccountName();
 const accountNameTo = helper.getAccountNameTo();

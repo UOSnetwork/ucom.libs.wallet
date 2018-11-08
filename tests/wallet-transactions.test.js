@@ -6,11 +6,13 @@ const helper = require('./helper');
 const delay = require('delay');
 // const util = require('util');
 
-WalletApi.setNodeJsEnv();
-WalletApi.initForTestEnv();
+helper.initForTestEnv();
 
-const accountName = helper.getTesterAccountName();
-const privateKey  = helper.getTesterAccountPrivateKey();
+const accountName             = helper.getTesterAccountName();
+const privateKey              = helper.getTesterAccountPrivateKey();
+
+const accountNameTo           = helper.getAccountNameTo();
+const accountNameToPrivateKey = helper.getAccountNameToPrivateKey();
 
 describe('Send transactions to blockchain', function () {
   it('sellRam', async () => {
@@ -54,8 +56,6 @@ describe('Send transactions to blockchain', function () {
   }, 20000);
 
   it('Send tokens', async () => {
-    const accountNameTo           = helper.getAccountNameTo();
-    const accountNameToPrivateKey = helper.getAccountNameToPrivateKey();
     const amountToSend = 2;
 
     const senderState = await WalletApi.getAccountState(accountName);
@@ -76,6 +76,7 @@ describe('Send transactions to blockchain', function () {
     const recipientTokensAfter = recipientStateAfter.tokens.active;
     expect(recipientTokensAfter).toBe(recipientTokensBefore + amountToSend);
 
+    // rollback
     await WalletApi.sendTokens(accountNameTo, accountNameToPrivateKey, accountName, amountToSend);
   }, 20000);
 

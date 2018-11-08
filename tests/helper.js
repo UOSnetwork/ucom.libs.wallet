@@ -5,10 +5,34 @@ const resources = [
 const TransactionSender = require('../lib/transaction-sender');
 const BlockchainRegistry = require('../lib/blockchain-registry');
 const accountsData = require('../accounts-data');
+const WalletApi = require('../lib/wallet-api');
 
 require('jest-expect-message');
 
+let accountName   = 'autotester';
+let accountNameTo = 'ilya';
+
 class Helper {
+
+  static initForTestEnv() {
+    accountName   = 'autotester';
+    accountNameTo = 'ilya';
+
+    WalletApi.setNodeJsEnv();
+    WalletApi.initForTestEnv();
+  }
+
+  // noinspection JSUnusedGlobalSymbols
+  /**
+   * @return void
+   */
+  static initForProductionEnv() {
+    accountName   = 'summerknight';
+    accountNameTo = 'autumnknight';
+
+    WalletApi.setNodeJsEnv();
+    WalletApi.initForProductionEnv();
+  }
 
   /**
    *
@@ -106,8 +130,6 @@ class Helper {
    * @return {string}
    */
   static getTesterAccountPrivateKey() {
-    const accountName = this.getTesterAccountName();
-
     return accountsData[accountName].activePk;
   }
 
@@ -116,7 +138,7 @@ class Helper {
    * @return {string}
    */
   static getAccountNameTo() {
-    return 'ilya'
+    return accountNameTo;
   }
 
   /**
@@ -124,9 +146,7 @@ class Helper {
    * @return {string}
    */
   static getAccountNameToPrivateKey() {
-    const name = this.getAccountNameTo();
-
-    return accountsData[name].activePk;
+    return accountsData[accountNameTo].activePk;
   }
 
 
@@ -135,7 +155,7 @@ class Helper {
    * @return {string}
    */
   static getTesterAccountName() {
-    return 'autotester';
+    return accountName;
   }
 
   /**
@@ -159,6 +179,10 @@ class Helper {
     tokensFields.forEach(field => {
       expect(data.tokens[field]).toBeDefined();
     });
+
+    expect(data.tokens.active).toBeGreaterThan(0);
+    expect(data.tokens.staked_delegated).toBeGreaterThan(0);
+    expect(data.tokens.emission).toBeGreaterThan(0);
 
     this._checkUnstakingRequest(data.tokens.unstaking_request, 'tokens');
 
