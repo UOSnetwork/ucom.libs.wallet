@@ -3,8 +3,10 @@ const { WalletApi } = require('../index');
 const helper = require('./helper');
 
 WalletApi.setNodeJsEnv();
+WalletApi.initForTestEnv();
 
 const accountName = helper.getTesterAccountName();
+const accountNameTo = helper.getAccountNameTo();
 
 const positiveIntErrorRegex       = new RegExp('Input value must be an integer and greater than zero');
 const positiveOrZeroIntErrorRegex = new RegExp('Input value must be an integer and greater than or equal to zero');
@@ -125,7 +127,7 @@ describe('Get blockchain info and validation checks', () => {
 
       await expect(WalletApi.sendTokens(accountName, 'sample_key', accountName, 1000000, '')).rejects.toThrow(notEnoughTokensErrorRegex);
 
-      const res = await WalletApi.sendTokens(accountName, 'sample_key', 'vlad', 1, '');
+      const res = await WalletApi.sendTokens(accountName, 'sample_key', accountNameTo, 1, '');
       expect(res.success).toBeTruthy();
     });
 
@@ -155,7 +157,7 @@ describe('Get blockchain info and validation checks', () => {
 
       const res4 = await WalletApi.stakeOrUnstakeTokens(accountName, 'sample', netTokens - 1, cpuTokens + 1);
       expect(res4.success).toBeTruthy();
-    });
+    }, 10000);
 
     it('getCurrentNetAndCpuStakedTokens', async () => {
       const nonExistedAccount = helper.getNonExistedAccountName();

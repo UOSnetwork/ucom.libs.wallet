@@ -7,6 +7,7 @@ const delay = require('delay');
 // const util = require('util');
 
 WalletApi.setNodeJsEnv();
+WalletApi.initForTestEnv();
 
 const accountName = helper.getTesterAccountName();
 const privateKey  = helper.getTesterAccountPrivateKey();

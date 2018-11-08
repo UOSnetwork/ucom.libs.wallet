@@ -159,7 +159,6 @@ class Helper {
     tokensFields.forEach(field => {
       expect(data.tokens[field]).toBeDefined();
     });
-    expect(data.tokens.active).toBeGreaterThan(0);
 
     this._checkUnstakingRequest(data.tokens.unstaking_request, 'tokens');
 
@@ -196,7 +195,7 @@ class Helper {
     expect(data, `There is no correct unstaking_request object for ${errorLabel}`).toBeDefined();
 
     const required = [
-      'amount', 'currency', 'request_datetime',
+      'amount', 'currency', 'request_datetime', 'unstaked_on_datetime'
     ];
 
     required.forEach(field => {

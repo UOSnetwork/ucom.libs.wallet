@@ -2,7 +2,12 @@ const { WalletApi } = require('./index');
 
 (async () => {
   /**
-    Get account state:
+    Init environment:
+    * @link WalletApi#initForTestEnv        - autotests only. This is default environment
+    * @link WalletApi#initForStagingEnv     - for staging.u.community
+    * @link WalletApi#initForProductionEnv  - for beta.u.community and new.u.community
+
+   Get account state:
     * @link WalletApi#getAccountState
 
     Send tokens:
