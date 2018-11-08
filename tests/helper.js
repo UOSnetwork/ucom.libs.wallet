@@ -6,6 +6,7 @@ const TransactionSender = require('../lib/transaction-sender');
 const BlockchainRegistry = require('../lib/blockchain-registry');
 const accountsData = require('../accounts-data');
 const WalletApi = require('../lib/wallet-api');
+const EosClient = require('../lib/eos-client');
 
 require('jest-expect-message');
 
@@ -46,6 +47,7 @@ class Helper {
     expect(response.processed.receipt.status).toBe('executed');
   }
 
+  // noinspection JSUnusedGlobalSymbols
   /**
    *
    * @param {Object} data
@@ -117,8 +119,8 @@ class Helper {
   }
 
   static mockTransactionSending() {
-    // noinspection JSUnresolvedVariable
-    TransactionSender._sendTransaction = function (actorPrivateKey, actions) {
+    // noinspection JSUnusedLocalSymbols
+    EosClient.sendTransaction = function (actorPrivateKey, actions) {
       return {
         success: true
       }
