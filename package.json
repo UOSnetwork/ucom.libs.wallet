@@ -24,6 +24,7 @@
     "node-fetch": "2.2.0"
   },
   "devDependencies": {
+    "delay": "4.1.0",
     "jest": "23.6.0",
     "jest-expect-message": "1.0.2"
   }
