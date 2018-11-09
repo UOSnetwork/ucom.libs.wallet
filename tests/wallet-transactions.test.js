@@ -77,6 +77,7 @@ describe('Send transactions to blockchain', function () {
       // rollback
       await WalletApi.sendTokens(accountNameTo, accountNameToPrivateKey, accountName, amountToSend);
     }, 20000);
+
     describe('stakeOrUnstakeTokens', async () => {
       it('Unstake and rollback it', async () => {
         await helper.rollbackAllUnstakingRequests(accountName, privateKey);

@@ -4,7 +4,7 @@ const helper = require('./helper');
 
 helper.initForTestEnv();
 
-const accountName = helper.getTesterAccountName();
+const accountName   = helper.getTesterAccountName();
 const accountNameTo = helper.getAccountNameTo();
 
 const positiveIntErrorRegex       = new RegExp('Input value must be an integer and greater than zero');
