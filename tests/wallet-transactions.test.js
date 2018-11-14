@@ -15,37 +15,25 @@ const accountNameToPrivateKey = helper.getAccountNameToPrivateKey();
 
 describe('Send transactions to blockchain', function () {
   describe('Positive', () => {
-    it('vote for block producer', async () => {
+    it.skip('vote for block producer', async () => {
 
-      /*
-        experiments:
-        - one vote:
-          * eosnationftw
-          * small producer like bengamin
-        questions:
-          * what is initial vote of user?
-          * how single vote affects total node votes?
-          * how to calculate votes amount and votes amount in eos for single user
-          * new vote rewrite previous one?
-        - three votes:
-          * eosnation + bengamin + somebody else
-          * how single vote split to different bps?
-          * how to calculate votes amount and votes amount in eos for single user
-          * new vote rewrite previous one?
-        - three votes from one user, three votes from another user
-          * how affects togetner? like a separated single votes?
-          * how to calculate total votes count and UOS votes amount
-       */
+      // TODO
 
-      // "owner": "eosnationftw",
-      //   "total_votes": "994141007460082944.00000000000000000",
+      // const voteInfo = await BlockchainRegistry.getRawVoteInfo(accountNameTo);
+      // console.dir(voteInfo);
+      //
+      // return;
+      //
+      // // const a = await WalletApi.stakeOrUnstakeTokens(accountNameTo, accountNameToPrivateKey, 10, 10);
+      // //
+      // // const ab = 0;
+      // //
+      // const res = await WalletApi.voteForBlockProducers(accountNameTo, accountNameToPrivateKey, [
+      //   'benjamintinp',
+      //   'eoscannonchn',
+      //   // 'eosnationftw',
+      // ]);
 
-      const res = await WalletApi.voteForBlockProducers(accountName, privateKey, [
-        'eosnationftw'
-        // '123'
-      ]);
-
-      // const res = await WalletApi.getAccountState(accountName);
     }, 20000);
 
     it('sellRam', async () => {

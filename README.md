@@ -9,7 +9,7 @@ TODO
 ## How to install:
 
 ```
-npm i git+ssh://git@bitbucket.org/gravityprotocol/uos-app-wallet.git#latest
+npm i git+ssh://git@bitbucket.org/gravityprotocol/uos-app-wallet.git
 ```
 
 ## How to use

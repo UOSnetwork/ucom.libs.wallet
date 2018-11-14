@@ -2,7 +2,7 @@ const { WalletApi } = require('../index');
 
 const helper = require('./helper');
 
-helper.initForTestEnv();
+helper.initForProductionEnv();
 
 const accountName   = helper.getTesterAccountName();
 const accountNameTo = helper.getAccountNameTo();
@@ -17,10 +17,14 @@ const notEnoughTokensErrorRegex   = new RegExp('Not enough tokens. Please correc
 helper.mockTransactionSending();
 
 describe('Get blockchain info and validation checks', () => {
-
   describe('GET requests', () => {
     describe('Get info from blockchain', () => {
       describe('Positive', () => {
+        it.skip('Get blockchain nodes', async () => {
+          // TODO
+          const res = await WalletApi.getBlockchainNodes();
+        });
+
         it('Get account state', async () => {
           const accountState = await WalletApi.getAccountState(accountName);
 
@@ -63,6 +67,10 @@ describe('Get blockchain info and validation checks', () => {
   });
 
   describe('Validations', () => {
+    it('Not possible to vote if you do not have any self staked tokens', async () => {
+      // TODO
+    });
+
     it('getApproximateRamPriceByBytesAmount - wrong number', async () => {
       await expect(WalletApi.getApproximateRamPriceByBytesAmount(0)).rejects.toThrow(positiveIntErrorRegex);
       // noinspection JSCheckFunctionSignatures
