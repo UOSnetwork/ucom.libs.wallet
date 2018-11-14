@@ -24,6 +24,9 @@ const { WalletApi } = require('./index');
     * @link WalletApi#getApproximateRamPriceByBytesAmount - set bytes from input and get approximate price in UOS to show
     * @link WalletApi#buyRam
     * @link WalletApi#sellRam
+
+    Vote for block producer:
+    * @link WalletApi#voteForBlockProducers
    */
 })();
 
