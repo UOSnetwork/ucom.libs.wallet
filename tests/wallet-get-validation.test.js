@@ -2,10 +2,13 @@ const { WalletApi } = require('../index');
 
 const helper = require('./helper');
 
-helper.initForProductionEnv();
+helper.initForTestEnv();
 
 const accountName   = helper.getTesterAccountName();
+const privateKey    = helper.getTesterAccountPrivateKey();
 const accountNameTo = helper.getAccountNameTo();
+
+const firstBp       = helper.getFirstBlockProducer();
 
 const positiveIntErrorRegex       = new RegExp('Input value must be an integer and greater than zero');
 const positiveOrZeroIntErrorRegex = new RegExp('Input value must be an integer and greater than or equal to zero');
@@ -67,10 +70,6 @@ describe('Get blockchain info and validation checks', () => {
   });
 
   describe('Validations', () => {
-    it('Not possible to vote if you do not have any self staked tokens', async () => {
-      // TODO
-    });
-
     it('getApproximateRamPriceByBytesAmount - wrong number', async () => {
       await expect(WalletApi.getApproximateRamPriceByBytesAmount(0)).rejects.toThrow(positiveIntErrorRegex);
       // noinspection JSCheckFunctionSignatures

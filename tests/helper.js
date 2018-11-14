@@ -13,11 +13,15 @@ require('jest-expect-message');
 let accountName   = 'autotester';
 let accountNameTo = 'ilya';
 
+let firstBlockProducer = 'calc1';
+
 class Helper {
 
   static initForTestEnv() {
     accountName   = 'autotester';
     accountNameTo = 'ilya';
+
+    firstBlockProducer = 'calc1';
 
     WalletApi.setNodeJsEnv();
     WalletApi.initForTestEnv();
@@ -67,6 +71,29 @@ class Helper {
     expect(data.amount).toBe(amount);
     expect(data.request_datetime).not.toBeNull();
     expect(data.currency).toBe('UOS');
+  }
+
+  /**
+   *
+   * @param {string} accountName
+   * @param {string} privateKey
+   * @return {Promise<void>}
+   */
+  static async unstakeEverything(accountName, privateKey) {
+    const state = await BlockchainRegistry.getAccountInfo(accountName);
+
+    if (state.resources.net.tokens.self_delegated === 0 && state.resources.cpu.tokens.self_delegated === 0) {
+      console.warn('nothing to unstake');
+
+      return;
+    }
+
+    await TransactionSender.stakeOrUnstakeTokens(accountName, privateKey, 0, 0);
+
+    const stateAfter = await BlockchainRegistry.getAccountInfo(accountName);
+
+    expect(stateAfter.resources.net.tokens.self_delegated).toBe(0);
+    expect(stateAfter.resources.net.tokens.self_delegated).toBe(0);
   }
 
   /**
@@ -158,6 +185,14 @@ class Helper {
    */
   static getTesterAccountName() {
     return accountName;
+  }
+
+  /**
+   *
+   * @return {string}
+   */
+  static getFirstBlockProducer() {
+    return firstBlockProducer;
   }
 
   /**

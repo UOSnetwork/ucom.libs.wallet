@@ -5,7 +5,7 @@ const helper = require('./helper');
 
 const delay = require('delay');
 
-helper.initForProductionEnv();
+helper.initForTestEnv();
 
 const accountName             = helper.getTesterAccountName();
 const privateKey              = helper.getTesterAccountPrivateKey();
@@ -13,29 +13,74 @@ const privateKey              = helper.getTesterAccountPrivateKey();
 const accountNameTo           = helper.getAccountNameTo();
 const accountNameToPrivateKey = helper.getAccountNameToPrivateKey();
 
+const nonExistedAccountErrorRegex = new RegExp('Probably account does not exist. Please check spelling');
+const noStakeErrorRegex = new RegExp('It is possible to vote only if you have self-staked tokens.');
+const maxProducersLimitErrorRegex = new RegExp('It is possible to vote up to 30 block producers');
+const noSuchBlockProducersErrorRegex = new RegExp('There is no such block producers: no_such_bp1, no_such_bp2');
+
+const firstBp = helper.getFirstBlockProducer();
+
+const JEST_TIMEOUT = 10000;
+
 describe('Send transactions to blockchain', function () {
+  describe('voting', () => {
+    describe('Positive', () => {
+      it('should vote for block producers', async () => {
+
+        // TODO
+
+        // const voteInfo = await BlockchainRegistry.getRawVoteInfo(accountNameTo);
+        // console.dir(voteInfo);
+        //
+        // return;
+        //
+        // // const a = await WalletApi.stakeOrUnstakeTokens(accountNameTo, accountNameToPrivateKey, 10, 10);
+        // //
+        // // const ab = 0;
+        // //
+        // const res = await WalletApi.voteForBlockProducers(accountNameTo, accountNameToPrivateKey, [
+        //   'benjamintinp',
+        //   'eoscannonchn',
+        //   // 'eosnationftw',
+        // ]);
+      });
+    });
+
+    describe('Negative', () => {
+      it('Not possible to vote if you do not have any self staked tokens', async () => {
+        await helper.unstakeEverything(accountName, privateKey);
+
+        const nonExistedAccount = helper.getNonExistedAccountName();
+        await expect(WalletApi.voteForBlockProducers(nonExistedAccount, 'sample_key', [ firstBp ]))
+          .rejects.toThrow(nonExistedAccountErrorRegex);
+
+        await expect(WalletApi.voteForBlockProducers(accountName, privateKey, [ firstBp ]))
+          .rejects.toThrow(noStakeErrorRegex);
+
+        await helper.rollbackAllUnstakingRequests(accountName, privateKey);
+      }, 10000);
+    });
+
+    it('It is not possible for more than 30 BP', async () => {
+      const fakeProducers = [];
+      for (let i = 0; i < 31; i++) {
+        fakeProducers.push(`producer_${i}`);
+      }
+
+      await expect(WalletApi.voteForBlockProducers(accountName, privateKey, fakeProducers))
+        .rejects.toThrow(maxProducersLimitErrorRegex);
+    });
+
+    it('it is not possible to vote for producer which does not exist', async () => {
+      const producers = ['no_such_bp1', 'no_such_bp2', firstBp];
+
+      await expect(WalletApi.voteForBlockProducers(accountName, privateKey, producers))
+        .rejects.toThrow(noSuchBlockProducersErrorRegex);
+
+    }, JEST_TIMEOUT);
+  });
+
   describe('Positive', () => {
-    it.skip('vote for block producer', async () => {
-
-      // TODO
-
-      // const voteInfo = await BlockchainRegistry.getRawVoteInfo(accountNameTo);
-      // console.dir(voteInfo);
-      //
-      // return;
-      //
-      // // const a = await WalletApi.stakeOrUnstakeTokens(accountNameTo, accountNameToPrivateKey, 10, 10);
-      // //
-      // // const ab = 0;
-      // //
-      // const res = await WalletApi.voteForBlockProducers(accountNameTo, accountNameToPrivateKey, [
-      //   'benjamintinp',
-      //   'eoscannonchn',
-      //   // 'eosnationftw',
-      // ]);
-
-    }, 20000);
-
     it('sellRam', async () => {
       const freeRam = await BlockchainRegistry.getFreeRamAmountInBytes(accountName);
       const ramToSell = Math.floor(freeRam / 100);
