@@ -5,10 +5,7 @@ const helper = require('./helper');
 helper.initForTestEnv();
 
 const accountName   = helper.getTesterAccountName();
-const privateKey    = helper.getTesterAccountPrivateKey();
 const accountNameTo = helper.getAccountNameTo();
-
-const firstBp       = helper.getFirstBlockProducer();
 
 const positiveIntErrorRegex       = new RegExp('Input value must be an integer and greater than zero');
 const positiveOrZeroIntErrorRegex = new RegExp('Input value must be an integer and greater than or equal to zero');
@@ -25,7 +22,6 @@ describe('Get blockchain info and validation checks', () => {
       describe('Positive', () => {
         it.skip('Get blockchain nodes', async () => {
           // TODO
-          const res = await WalletApi.getBlockchainNodes();
         });
 
         it('Get account state', async () => {

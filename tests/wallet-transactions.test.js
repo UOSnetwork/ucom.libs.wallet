@@ -2,7 +2,6 @@ const { WalletApi }       = require('../index');
 const BlockchainRegistry  = require('../lib/blockchain-registry');
 
 const helper = require('./helper');
-
 const delay = require('delay');
 
 helper.initForTestEnv();
@@ -18,32 +17,63 @@ const noStakeErrorRegex = new RegExp('It is possible to vote only if you have se
 const maxProducersLimitErrorRegex = new RegExp('It is possible to vote up to 30 block producers');
 const noSuchBlockProducersErrorRegex = new RegExp('There is no such block producers: no_such_bp1, no_such_bp2');
 
-const firstBp = helper.getFirstBlockProducer();
+const firstBp   = helper.getFirstBlockProducer();
+const secondBp  = helper.getSecondBlockProducer();
 
-const JEST_TIMEOUT = 10000;
+const JEST_TIMEOUT = 20000;
 
 describe('Send transactions to blockchain', function () {
   describe('voting', () => {
     describe('Positive', () => {
+      it ('should be possible to vote for nobody', async () => {
+        await helper.stakeSomethingIfNecessary(accountName, privateKey);
+        await WalletApi.voteForBlockProducers(accountName, privateKey, [
+          firstBp,
+          secondBp,
+        ]);
+
+        const voteInfo = await WalletApi.getRawVoteInfo(accountName);
+
+        const producers = voteInfo.producers;
+
+        expect(~(producers.indexOf(firstBp))).toBeTruthy();
+        expect(~(producers.indexOf(secondBp))).toBeTruthy();
+
+        expect(+voteInfo.last_vote_weight).toBeGreaterThan(0);
+
+        await WalletApi.voteForBlockProducers(accountName, privateKey, []);
+
+        const voteInfoAfter = await WalletApi.getRawVoteInfo(accountName);
+        expect(voteInfoAfter.producers.length).toBe(0);
+      }, JEST_TIMEOUT);
+
+
       it('should vote for block producers', async () => {
+        await helper.resetVotingState(accountName, privateKey);
+        await helper.stakeSomethingIfNecessary(accountName, privateKey);
 
-        // TODO
+        const producers             = await WalletApi.getBlockchainNodes();
+        const firstProducerBefore   = producers[firstBp];
+        const secondProducerBefore  = producers[secondBp];
 
-        // const voteInfo = await BlockchainRegistry.getRawVoteInfo(accountNameTo);
-        // console.dir(voteInfo);
-        //
-        // return;
-        //
-        // // const a = await WalletApi.stakeOrUnstakeTokens(accountNameTo, accountNameToPrivateKey, 10, 10);
-        // //
-        // // const ab = 0;
-        // //
-        // const res = await WalletApi.voteForBlockProducers(accountNameTo, accountNameToPrivateKey, [
-        //   'benjamintinp',
-        //   'eoscannonchn',
-        //   // 'eosnationftw',
-        // ]);
-      });
+        const accountState = await WalletApi.getAccountState(accountName);
+        const votingTokens = accountState.tokens.staked;
+
+        await WalletApi.voteForBlockProducers(accountName, privateKey, [
+          firstBp,
+          secondBp
+        ]);
+
+        const producersAfter       = await WalletApi.getBlockchainNodes();
+        const firstProducerAfter   = producersAfter[firstBp];
+        const secondProducerAfter  = producersAfter[secondBp];
+
+        expect(firstProducerAfter.votes_count).toBe(firstProducerBefore.votes_count + 1);
+        expect(secondProducerAfter.votes_count).toBe(secondProducerBefore.votes_count + 1);
+
+        expect(firstProducerAfter.votes_amount).toBe(firstProducerBefore.votes_amount + votingTokens);
+        expect(secondProducerAfter.votes_amount).toBe(secondProducerBefore.votes_amount + votingTokens);
+      }, JEST_TIMEOUT);
     });
 
     describe('Negative', () => {
@@ -58,7 +88,7 @@ describe('Send transactions to blockchain', function () {
           .rejects.toThrow(noStakeErrorRegex);
 
         await helper.rollbackAllUnstakingRequests(accountName, privateKey);
-      }, 10000);
+      }, JEST_TIMEOUT);
     });
 
     it('It is not possible for more than 30 BP', async () => {

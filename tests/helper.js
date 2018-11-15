@@ -13,7 +13,8 @@ require('jest-expect-message');
 let accountName   = 'autotester';
 let accountNameTo = 'ilya';
 
-let firstBlockProducer = 'calc1';
+let firstBlockProducer  = 'calc1';
+let secondBlockProducer = 'calc2';
 
 class Helper {
 
@@ -193,6 +194,39 @@ class Helper {
    */
   static getFirstBlockProducer() {
     return firstBlockProducer;
+  }
+
+  /**
+   *
+   * @return {string}
+   */
+  static getSecondBlockProducer() {
+    return secondBlockProducer;
+  }
+
+  /**
+   *
+   * @param {string} accountName
+   * @param {string} privateKey
+   * @return {Promise<void>}
+   */
+  static async stakeSomethingIfNecessary(accountName, privateKey) {
+    await this.rollbackAllUnstakingRequests(accountName, privateKey);
+    const accountState = await WalletApi.getAccountState(accountName);
+
+    if (accountState.tokens.staked === 0) {
+      await WalletApi.stakeOrUnstakeTokens(accountName, privateKey, 10, 10)
+    }
+  }
+
+  /**
+   *
+   * @param {string} accountName
+   * @param {string} privateKey
+   * @return {Promise<Object>}
+   */
+  static resetVotingState(accountName, privateKey) {
+    return WalletApi.voteForBlockProducers(accountName, privateKey, []);
   }
 
   /**
