@@ -52,9 +52,9 @@ describe('Send transactions to blockchain', function () {
         await helper.resetVotingState(accountName, privateKey);
         await helper.stakeSomethingIfNecessary(accountName, privateKey);
 
-        const producers             = await WalletApi.getBlockchainNodes();
-        const firstProducerBefore   = producers[firstBp];
-        const secondProducerBefore  = producers[secondBp];
+        const {producerData:producerDataBefore} = await WalletApi.getBlockchainNodes();
+        const firstProducerBefore   = producerDataBefore[firstBp];
+        const secondProducerBefore  = producerDataBefore[secondBp];
 
         const accountState = await WalletApi.getAccountState(accountName);
         const votingTokens = accountState.tokens.staked;
@@ -64,9 +64,9 @@ describe('Send transactions to blockchain', function () {
           secondBp
         ]);
 
-        const producersAfter       = await WalletApi.getBlockchainNodes();
-        const firstProducerAfter   = producersAfter[firstBp];
-        const secondProducerAfter  = producersAfter[secondBp];
+        const { producerData }       = await WalletApi.getBlockchainNodes();
+        const firstProducerAfter   = producerData[firstBp];
+        const secondProducerAfter  = producerData[secondBp];
 
         expect(firstProducerAfter.votes_count).toBe(firstProducerBefore.votes_count + 1);
         expect(secondProducerAfter.votes_count).toBe(secondProducerBefore.votes_count + 1);
