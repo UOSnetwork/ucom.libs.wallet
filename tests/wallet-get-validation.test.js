@@ -131,7 +131,7 @@ describe('Get blockchain info and validation checks', () => {
 
       const res = await WalletApi.sendTokens(accountName, 'sample_key', accountNameTo, 1, '');
       expect(res.success).toBeTruthy();
-    });
+    }, 10000);
 
     it('stakeOrUnstakeTokens', async () => {
       await expect(WalletApi.stakeOrUnstakeTokens(accountName, 'sample', -1, 0)).rejects.toThrow(positiveOrZeroIntErrorRegex);
