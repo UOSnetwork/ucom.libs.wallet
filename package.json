@@ -1,5 +1,5 @@
 {
-  "name": "uos-app-wallet",
+  "name": "ucom-libs-wallet",
   "version": "0.15.0",
   "description": "NPM package to implement UOS wallet",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/gravityprotocol/uos-app-wallet.git"
+    "url": "git@github.com:UOSnetwork/ucom.libs.wallet.git"
   },
   "keywords": [
     "UOS",
@@ -16,7 +16,7 @@
     "DPOS",
     "DPOI"
   ],
-  "homepage": "https://bitbucket.org/gravityprotocol/uos-app-wallet/src/master/README.md",
+  "homepage": "https://github.com/UOSnetwork/ucom.libs.wallet/blob/master/README.md",
   "author": "UOS",
   "license": "MIT",
   "dependencies": {
