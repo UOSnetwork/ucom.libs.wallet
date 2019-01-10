@@ -20,6 +20,8 @@
   "author": "UOS",
   "license": "MIT",
   "dependencies": {
+    "bignumber.js": "^8.0.1",
+    "bytebuffer": "^5.0.1",
     "eosjs": "20.0.0-beta2",
     "lodash": "4.17.11",
     "moment": "2.22.2",

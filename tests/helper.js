@@ -10,8 +10,8 @@ const EosClient = require('../lib/eos-client');
 
 require('jest-expect-message');
 
-let accountName   = 'autotester';
-let accountNameTo = 'ilya';
+let accountName   = 'vladvladvlad';
+let accountNameTo = 'janejanejane';
 
 let firstBlockProducer  = 'calc1';
 let secondBlockProducer = 'calc2';
@@ -19,8 +19,8 @@ let secondBlockProducer = 'calc2';
 class Helper {
 
   static initForTestEnv() {
-    accountName   = 'autotester';
-    accountNameTo = 'ilya';
+    accountName   = 'vladvladvlad';
+    accountNameTo = 'janejanejane';
 
     firstBlockProducer = 'calc1';
 
