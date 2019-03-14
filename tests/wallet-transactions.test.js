@@ -25,6 +25,15 @@ const JEST_TIMEOUT = 20000;
 describe('Send transactions to blockchain', function () {
   describe('voting', () => {
     describe('Positive', () => {
+
+      it('should run sample method to vote for calculatorNode', async () => {
+        // TODO - sample method is tested
+        await WalletApi.voteForCalculatorNodes(accountName, privateKey, [
+          firstBp,
+          secondBp,
+        ]);
+      });
+
       it ('should be possible to vote for nobody', async () => {
         await helper.stakeSomethingIfNecessary(accountName, privateKey);
         await WalletApi.voteForBlockProducers(accountName, privateKey, [
