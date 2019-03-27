@@ -4,7 +4,8 @@
   "description": "NPM package to implement UOS wallet",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll --verbose --runInBand"
+    "test": "jest --runInBand",
+    "test-watch": "jest --watchAll --verbose --runInBand"
   },
   "repository": {
     "type": "git",

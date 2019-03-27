@@ -28,6 +28,16 @@ class Helper {
     WalletApi.initForTestEnv();
   }
 
+  static initForStagingEnv() {
+    accountName   = 'vladvladvlad';
+    accountNameTo = 'janejanejane';
+
+    firstBlockProducer = 'calc1';
+
+    WalletApi.setNodeJsEnv();
+    WalletApi.initForStagingEnv();
+  }
+
   // noinspection JSUnusedGlobalSymbols
   /**
    * @return void
