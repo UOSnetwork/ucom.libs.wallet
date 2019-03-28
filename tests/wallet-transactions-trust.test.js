@@ -24,7 +24,7 @@ async function signAndSendTransaction() {
   TransactionsPushResponseChecker.checkOneTransaction(trustTrxResponse, expected);
 }
 
-describe('Send trust transactions to blockchain', () => {
+describe('Trust', () => {
   it('Send signed transaction to staging uos.activity', async () => {
     helper.initForStagingEnv();
 
@@ -53,3 +53,22 @@ describe('Send trust transactions to blockchain', () => {
     TransactionsPushResponseChecker.checkOneTransaction(trustTrxResponse, expected);
   }, JEST_TIMEOUT);
 });
+
+describe('Untrust', () => {
+  it('Send signed untrust transaction to staging uos.activity - fetch json', async () => {
+    helper.initForStagingEnv();
+
+    const accountName = helper.getTesterAccountName();
+    const privateKey = helper.getTesterAccountPrivateKey();
+    const accountNameTo = helper.getAccountNameTo();
+
+    const signedJson = await SocialApi.getUnTrustUserSignedTransactionsAsJson(accountName, privateKey, accountNameTo);
+    const signedParsed = SocialApi.parseSignedTransactionJson(signedJson);
+
+    const trustTrxResponse = await EosClient.pushTransaction(signedParsed);
+
+    const expected = TrustExpectedDataHelper.getOneUserToOtherPushResponse(accountName, accountNameTo, false);
+    TransactionsPushResponseChecker.checkOneTransaction(trustTrxResponse, expected);
+  }, JEST_TIMEOUT);
+});
+

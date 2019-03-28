@@ -1,5 +1,7 @@
 class TrustExpectedDataHelper {
-  static getOneUserToOtherPushResponse(accountNameFrom, accountNameTo) {
+  static getOneUserToOtherPushResponse(accountNameFrom, accountNameTo, isTrust = true) {
+    const interaction = isTrust ? 'trust' : 'untrust';
+
     return {
       "producer_block_id": null,
       "receipt": {
@@ -22,7 +24,7 @@ class TrustExpectedDataHelper {
           ],
           "data": {
             "acc": accountNameFrom,
-            "action_json": `{\"interaction\":\"trust\",\"data\":{\"account_from\":\"${accountNameFrom}\",\"account_to\":\"${accountNameTo}\"}}`
+            "action_json": `{\"interaction\":\"${interaction}\",\"data\":{\"account_from\":\"${accountNameFrom}\",\"account_to\":\"${accountNameTo}\"}}`
           },
         },
         "context_free": false,
