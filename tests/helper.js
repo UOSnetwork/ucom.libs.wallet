@@ -10,6 +10,10 @@ const EosClient = require('../lib/eos-client');
 
 require('jest-expect-message');
 
+
+let airdropAccountName = 'testairdrop1';
+let airdropHolderAccountName = 'testholder11';
+
 let accountName   = 'vladvladvlad';
 let accountNameTo = 'janejanejane';
 
@@ -17,6 +21,38 @@ let firstBlockProducer  = 'calc1';
 let secondBlockProducer = 'calc2';
 
 class Helper {
+
+  /**
+   *
+   * @returns {string}
+   */
+  static getAirdropAccountName() {
+    return airdropAccountName;
+  }
+
+  /**
+   *
+   * @returns {string}
+   */
+  static getAirdropHolderAccountName() {
+    return airdropHolderAccountName;
+  }
+
+  /**
+   *
+   * @returns {string}
+   */
+  static getAirdropAccountPrivateKey() {
+    return accountsData[airdropAccountName].activePk;
+  }
+
+  /**
+   *
+   * @returns {string}
+   */
+  static getAirdropHolderPrivateKey() {
+    return accountsData[airdropHolderAccountName].activePk;
+  }
 
   static initForTestEnv() {
     accountName   = 'vladvladvlad';
