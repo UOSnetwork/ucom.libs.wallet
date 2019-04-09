@@ -1,5 +1,8 @@
 # U°OS Application Wallet Library
 
+[![dependencies Status](https://david-dm.org/UOSnetwork/ucom.libs.wallet/status.svg)](https://david-dm.org/UOSnetwork/ucom.libs.wallet) 
+[![devDependencies Status](https://david-dm.org/UOSnetwork/ucom.libs.wallet/dev-status.svg)](https://david-dm.org/UOSnetwork/ucom.libs.wallet?type=dev)
+
 Stable interface is provided only to these classes:
 * `WalletApi`
 * `SocialApi`
