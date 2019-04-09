@@ -22,7 +22,7 @@ const secondBp  = helper.getSecondBlockProducer();
 
 const JEST_TIMEOUT = 20000;
 
-describe('Send transactions to blockchain', function () {
+describe('Send transactions to blockchain', () => {
   describe('voting', () => {
     describe('Positive', () => {
 

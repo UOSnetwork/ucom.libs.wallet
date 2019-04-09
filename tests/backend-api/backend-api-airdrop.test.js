@@ -1,4 +1,4 @@
-const { BackendApi, EosClient, WalletApi }       = require('../../index');
+const { BackendApi, EosClient }       = require('../../index');
 
 const helper = require('../helper');
 const NumbersHelper = require('../helpers/common/numbers-helper');
@@ -190,46 +190,185 @@ describe('Backend API airdrop', () => {
     });
   });
 
-  it('Get table rows', async () => {
-    /*
-      get_table_rows:
-        * allow batching - 0.5
-      * allow setting index key - 0.5
-      * autotests - 0.5
-      * remember the sample output to use inside backend autotests - 0.25
+  describe('Get airdrops receipt table rows', () => {
+    it('Get table rows with regular pagination (via id)', async () => {
+      helper.initForStagingEnv();
 
-      Publish - 0.5h
+      const actual = await BackendApi.getAirdropsReceiptTableRows();
+      const expected = getSampleAirdropsReceiptTableRows();
 
-    {
-      "scope":"testairdrop1",
-      "code":"testairdrop1",
-      "table":"receipt",
-      "json":"true",
-      "limit": 1000,
-      "lower_bound": 111,
-      "index_position": "2",
-      "key_type": "i64"
-    }
-     */
+      for (let i = 0; i < expected.length; i += 1) {
+        expect(actual[i]).toMatchObject(expected[i]);
+      }
+    }, JEST_TIMEOUT);
 
-    helper.initForStagingEnv();
+    it('Find a concrete record via external_id', async () => {
+      helper.initForStagingEnv();
 
-    const smartContract = 'testairdrop1';
-    const scope = 'testairdrop1';
-    const table = 'receipt';
+      const externalId = 3882236;
+      const actual = await BackendApi.getOneAirdropReceiptRowByExternalId(externalId);
+      const expected = {
+        id: 13,
+        external_id: 3882236,
+        airdrop_id: 5104204,
+        amount: 20001,
+        acc_name: "jane",
+        symbol: "UOSTEST"
+      };
 
-    let res;
-    try {
-      res = await EosClient.getJsonTableRows(smartContract, scope, table, 100);
-    } catch (error) {
-      const a = 0;
-    }
-
-
-    const a = 0;
-
-  }, JEST_TIMEOUT * 100);
+      expect(actual).toMatchObject(expected);
+    }, JEST_TIMEOUT);
+  });
 });
+
+function getSampleAirdropsReceiptTableRows() {
+  return [
+    {
+      "id": 0,
+      "external_id": 100,
+      "airdrop_id": 12,
+      "amount": 1,
+      "acc_name": "vlad",
+      "symbol": "UOSTEST"
+    },
+    {
+      "id": 1,
+      "external_id": 101,
+      "airdrop_id": 13,
+      "amount": 1,
+      "acc_name": "vlad",
+      "symbol": "UOSTEST"
+    },
+    {
+      "id": 2,
+      "external_id": 102,
+      "airdrop_id": 12,
+      "amount": 10001,
+      "acc_name": "jane",
+      "symbol": "UOSTEST"
+    },
+    {
+      "id": 3,
+      "external_id": 111,
+      "airdrop_id": 14,
+      "amount": 1,
+      "acc_name": "vlad",
+      "symbol": "UOSTEST"
+    },
+    {
+      "id": 4,
+      "external_id": 112,
+      "airdrop_id": 14,
+      "amount": 2001,
+      "acc_name": "jane",
+      "symbol": "UOSTEST"
+    },
+    {
+      "id": 5,
+      "external_id": 470255,
+      "airdrop_id": 618018,
+      "amount": 20001,
+      "acc_name": "jane",
+      "symbol": "UOSTEST"
+    },
+    {
+      "id": 6,
+      "external_id": 275349,
+      "airdrop_id": 29947,
+      "amount": 20001,
+      "acc_name": "petr",
+      "symbol": "UOSTEST"
+    },
+    {
+      "id": 7,
+      "external_id": 312965,
+      "airdrop_id": 29947,
+      "amount": 20001,
+      "acc_name": "vlad",
+      "symbol": "UOSTEST"
+    },
+    {
+      "id": 8,
+      "external_id": 988861,
+      "airdrop_id": 587162,
+      "amount": 20001,
+      "acc_name": "vlad",
+      "symbol": "UOSTEST"
+    },
+    {
+      "id": 9,
+      "external_id": 958064,
+      "airdrop_id": 587162,
+      "amount": 20001,
+      "acc_name": "jane",
+      "symbol": "UOSTEST"
+    },
+    {
+      "id": 10,
+      "external_id": 4324265,
+      "airdrop_id": 4821544,
+      "amount": 20001,
+      "acc_name": "summerknight",
+      "symbol": "UOSTEST"
+    },
+    {
+      "id": 11,
+      "external_id": 3008790,
+      "airdrop_id": 1951188,
+      "amount": 20001,
+      "acc_name": "summerknight",
+      "symbol": "GHTEST"
+    },
+    {
+      "id": 12,
+      "external_id": 4800357,
+      "airdrop_id": 5104204,
+      "amount": 20001,
+      "acc_name": "vlad",
+      "symbol": "UOSTEST"
+    },
+    {
+      "id": 13,
+      "external_id": 3882236,
+      "airdrop_id": 5104204,
+      "amount": 20001,
+      "acc_name": "jane",
+      "symbol": "UOSTEST"
+    },
+    {
+      "id": 14,
+      "external_id": 6309138,
+      "airdrop_id": 3345720,
+      "amount": 20001,
+      "acc_name": "summerknight",
+      "symbol": "UOSTEST"
+    },
+    {
+      "id": 15,
+      "external_id": 9392554,
+      "airdrop_id": 2260179,
+      "amount": 20001,
+      "acc_name": "summerknight",
+      "symbol": "GHTEST"
+    },
+    {
+      "id": 16,
+      "external_id": 4000336,
+      "airdrop_id": 3714441,
+      "amount": 20001,
+      "acc_name": "vlad",
+      "symbol": "UOSTEST"
+    },
+    {
+      "id": 17,
+      "external_id": 1169432,
+      "airdrop_id": 3714441,
+      "amount": 20001,
+      "acc_name": "jane",
+      "symbol": "UOSTEST"
+    },
+  ];
+}
 
 
 function getSamplePushResponse(data) {
