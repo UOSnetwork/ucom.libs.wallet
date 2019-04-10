@@ -4,6 +4,7 @@ module.exports = {
 
   BackendApi: require('./lib/backend-api'),
 
+  TransactionSender: require('./lib/transaction-sender'),
   EosClient: require('./lib/eos-client'),
   Dictionary: {
     BlockchainTrTraces: require('./lib/dictionary/blockchain-tr-traces-dictionary')
