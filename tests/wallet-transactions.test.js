@@ -1,5 +1,6 @@
 const { WalletApi }       = require('../index');
 const BlockchainRegistry  = require('../lib/blockchain-registry');
+const TransactionsPushResponseChecker = require('./helpers/common/transactions-push-response-checker');
 
 const helper = require('./helper');
 const delay = require('delay');
@@ -26,12 +27,50 @@ describe('Send transactions to blockchain', () => {
   describe('voting', () => {
     describe('Positive', () => {
 
-      it('should run sample method to vote for calculatorNode', async () => {
-        // TODO - sample method is tested
-        await WalletApi.voteForCalculatorNodes(accountName, privateKey, [
-          firstBp,
-          secondBp,
+      it('vote for calculator nodes', async () => {
+        const res = await WalletApi.voteForCalculatorNodes(accountName, privateKey, [
+          'initcalc1111',
+          'initcalc1115',
         ]);
+
+        const expected = {
+          action_traces: [
+            {
+              "receipt": {
+                "receiver": "eosio",
+              },
+              "act": {
+                "account": "eosio",
+                "name": "votecalc",
+                "authorization": [
+                  {
+                    "actor": "vladvladvlad",
+                    "permission": "active"
+                  }
+                ],
+                "data": {
+                  "voter": "vladvladvlad",
+                  "calculators": [
+                    "initcalc1111",
+                    "initcalc1115"
+                  ]
+                },
+                "hex_data": "904cdcc9c49d4cdc02104208281a94dd74504208281a94dd74"
+              },
+              "context_free": false,
+              "console": "",
+              "producer_block_id": null,
+              "except": null,
+              "inline_traces": []
+            }
+          ],
+        };
+
+        TransactionsPushResponseChecker.checkOneTransaction(res, expected);
+      });
+
+      it('vote for nobody', async () => {
+        // TODO
       });
 
       it ('should be possible to vote for nobody', async () => {
@@ -183,7 +222,7 @@ describe('Send transactions to blockchain', () => {
       await WalletApi.sendTokens(accountNameTo, accountNameToPrivateKey, accountName, amountToSend);
     }, 20000);
 
-    describe('stakeOrUnstakeTokens', async () => {
+    describe('stakeOrUnstakeTokens', () => {
       it('Unstake and rollback it', async () => {
         await helper.rollbackAllUnstakingRequests(accountName, privateKey);
 
