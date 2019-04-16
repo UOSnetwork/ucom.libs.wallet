@@ -1,31 +1,33 @@
-const { WalletApi }       = require('../index');
-const BlockchainRegistry  = require('../lib/blockchain-registry');
+/* eslint-disable no-bitwise,security/detect-object-injection,jest/no-disabled-tests */
+import Helper = require('../../helpers/helper');
 
-const helper = require('./helper');
+
 const delay = require('delay');
+/* eslint-disable max-len,unicorn/import-index */
+const { WalletApi } = require('../../../index.js');
+const BlockchainRegistry = require('../../../lib/blockchain-registry');
 
-helper.initForTestEnv();
+Helper.initForTestEnv();
 
-const accountName             = helper.getTesterAccountName();
-const privateKey              = helper.getTesterAccountPrivateKey();
+const accountName = Helper.getTesterAccountName();
+const privateKey = Helper.getTesterAccountPrivateKey();
 
-const accountNameTo           = helper.getAccountNameTo();
-const accountNameToPrivateKey = helper.getAccountNameToPrivateKey();
+const accountNameTo = Helper.getAccountNameTo();
+const accountNameToPrivateKey = Helper.getAccountNameToPrivateKey();
 
 const nonExistedAccountErrorRegex = new RegExp('Probably account does not exist. Please check spelling');
 const noStakeErrorRegex = new RegExp('It is possible to vote only if you have self-staked tokens.');
 const maxProducersLimitErrorRegex = new RegExp('It is possible to vote up to 30 block producers');
 const noSuchBlockProducersErrorRegex = new RegExp('There is no such block producers: no_such_bp1, no_such_bp2');
 
-const firstBp   = helper.getFirstBlockProducer();
-const secondBp  = helper.getSecondBlockProducer();
+const firstBp = Helper.getFirstBlockProducer();
+const secondBp = Helper.getSecondBlockProducer();
 
 const JEST_TIMEOUT = 20000;
 
 describe('Send transactions to blockchain', () => {
   describe('voting', () => {
     describe('Positive', () => {
-
       it('should run sample method to vote for calculatorNode', async () => {
         // TODO - sample method is tested
         await WalletApi.voteForCalculatorNodes(accountName, privateKey, [
@@ -34,8 +36,8 @@ describe('Send transactions to blockchain', () => {
         ]);
       });
 
-      it ('should be possible to vote for nobody', async () => {
-        await helper.stakeSomethingIfNecessary(accountName, privateKey);
+      it('should be possible to vote for nobody', async () => {
+        await Helper.stakeSomethingIfNecessary(accountName, privateKey);
         await WalletApi.voteForBlockProducers(accountName, privateKey, [
           firstBp,
           secondBp,
@@ -43,7 +45,7 @@ describe('Send transactions to blockchain', () => {
 
         const voteInfo = await WalletApi.getRawVoteInfo(accountName);
 
-        const producers = voteInfo.producers;
+        const { producers } = voteInfo;
 
         expect(~(producers.indexOf(firstBp))).toBeTruthy();
         expect(~(producers.indexOf(secondBp))).toBeTruthy();
@@ -58,24 +60,24 @@ describe('Send transactions to blockchain', () => {
 
 
       it('should vote for block producers', async () => {
-        await helper.resetVotingState(accountName, privateKey);
-        await helper.stakeSomethingIfNecessary(accountName, privateKey);
+        await Helper.resetVotingState(accountName, privateKey);
+        await Helper.stakeSomethingIfNecessary(accountName, privateKey);
 
-        const {producerData:producerDataBefore} = await WalletApi.getBlockchainNodes();
-        const firstProducerBefore   = producerDataBefore[firstBp];
-        const secondProducerBefore  = producerDataBefore[secondBp];
+        const { producerData: producerDataBefore } = await WalletApi.getBlockchainNodes();
+        const firstProducerBefore = producerDataBefore[firstBp];
+        const secondProducerBefore = producerDataBefore[secondBp];
 
         const accountState = await WalletApi.getAccountState(accountName);
         const votingTokens = accountState.tokens.staked;
 
         await WalletApi.voteForBlockProducers(accountName, privateKey, [
           firstBp,
-          secondBp
+          secondBp,
         ]);
 
-        const { producerData }       = await WalletApi.getBlockchainNodes();
-        const firstProducerAfter   = producerData[firstBp];
-        const secondProducerAfter  = producerData[secondBp];
+        const { producerData } = await WalletApi.getBlockchainNodes();
+        const firstProducerAfter = producerData[firstBp];
+        const secondProducerAfter = producerData[secondBp];
 
         expect(firstProducerAfter.votes_count).toBe(firstProducerBefore.votes_count + 1);
         expect(secondProducerAfter.votes_count).toBe(secondProducerBefore.votes_count + 1);
@@ -87,22 +89,22 @@ describe('Send transactions to blockchain', () => {
 
     describe('Negative', () => {
       it('Not possible to vote if you do not have any self staked tokens', async () => {
-        await helper.unstakeEverything(accountName, privateKey);
+        await Helper.unstakeEverything(accountName, privateKey);
 
-        const nonExistedAccount = helper.getNonExistedAccountName();
-        await expect(WalletApi.voteForBlockProducers(nonExistedAccount, 'sample_key', [ firstBp ]))
+        const nonExistedAccount = Helper.getNonExistedAccountName();
+        await expect(WalletApi.voteForBlockProducers(nonExistedAccount, 'sample_key', [firstBp]))
           .rejects.toThrow(nonExistedAccountErrorRegex);
 
-        await expect(WalletApi.voteForBlockProducers(accountName, privateKey, [ firstBp ]))
+        await expect(WalletApi.voteForBlockProducers(accountName, privateKey, [firstBp]))
           .rejects.toThrow(noStakeErrorRegex);
 
-        await helper.rollbackAllUnstakingRequests(accountName, privateKey);
+        await Helper.rollbackAllUnstakingRequests(accountName, privateKey);
       }, JEST_TIMEOUT);
     });
 
     it('It is not possible for more than 30 BP', async () => {
-      const fakeProducers = [];
-      for (let i = 0; i < 31; i++) {
+      const fakeProducers: string[] = [];
+      for (let i = 0; i < 31; i += 1) {
         fakeProducers.push(`producer_${i}`);
       }
 
@@ -115,7 +117,6 @@ describe('Send transactions to blockchain', () => {
 
       await expect(WalletApi.voteForBlockProducers(accountName, privateKey, producers))
         .rejects.toThrow(noSuchBlockProducersErrorRegex);
-
     }, JEST_TIMEOUT);
   });
 
@@ -126,9 +127,9 @@ describe('Send transactions to blockchain', () => {
 
       const balanceBefore = await BlockchainRegistry.getAccountBalance(accountName);
 
-      const res = await WalletApi.sellRam(accountName, privateKey, ramToSell);
+      const response = await WalletApi.sellRam(accountName, privateKey, ramToSell);
 
-      helper.checkBasicTransactionStructure(res);
+      Helper.checkBasicTransactionStructure(response);
 
       const freeRamAfter = await BlockchainRegistry.getFreeRamAmountInBytes(accountName);
       expect(freeRamAfter).toBe(freeRam - ramToSell);
@@ -137,7 +138,6 @@ describe('Send transactions to blockchain', () => {
 
       // TODO - check exact value
       expect(balanceAfter).toBeGreaterThan(balanceBefore);
-
     }, 20000);
     it('buyRam', async () => {
       const freeRam = await BlockchainRegistry.getFreeRamAmountInBytes(accountName);
@@ -146,9 +146,9 @@ describe('Send transactions to blockchain', () => {
       const totalRamBefore = await BlockchainRegistry.getTotalRamAmount(accountName);
       const balanceBefore = await BlockchainRegistry.getAccountBalance(accountName);
 
-      const res = await WalletApi.buyRam(accountName, privateKey, ramToBuy);
+      const response = await WalletApi.buyRam(accountName, privateKey, ramToBuy);
 
-      helper.checkBasicTransactionStructure(res);
+      Helper.checkBasicTransactionStructure(response);
 
       const balanceAfter = await BlockchainRegistry.getAccountBalance(accountName);
       const totalRamAfter = await BlockchainRegistry.getTotalRamAmount(accountName);
@@ -167,9 +167,9 @@ describe('Send transactions to blockchain', () => {
       const recipientState = await WalletApi.getAccountState(accountNameTo);
       const recipientTokensBefore = recipientState.tokens.active;
 
-      const res = await WalletApi.sendTokens(accountName, privateKey, accountNameTo, amountToSend);
+      const response = await WalletApi.sendTokens(accountName, privateKey, accountNameTo, amountToSend);
 
-      helper.checkSendTokensTransactionResponse(res, accountName, accountNameTo, amountToSend);
+      Helper.checkSendTokensTransactionResponse(response, accountName, accountNameTo, amountToSend);
 
       const senderStateAfter = await WalletApi.getAccountState(accountName);
       const senderTokensAfter = senderStateAfter.tokens.active;
@@ -183,9 +183,9 @@ describe('Send transactions to blockchain', () => {
       await WalletApi.sendTokens(accountNameTo, accountNameToPrivateKey, accountName, amountToSend);
     }, 20000);
 
-    describe('stakeOrUnstakeTokens', async () => {
+    describe('stakeOrUnstakeTokens', () => {
       it('Unstake and rollback it', async () => {
-        await helper.rollbackAllUnstakingRequests(accountName, privateKey);
+        await Helper.rollbackAllUnstakingRequests(accountName, privateKey);
 
         // ---------- Check basic state - no unstaking request ------------
         const state = await WalletApi.getAccountState(accountName);
@@ -203,15 +203,15 @@ describe('Send transactions to blockchain', () => {
           accountName,
           privateKey,
           netTokens - netTokensToDecrease,
-          cpuTokens - cpuTokensToDecrease
+          cpuTokens - cpuTokensToDecrease,
         );
 
         const stateAfter = await WalletApi.getAccountState(accountName);
 
         // console.log(util.inspect(stateAfter, false, null, true /* enable colors */));
 
-        helper.checkUnstakingRequestValues(stateAfter.resources.net.unstaking_request, netTokensToDecrease);
-        helper.checkUnstakingRequestValues(stateAfter.resources.cpu.unstaking_request, cpuTokensToDecrease);
+        Helper.checkUnstakingRequestValues(stateAfter.resources.net.unstaking_request, netTokensToDecrease);
+        Helper.checkUnstakingRequestValues(stateAfter.resources.cpu.unstaking_request, cpuTokensToDecrease);
 
         // total self_staked amount must be decreased
         expect(stateAfter.tokens.staked).toBe(totalStakedTokensBefore - netTokensToDecrease - cpuTokensToDecrease);
@@ -231,7 +231,7 @@ describe('Send transactions to blockchain', () => {
           accountName,
           privateKey,
           netTokensAfter + netTokensToDecrease,
-          cpuTokensAfter + cpuTokensToDecrease
+          cpuTokensAfter + cpuTokensToDecrease,
         );
 
         const rollbackState = await WalletApi.getAccountState(accountName);
@@ -253,7 +253,6 @@ describe('Send transactions to blockchain', () => {
 
         // Active token amount is not increased
         expect(rollbackState.tokens.active).toBe(state.tokens.active);
-
       }, 50000);
 
       it('increase both net and cpu', async () => {
@@ -261,14 +260,14 @@ describe('Send transactions to blockchain', () => {
         const netBefore = stateBefore.resources.net;
         const cpuBefore = stateBefore.resources.cpu;
 
-        const res = await WalletApi.stakeOrUnstakeTokens(
+        const response = await WalletApi.stakeOrUnstakeTokens(
           accountName,
           privateKey,
           netBefore.tokens.self_delegated + 1,
           cpuBefore.tokens.self_delegated + 2,
         );
 
-        helper.checkBasicTransactionStructure(res, 2);
+        Helper.checkBasicTransactionStructure(response, 2);
 
         const stateAfter = await WalletApi.getAccountState(accountName);
         const netAfter = stateAfter.resources.net;
@@ -278,7 +277,6 @@ describe('Send transactions to blockchain', () => {
 
         expect(netAfter.tokens.self_delegated).toBeGreaterThan(netBefore.tokens.self_delegated);
         expect(cpuAfter.tokens.self_delegated).toBeGreaterThan(cpuBefore.tokens.self_delegated);
-
       }, 20000);
 
       it('decrease both net and cpu', async () => {
@@ -286,14 +284,14 @@ describe('Send transactions to blockchain', () => {
         const netBefore = stateBefore.resources.net;
         const cpuBefore = stateBefore.resources.cpu;
 
-        const res = await WalletApi.stakeOrUnstakeTokens(
+        const response = await WalletApi.stakeOrUnstakeTokens(
           accountName,
           privateKey,
           netBefore.tokens.self_delegated - 1,
           cpuBefore.tokens.self_delegated - 2,
         );
 
-        helper.checkBasicTransactionStructure(res, 2);
+        Helper.checkBasicTransactionStructure(response, 2);
 
         const stateAfter = await WalletApi.getAccountState(accountName);
         const netAfter = stateAfter.resources.net;
@@ -304,7 +302,7 @@ describe('Send transactions to blockchain', () => {
         expect(netAfter.tokens.self_delegated).toBeLessThan(netBefore.tokens.self_delegated);
         expect(cpuAfter.tokens.self_delegated).toBeLessThan(cpuBefore.tokens.self_delegated);
 
-        await helper.rollbackAllUnstakingRequests(accountName, privateKey);
+        await Helper.rollbackAllUnstakingRequests(accountName, privateKey);
       }, 20000);
 
 
@@ -313,14 +311,14 @@ describe('Send transactions to blockchain', () => {
         const netBefore = stateBefore.resources.net;
         const cpuBefore = stateBefore.resources.cpu;
 
-        const res = await WalletApi.stakeOrUnstakeTokens(
+        const response = await WalletApi.stakeOrUnstakeTokens(
           accountName,
           privateKey,
           netBefore.tokens.self_delegated - 1,
           cpuBefore.tokens.self_delegated + 2,
         );
 
-        helper.checkBasicTransactionStructure(res, 2);
+        Helper.checkBasicTransactionStructure(response, 2);
 
         const stateAfter = await WalletApi.getAccountState(accountName);
         const netAfter = stateAfter.resources.net;
@@ -331,8 +329,7 @@ describe('Send transactions to blockchain', () => {
         expect(netAfter.tokens.self_delegated).toBeLessThan(netBefore.tokens.self_delegated);
         expect(cpuAfter.tokens.self_delegated).toBeGreaterThan(cpuBefore.tokens.self_delegated);
 
-        await helper.rollbackAllUnstakingRequests(accountName, privateKey);
-
+        await Helper.rollbackAllUnstakingRequests(accountName, privateKey);
       }, 20000);
 
       it('decrease cpu and increase net', async () => {
@@ -340,14 +337,14 @@ describe('Send transactions to blockchain', () => {
         const netBefore = stateBefore.resources.net;
         const cpuBefore = stateBefore.resources.cpu;
 
-        const res = await WalletApi.stakeOrUnstakeTokens(
+        const response = await WalletApi.stakeOrUnstakeTokens(
           accountName,
           privateKey,
           netBefore.tokens.self_delegated + 3,
           cpuBefore.tokens.self_delegated - 2,
         );
 
-        helper.checkBasicTransactionStructure(res, 2);
+        Helper.checkBasicTransactionStructure(response, 2);
 
         delay(100);
 
@@ -360,7 +357,7 @@ describe('Send transactions to blockchain', () => {
         expect(netAfter.tokens.self_delegated).toBeGreaterThan(netBefore.tokens.self_delegated);
         expect(cpuAfter.tokens.self_delegated).toBeLessThan(cpuBefore.tokens.self_delegated);
 
-        await helper.rollbackAllUnstakingRequests(accountName, privateKey);
+        await Helper.rollbackAllUnstakingRequests(accountName, privateKey);
       }, 20000);
 
       it('decrease cpu and net the same', async () => {
@@ -368,14 +365,14 @@ describe('Send transactions to blockchain', () => {
         const netBefore = stateBefore.resources.net;
         const cpuBefore = stateBefore.resources.cpu;
 
-        const res = await WalletApi.stakeOrUnstakeTokens(
+        const response = await WalletApi.stakeOrUnstakeTokens(
           accountName,
           privateKey,
           netBefore.tokens.self_delegated,
           cpuBefore.tokens.self_delegated - 2,
         );
 
-        helper.checkBasicTransactionStructure(res, 1);
+        Helper.checkBasicTransactionStructure(response, 1);
 
         const stateAfter = await WalletApi.getAccountState(accountName);
         const netAfter = stateAfter.resources.net;
@@ -386,7 +383,7 @@ describe('Send transactions to blockchain', () => {
         expect(netAfter.tokens.self_delegated).toBe(netBefore.tokens.self_delegated);
         expect(cpuAfter.tokens.self_delegated).toBeLessThan(cpuBefore.tokens.self_delegated);
 
-        await helper.rollbackAllUnstakingRequests(accountName, privateKey);
+        await Helper.rollbackAllUnstakingRequests(accountName, privateKey);
       }, 20000);
 
       it('decrease net and cpu the same', async () => {
@@ -394,14 +391,14 @@ describe('Send transactions to blockchain', () => {
         const netBefore = stateBefore.resources.net;
         const cpuBefore = stateBefore.resources.cpu;
 
-        const res = await WalletApi.stakeOrUnstakeTokens(
+        const response = await WalletApi.stakeOrUnstakeTokens(
           accountName,
           privateKey,
           netBefore.tokens.self_delegated - 2,
           cpuBefore.tokens.self_delegated,
         );
 
-        helper.checkBasicTransactionStructure(res, 1);
+        Helper.checkBasicTransactionStructure(response, 1);
 
         delay(100);
 
@@ -414,7 +411,7 @@ describe('Send transactions to blockchain', () => {
         expect(netAfter.tokens.self_delegated).toBeLessThan(netBefore.tokens.self_delegated);
         expect(cpuAfter.tokens.self_delegated).toBe(cpuBefore.tokens.self_delegated);
 
-        await helper.rollbackAllUnstakingRequests(accountName, privateKey);
+        await Helper.rollbackAllUnstakingRequests(accountName, privateKey);
       }, 20000);
 
       it('increase net and cpu the same', async () => {
@@ -422,14 +419,14 @@ describe('Send transactions to blockchain', () => {
         const netBefore = stateBefore.resources.net;
         const cpuBefore = stateBefore.resources.cpu;
 
-        const res = await WalletApi.stakeOrUnstakeTokens(
+        const response = await WalletApi.stakeOrUnstakeTokens(
           accountName,
           privateKey,
           netBefore.tokens.self_delegated + 5,
           cpuBefore.tokens.self_delegated,
         );
 
-        helper.checkBasicTransactionStructure(res, 1);
+        Helper.checkBasicTransactionStructure(response, 1);
 
         delay(100);
 
@@ -448,14 +445,14 @@ describe('Send transactions to blockchain', () => {
         const netBefore = stateBefore.resources.net;
         const cpuBefore = stateBefore.resources.cpu;
 
-        const res = await WalletApi.stakeOrUnstakeTokens(
+        const response = await WalletApi.stakeOrUnstakeTokens(
           accountName,
           privateKey,
           netBefore.tokens.self_delegated,
           cpuBefore.tokens.self_delegated + 5,
         );
 
-        helper.checkBasicTransactionStructure(res, 1);
+        Helper.checkBasicTransactionStructure(response, 1);
 
         delay(100);
 

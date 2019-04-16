@@ -5,4 +5,4 @@ class TransactionsPushResponseChecker {
   }
 }
 
-module.exports = TransactionsPushResponseChecker;
+export = TransactionsPushResponseChecker;

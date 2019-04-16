@@ -21,4 +21,4 @@ class NumbersHelper {
   }
 }
 
-module.exports = NumbersHelper;
+export = NumbersHelper;

@@ -1,19 +1,20 @@
-const { SocialApi, EosClient }       = require('../index');
+/* eslint-disable max-len */
+import Helper = require('../../helpers/helper');
+import TrustExpectedDataHelper = require('../../helpers/social/trust-expected-data-helper');
+import TransactionsPushResponseChecker = require('../../helpers/common/transactions-push-response-checker');
 
-const helper = require('./helper');
-const TrustExpectedDataHelper = require('./helpers/social/trust-expected-data-helper');
-const TransactionsPushResponseChecker = require('./helpers/common/transactions-push-response-checker');
+const { SocialApi, EosClient } = require('../../..');
 
 const JEST_TIMEOUT = 10000;
 
 async function signAndSendTransaction() {
-  const accountName             = helper.getTesterAccountName();
-  const privateKey              = helper.getTesterAccountPrivateKey();
+  const accountName = Helper.getTesterAccountName();
+  const privateKey = Helper.getTesterAccountPrivateKey();
 
-  const accountNameTo           = helper.getAccountNameTo();
+  const accountNameTo = Helper.getAccountNameTo();
 
-  const signed      = await SocialApi.getTrustUserSignedTransaction(accountName, privateKey, accountNameTo);
-  const signedJson  = SocialApi.signedTransactionToString(signed);
+  const signed = await SocialApi.getTrustUserSignedTransaction(accountName, privateKey, accountNameTo);
+  const signedJson = SocialApi.signedTransactionToString(signed);
 
   const signedParsed = SocialApi.parseSignedTransactionJson(signedJson);
   expect(signed).toMatchObject(signedParsed);
@@ -26,23 +27,23 @@ async function signAndSendTransaction() {
 
 describe('Trust', () => {
   it('Send signed transaction to staging uos.activity', async () => {
-    helper.initForStagingEnv();
+    Helper.initForStagingEnv();
 
     await signAndSendTransaction();
   }, JEST_TIMEOUT);
 
   it('Send signed transaction to production', async () => {
-    helper.initForProductionEnv();
+    Helper.initForProductionEnv();
 
     await signAndSendTransaction();
   }, JEST_TIMEOUT);
 
   it('Send signed transaction to staging uos.activity - fetch json', async () => {
-    helper.initForStagingEnv();
+    Helper.initForStagingEnv();
 
-    const accountName = helper.getTesterAccountName();
-    const privateKey = helper.getTesterAccountPrivateKey();
-    const accountNameTo = helper.getAccountNameTo();
+    const accountName = Helper.getTesterAccountName();
+    const privateKey = Helper.getTesterAccountPrivateKey();
+    const accountNameTo = Helper.getAccountNameTo();
 
     const signedJson = await SocialApi.getTrustUserSignedTransactionsAsJson(accountName, privateKey, accountNameTo);
     const signedParsed = SocialApi.parseSignedTransactionJson(signedJson);
@@ -56,11 +57,11 @@ describe('Trust', () => {
 
 describe('Untrust', () => {
   it('Send signed untrust transaction to staging uos.activity - fetch json', async () => {
-    helper.initForStagingEnv();
+    Helper.initForStagingEnv();
 
-    const accountName = helper.getTesterAccountName();
-    const privateKey = helper.getTesterAccountPrivateKey();
-    const accountNameTo = helper.getAccountNameTo();
+    const accountName = Helper.getTesterAccountName();
+    const privateKey = Helper.getTesterAccountPrivateKey();
+    const accountNameTo = Helper.getAccountNameTo();
 
     const signedJson = await SocialApi.getUnTrustUserSignedTransactionsAsJson(accountName, privateKey, accountNameTo);
     const signedParsed = SocialApi.parseSignedTransactionJson(signedJson);
@@ -71,4 +72,3 @@ describe('Untrust', () => {
     TransactionsPushResponseChecker.checkOneTransaction(trustTrxResponse, expected);
   }, JEST_TIMEOUT);
 });
-

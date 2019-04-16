@@ -1,20 +1,21 @@
-const { WalletApi } = require('../index');
+/* eslint-disable unicorn/import-index,max-len,jest/no-disabled-tests */
+import Helper = require('../../helpers/helper');
 
-const helper = require('./helper');
+const { WalletApi } = require('../../../index.js');
 
-helper.initForTestEnv();
+Helper.initForTestEnv();
 
-const accountName   = helper.getTesterAccountName();
-const accountNameTo = helper.getAccountNameTo();
+const accountName = Helper.getTesterAccountName();
+const accountNameTo = Helper.getAccountNameTo();
 
-const positiveIntErrorRegex       = new RegExp('Input value must be an integer and greater than zero');
+const positiveIntErrorRegex = new RegExp('Input value must be an integer and greater than zero');
 const positiveOrZeroIntErrorRegex = new RegExp('Input value must be an integer and greater than or equal to zero');
 const nonExistedAccountErrorRegex = new RegExp('Probably account does not exist. Please check spelling');
-const notEnoughFreeRamErrorRegex  = new RegExp('Not enough free RAM. Please correct input data');
+const notEnoughFreeRamErrorRegex = new RegExp('Not enough free RAM. Please correct input data');
 const tooSmallRamAmountErrorRegex = new RegExp('Please increase amounts of bytes - total UOS price must be more or equal 1');
-const notEnoughTokensErrorRegex   = new RegExp('Not enough tokens. Please correct input data');
+const notEnoughTokensErrorRegex = new RegExp('Not enough tokens. Please correct input data');
 
-helper.mockTransactionSending();
+Helper.mockTransactionSending();
 
 describe('Get blockchain info and validation checks', () => {
   describe('GET requests', () => {
@@ -27,7 +28,7 @@ describe('Get blockchain info and validation checks', () => {
         it('Get account state', async () => {
           const accountState = await WalletApi.getAccountState(accountName);
 
-          helper.checkStateStructure(accountState);
+          Helper.checkStateStructure(accountState);
         });
 
         it('Get ram price', async () => {
@@ -54,13 +55,13 @@ describe('Get blockchain info and validation checks', () => {
 
       describe('Negative', () => {
         it('Empty object if account does not exist', async () => {
-          const accountName = helper.getNonExistedAccountName();
+          const account = Helper.getNonExistedAccountName();
 
-          const accountState = await WalletApi.getAccountState(accountName);
+          const accountState = await WalletApi.getAccountState(account);
 
           expect(typeof accountState).toBe('object');
           expect(Object.keys(accountState).length).toBe(0);
-        })
+        });
       });
     });
   });
@@ -77,7 +78,7 @@ describe('Get blockchain info and validation checks', () => {
       // noinspection JSCheckFunctionSignatures
       await expect(WalletApi.sellRam(accountName, 'sample_key', 'abc')).rejects.toThrow(positiveIntErrorRegex);
 
-      const nonExistedAccount = helper.getNonExistedAccountName();
+      const nonExistedAccount = Helper.getNonExistedAccountName();
       await expect(WalletApi.sellRam(nonExistedAccount, 'sample_key', 100)).rejects.toThrow(nonExistedAccountErrorRegex);
 
       const state = await WalletApi.getAccountState(accountName);
@@ -87,9 +88,9 @@ describe('Get blockchain info and validation checks', () => {
 
       await expect(WalletApi.sellRam(accountName, 'sample_key', 1)).rejects.toThrow(tooSmallRamAmountErrorRegex);
 
-      const res = await WalletApi.sellRam(accountName, 'sample_key', freeRam - 100);
+      const response = await WalletApi.sellRam(accountName, 'sample_key', freeRam - 100);
 
-      expect(res.success).toBeTruthy();
+      expect(response.success).toBeTruthy();
     });
 
     it('buyRam validation', async () => {
@@ -97,24 +98,24 @@ describe('Get blockchain info and validation checks', () => {
       // noinspection JSCheckFunctionSignatures
       await expect(WalletApi.buyRam(accountName, 'sample_key', 'abc')).rejects.toThrow(positiveIntErrorRegex);
 
-      const nonExistedAccount = helper.getNonExistedAccountName();
+      const nonExistedAccount = Helper.getNonExistedAccountName();
       await expect(WalletApi.buyRam(nonExistedAccount, 'sample_key', 1000)).rejects.toThrow(nonExistedAccountErrorRegex);
 
       await expect(WalletApi.buyRam(accountName, 'sample_key', 1)).rejects.toThrow(tooSmallRamAmountErrorRegex);
 
       await expect(WalletApi.buyRam(accountName, 'sample_key', 10000000000)).rejects.toThrow(notEnoughTokensErrorRegex);
 
-      const res = await WalletApi.buyRam(accountName, 'sample_key', 1000000);
+      const response = await WalletApi.buyRam(accountName, 'sample_key', 1000000);
 
-      expect(res.success).toBeTruthy();
+      expect(response.success).toBeTruthy();
     });
 
     it('claim emission validation', async () => {
-      const nonExistedAccount = helper.getNonExistedAccountName();
+      const nonExistedAccount = Helper.getNonExistedAccountName();
       await expect(WalletApi.claimEmission(nonExistedAccount, 'sample_key')).rejects.toThrow(nonExistedAccountErrorRegex);
 
-      const res = await WalletApi.claimEmission(accountName, 'sample_key');
-      expect(res.success).toBeTruthy();
+      const response = await WalletApi.claimEmission(accountName, 'sample_key');
+      expect(response.success).toBeTruthy();
     });
 
     it('send tokens', async () => {
@@ -122,22 +123,22 @@ describe('Get blockchain info and validation checks', () => {
       // noinspection JSCheckFunctionSignatures
       await expect(WalletApi.sendTokens(accountName, 'sample_key', 'sample_acc_to', 'abc', '')).rejects.toThrow(positiveIntErrorRegex);
 
-      const nonExistedAccount = helper.getNonExistedAccountName();
+      const nonExistedAccount = Helper.getNonExistedAccountName();
       await expect(WalletApi.sendTokens(nonExistedAccount, 'sample_key', 'sample_acc_to', 1, '')).rejects.toThrow(nonExistedAccountErrorRegex);
 
       await expect(WalletApi.sendTokens(accountName, 'sample_key', nonExistedAccount, 1, '')).rejects.toThrow(nonExistedAccountErrorRegex);
 
       await expect(WalletApi.sendTokens(accountName, 'sample_key', accountName, 1000000, '')).rejects.toThrow(notEnoughTokensErrorRegex);
 
-      const res = await WalletApi.sendTokens(accountName, 'sample_key', accountNameTo, 1, '');
-      expect(res.success).toBeTruthy();
+      const response = await WalletApi.sendTokens(accountName, 'sample_key', accountNameTo, 1, '');
+      expect(response.success).toBeTruthy();
     }, 10000);
 
     it('stakeOrUnstakeTokens', async () => {
       await expect(WalletApi.stakeOrUnstakeTokens(accountName, 'sample', -1, 0)).rejects.toThrow(positiveOrZeroIntErrorRegex);
       await expect(WalletApi.stakeOrUnstakeTokens(accountName, 'sample', 0, -1)).rejects.toThrow(positiveOrZeroIntErrorRegex);
 
-      const nonExistedAccount = helper.getNonExistedAccountName();
+      const nonExistedAccount = Helper.getNonExistedAccountName();
       await expect(WalletApi.stakeOrUnstakeTokens(nonExistedAccount, 'sample', 0, 0)).rejects.toThrow(nonExistedAccountErrorRegex);
 
       await expect(WalletApi.stakeOrUnstakeTokens(accountName, 'sample', 10000000, 0)).rejects.toThrow(notEnoughTokensErrorRegex);
@@ -148,21 +149,21 @@ describe('Get blockchain info and validation checks', () => {
       const netTokens = state.resources.net.tokens.self_delegated;
       const cpuTokens = state.resources.cpu.tokens.self_delegated;
 
-      const res1 = await WalletApi.stakeOrUnstakeTokens(accountName, 'sample', netTokens + 2, cpuTokens + 3);
-      expect(res1.success).toBeTruthy();
+      const response1 = await WalletApi.stakeOrUnstakeTokens(accountName, 'sample', netTokens + 2, cpuTokens + 3);
+      expect(response1.success).toBeTruthy();
 
-      const res2 = await WalletApi.stakeOrUnstakeTokens(accountName, 'sample', netTokens - 1, cpuTokens - 2);
-      expect(res2.success).toBeTruthy();
+      const response2 = await WalletApi.stakeOrUnstakeTokens(accountName, 'sample', netTokens - 1, cpuTokens - 2);
+      expect(response2.success).toBeTruthy();
 
-      const res3 = await WalletApi.stakeOrUnstakeTokens(accountName, 'sample', netTokens + 1, cpuTokens - 1);
-      expect(res3.success).toBeTruthy();
+      const response3 = await WalletApi.stakeOrUnstakeTokens(accountName, 'sample', netTokens + 1, cpuTokens - 1);
+      expect(response3.success).toBeTruthy();
 
-      const res4 = await WalletApi.stakeOrUnstakeTokens(accountName, 'sample', netTokens - 1, cpuTokens + 1);
-      expect(res4.success).toBeTruthy();
+      const response4 = await WalletApi.stakeOrUnstakeTokens(accountName, 'sample', netTokens - 1, cpuTokens + 1);
+      expect(response4.success).toBeTruthy();
     }, 10000);
 
     it('getCurrentNetAndCpuStakedTokens', async () => {
-      const nonExistedAccount = helper.getNonExistedAccountName();
+      const nonExistedAccount = Helper.getNonExistedAccountName();
       await expect(WalletApi.getCurrentNetAndCpuStakedTokens(nonExistedAccount)).rejects.toThrow(nonExistedAccountErrorRegex);
     });
   });
