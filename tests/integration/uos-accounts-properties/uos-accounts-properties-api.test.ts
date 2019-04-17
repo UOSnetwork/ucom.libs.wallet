@@ -7,12 +7,12 @@ import UosAccountsPropertiesApi = require('../../../lib/uos-accounts-properties/
 const JEST_TIMEOUT = 10000;
 
 ConfigService.initNodeJsEnv();
-ConfigService.initForStagingEnv();
+ConfigService.initForProductionEnv();
 
 describe('UOS accounts properties', () => {
   it('get table rows and check the interface', async () => {
-    const lowerBound = 2;
-    const limit = 500;
+    const lowerBound = 0;
+    const limit = 1500;
 
     const rows = await UosAccountsPropertiesApi.getImportanceTableRows(lowerBound, limit);
 
@@ -20,55 +20,47 @@ describe('UOS accounts properties', () => {
     expect(rows.limit).toBe(limit);
 
     expect(typeof rows.total).toBe('number');
-    expect(rows.total).toBeGreaterThan(limit);
+    expect(rows.total).toBeGreaterThan(0);
 
     expect(_.isEmpty(rows.accounts)).toBeFalsy();
-    expect(rows.accounts.length).toBe(limit);
+    expect(rows.accounts.length).toBeGreaterThan(0);
+
+    const expectedFields = [
+      'staked_balance',
+      'validity',
+      'importance',
+      'scaled_importance',
+
+      'stake_rate',
+      'scaled_stake_rate',
+
+      'social_rate',
+      'scaled_social_rate',
+
+      'transfer_rate',
+      'scaled_transfer_rate',
+
+      'previous_cumulative_emission',
+      'current_emission',
+      'current_cumulative_emission',
+    ];
 
     for (const item of rows.accounts) {
       expect(typeof item.name).toBe('string');
-      expect(item.name.length).toBe(12);
+      expect(item.name.length).toBeGreaterThanOrEqual(3);
 
       const { values } = item;
-
       expect(_.isEmpty(values)).toBeFalsy();
       expect(typeof values).toBe('object');
 
-      expect(typeof values.current_cumulative_emission).toBe('string');
-      expect(values.current_cumulative_emission.length).toBeGreaterThan(0);
+      for (const expectedField of expectedFields) {
+        expect(typeof values[expectedField]).toBe('string');
+        expect(values.current_cumulative_emission.length).toBeGreaterThan(0);
 
-      expect(typeof values.current_emission).toBe('string');
-      expect(values.current_emission.length).toBeGreaterThan(0);
-
-      expect(typeof values.importance).toBe('string');
-      expect(values.importance.length).toBeGreaterThan(0);
-
-      expect(typeof values.prev_cumulative_emission).toBe('string');
-      expect(values.prev_cumulative_emission.length).toBeGreaterThan(0);
-
-      expect(typeof values.scaled_importance).toBe('string');
-      expect(values.scaled_importance.length).toBeGreaterThan(0);
-
-      expect(typeof values.scaled_social_rate).toBe('string');
-      expect(values.scaled_social_rate.length).toBeGreaterThan(0);
-
-      expect(typeof values.scaled_stake_rate).toBe('string');
-      expect(values.scaled_stake_rate.length).toBeGreaterThan(0);
-
-      expect(typeof values.scaled_transfer_rate).toBe('string');
-      expect(values.scaled_transfer_rate.length).toBeGreaterThan(0);
-
-      expect(typeof values.social_rate).toBe('string');
-      expect(values.social_rate.length).toBeGreaterThan(0);
-
-      expect(typeof values.staked_balance).toBe('string');
-      expect(values.staked_balance.length).toBeGreaterThan(0);
-
-      expect(typeof values.stake_rate).toBe('string');
-      expect(values.stake_rate.length).toBeGreaterThan(0);
-
-      expect(typeof values.validity).toBe('string');
-      expect(values.validity.length).toBeGreaterThan(0);
+        const numeric = +values[expectedField];
+        expect(Number.isFinite(numeric)).toBeTruthy();
+        expect(numeric).toBeGreaterThanOrEqual(0);
+      }
     }
   }, JEST_TIMEOUT);
 
