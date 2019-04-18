@@ -5,7 +5,7 @@ import Helper = require('../../helpers/helper');
 const delay = require('delay');
 /* eslint-disable max-len,unicorn/import-index */
 const { WalletApi } = require('../../../index.js');
-const BlockchainRegistry = require('../../../lib/blockchain-registry');
+const BlockchainRegistry = require('../../../build/lib/blockchain-registry');
 
 Helper.initForTestEnv();
 

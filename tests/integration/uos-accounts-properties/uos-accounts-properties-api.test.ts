@@ -1,8 +1,8 @@
 /* eslint-disable unicorn/prevent-abbreviations,sonarjs/no-duplicate-string,security/detect-object-injection,max-len,no-restricted-syntax */
-import ConfigService = require('../../../config/config-service');
+import ConfigService = require('../../../build/config/config-service');
 
 import _ = require('lodash');
-import UosAccountsPropertiesApi = require('../../../lib/uos-accounts-properties/uos-accounts-properties-api');
+import UosAccountsPropertiesApi = require('../../../build/lib/uos-accounts-properties/uos-accounts-properties-api');
 
 const JEST_TIMEOUT = 10000;
 

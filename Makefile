@@ -7,6 +7,7 @@ publish:
 	npm publish
 
 check-project:
+	npm run check-by-eslint
 	/bin/bash ./check-project.sh
 
 compile-typescript:

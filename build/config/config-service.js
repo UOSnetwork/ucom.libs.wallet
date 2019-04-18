@@ -4,7 +4,7 @@ const STAGING_ENV = 'staging';
 const PRODUCTION_ENV = 'production';
 let isNode = false;
 let env = TEST_ENV;
-const configStorage = require('./default.json');
+const configStorage = require('./default');
 class ConfigService {
     static getConfig() {
         return configStorage[env];

@@ -4,6 +4,7 @@
   "description": "NPM package to implement UOS wallet",
   "main": "index.js",
   "scripts": {
+    "check-by-eslint": "eslint **/*.ts",
     "test": "jest --runInBand",
     "test-watch": "jest --watchAll --verbose --runInBand",
     "compile-ts": "tsc",
