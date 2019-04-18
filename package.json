@@ -1,6 +1,6 @@
 {
   "name": "ucom-libs-wallet",
-  "version": "1.8.3",
+  "version": "1.9.0",
   "description": "NPM package to implement UOS wallet",
   "main": "index.js",
   "scripts": {
