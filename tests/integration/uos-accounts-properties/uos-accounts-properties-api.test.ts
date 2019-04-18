@@ -7,14 +7,14 @@ import UosAccountsPropertiesApi = require('../../../lib/uos-accounts-properties/
 const JEST_TIMEOUT = 10000;
 
 ConfigService.initNodeJsEnv();
-ConfigService.initForProductionEnv();
+ConfigService.initForStagingEnv();
 
 describe('UOS accounts properties', () => {
   it('get table rows and check the interface', async () => {
     const lowerBound = 0;
     const limit = 1500;
 
-    const rows = await UosAccountsPropertiesApi.getImportanceTableRows(lowerBound, limit);
+    const rows = await UosAccountsPropertiesApi.getAccountsTableRows(lowerBound, limit);
 
     expect(rows.lower_bound).toBe(lowerBound);
     expect(rows.limit).toBe(limit);
@@ -68,13 +68,13 @@ describe('UOS accounts properties', () => {
     let offset = 0;
     const limit = 5;
 
-    const firstRowsSet = await UosAccountsPropertiesApi.getImportanceTableRows(offset, limit);
+    const firstRowsSet = await UosAccountsPropertiesApi.getAccountsTableRows(offset, limit);
     offset += limit;
-    const secondRowsSet = await UosAccountsPropertiesApi.getImportanceTableRows(offset, limit);
+    const secondRowsSet = await UosAccountsPropertiesApi.getAccountsTableRows(offset, limit);
     offset += limit;
-    const thirdRowsSet = await UosAccountsPropertiesApi.getImportanceTableRows(offset, limit);
+    const thirdRowsSet = await UosAccountsPropertiesApi.getAccountsTableRows(offset, limit);
 
-    const expectedRowsSet = await UosAccountsPropertiesApi.getImportanceTableRows(0, 15);
+    const expectedRowsSet = await UosAccountsPropertiesApi.getAccountsTableRows(0, 15);
 
     const actualRows: any = Array.prototype.concat(
       firstRowsSet.accounts,

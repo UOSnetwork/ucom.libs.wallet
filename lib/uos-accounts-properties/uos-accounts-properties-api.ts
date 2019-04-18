@@ -1,7 +1,7 @@
 import CalculatorRpcClient = require('../common/client/calculator-rpc-client');
 
 class UosAccountsPropertiesApi {
-  public static async getImportanceTableRows(
+  public static async getAccountsTableRows(
     lowerBound: number,
     limit: number,
   ): Promise<any> {
