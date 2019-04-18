@@ -12,3 +12,6 @@ check-project:
 
 compile-typescript:
 	npm run compile-ts
+
+compile-typescript-watch:
+	npm run compile-ts-watch

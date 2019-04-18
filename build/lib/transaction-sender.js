@@ -1,6 +1,8 @@
 "use strict";
 const EosClient = require('./eos-client');
 const TransactionBuilder = require('./service/transactions-builder');
+const SmartContractsActionsDictionary = require('../lib/dictionary/smart-contracts-actions-dictionary');
+const SmartContractsDictionary = require('../lib/dictionary/smart-contracts-dictionary');
 const SMART_CONTRACT__EISIO = 'eosio';
 const SMART_CONTRACT__EMISSION = 'uos.calcs';
 const SMART_CONTRACT__EOSIO_TOKEN = 'eosio.token';
@@ -173,6 +175,23 @@ class TransactionSender {
             voter: accountNameFrom,
             proxy: '',
             producers
+        };
+        return TransactionBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
+    }
+    /**
+     *
+     * @param {string} accountNameFrom
+     * @param {string[]} nodeTitles
+     * @return {{account: *, name: *, authorization: *, data: *}}
+     * @private
+     */
+    static _getVoteForCalculatorsAction(accountNameFrom, nodeTitles) {
+        const smartContract = SmartContractsDictionary.eosIo();
+        const actionName = SmartContractsActionsDictionary.voteForCalculators();
+        const data = {
+            voter: accountNameFrom,
+            proxy: '',
+            calculators: nodeTitles,
         };
         return TransactionBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
     }

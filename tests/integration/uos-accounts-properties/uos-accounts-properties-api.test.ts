@@ -1,8 +1,8 @@
 /* eslint-disable unicorn/prevent-abbreviations,sonarjs/no-duplicate-string,security/detect-object-injection,max-len,no-restricted-syntax */
-import ConfigService = require('../../../build/config/config-service');
+import ConfigService = require('../../../src/config/config-service');
 
 import _ = require('lodash');
-import UosAccountsPropertiesApi = require('../../../build/lib/uos-accounts-properties/uos-accounts-properties-api');
+import UosAccountsPropertiesApi = require('../../../src/lib/uos-accounts-properties/uos-accounts-properties-api');
 
 const JEST_TIMEOUT = 10000;
 
@@ -10,6 +10,16 @@ ConfigService.initNodeJsEnv();
 ConfigService.initForStagingEnv();
 
 describe('UOS accounts properties', () => {
+  it('get all at once', async () => {
+    const lowerBound = 0;
+    const limit = 1500;
+
+    const allRows = await UosAccountsPropertiesApi.getAccountsTableRows(lowerBound, limit);
+    const allRowsWithPagination = await UosAccountsPropertiesApi.getAllAccountsTableRows();
+
+    expect(allRows.accounts.length).toBe(allRowsWithPagination.length);
+  });
+
   it('get table rows and check the interface', async () => {
     const lowerBound = 0;
     const limit = 1500;

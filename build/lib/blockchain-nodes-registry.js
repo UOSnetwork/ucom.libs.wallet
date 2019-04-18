@@ -2,13 +2,12 @@
 const EosClient = require('./eos-client');
 const BP_STATUS__ACTIVE = 1;
 const BP_STATUS__BACKUP = 2;
-const TABLE_ROWS_LIMIT_ALL = 999999;
+const TABLE_ROWS_LIMIT_ALL = 1000;
 const TABLE_NAME__VOTERS = 'voters';
 const SMART_CONTRACT__EOSIO = 'eosio';
 class BlockchainNodesRegistry {
     static async getBlockchainNodes() {
         const rpc = EosClient.getRpcClient();
-        // noinspection JSCheckFunctionSignatures
         const [votersRows, producersSchedule, allProducers] = await Promise.all([
             this._getVotesTableRows(),
             rpc.get_producer_schedule(),

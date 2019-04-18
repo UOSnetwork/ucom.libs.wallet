@@ -1,27 +1,29 @@
-const EosClient = require('./eos-client');
+import UosAccountsPropertiesApi = require('../../uos-accounts-properties/uos-accounts-properties-api');
+
+const EosClient = require('../../eos-client');
 
 const BP_STATUS__ACTIVE = 1;
 const BP_STATUS__BACKUP = 2;
 
-const TABLE_ROWS_LIMIT_ALL = 999999;
-const TABLE_NAME__VOTERS        = 'voters';
+const TABLE_ROWS_LIMIT_ALL = 1000;
+const TABLE_NAME__VOTERS   = 'voters';
 
 const SMART_CONTRACT__EOSIO = 'eosio';
 
-class BlockchainNodesRegistry {
-  static async getBlockchainNodes() {
+class BlockProducersService {
+  public static async getBlockProducers() {
     const rpc = EosClient.getRpcClient();
 
-    // noinspection JSCheckFunctionSignatures
-    const [votersRows, producersSchedule, allProducers] = await Promise.all([
-      this._getVotesTableRows(),
+    const [votersRows, producersSchedule, allProducers, uosAccounts] = await Promise.all([
+      this.getVotesTableRows(),
       rpc.get_producer_schedule(),
-      rpc.get_producers(true, "", TABLE_ROWS_LIMIT_ALL),
+      rpc.get_producers(true, '', TABLE_ROWS_LIMIT_ALL),
+      UosAccountsPropertiesApi.getAllAccountsTableRows(),
     ]);
 
-    const activeProducers = this._extractActiveProducers(producersSchedule);
-    const {producerData, voters} = this._processVotersAndVotedProducers(votersRows, activeProducers);
-    this._addOtherProducers(allProducers, producerData);
+    const activeProducers = this.extractActiveProducers(producersSchedule);
+    const { producerData, voters } = this.processVotersAndVotedProducers(votersRows, activeProducers, uosAccounts);
+    this.addOtherProducers(allProducers, producerData);
 
     return {
       producerData,
@@ -29,12 +31,7 @@ class BlockchainNodesRegistry {
     };
   }
 
-  /**
-   *
-   * @param {Object} producersSchedule
-   * @private
-   */
-  static _extractActiveProducers(producersSchedule) {
+  private static extractActiveProducers(producersSchedule) {
     const activeProducers = {};
     if (producersSchedule && producersSchedule.active && producersSchedule.active.producers) {
       producersSchedule.active.producers.forEach(producerData => {
@@ -45,14 +42,8 @@ class BlockchainNodesRegistry {
     return activeProducers;
   }
 
-  /**
-   *
-   * @param {Object[]} allProducers
-   * @param {Object[]} producerData
-   * @private
-   */
-  static _addOtherProducers(allProducers, producerData) {
-    for (let i = 0; i < allProducers.rows.length; i++) {
+  private static addOtherProducers(allProducers, producerData): void {
+    for (let i = 0; i < allProducers.rows.length; i += 1) {
       const producerSet = allProducers.rows[i];
 
       if (producerData[producerSet.owner]) {
@@ -69,13 +60,12 @@ class BlockchainNodesRegistry {
     }
   }
 
-  /**
-   *
-   * @param {Object} votersRows
-   * @param {Object[]} activeProducers
-   * @private
-   */
-  static _processVotersAndVotedProducers(votersRows, activeProducers) {
+  private static processVotersAndVotedProducers(
+    votersRows,
+    activeProducers,
+    // @ts-ignore
+    uosAccounts,
+  ) {
     const voters = {};
     const producerData = {};
 
@@ -106,12 +96,7 @@ class BlockchainNodesRegistry {
     }
   }
 
-  /**
-   *
-   * @return {Promise<Object>}
-   * @private
-   */
-  static async _getVotesTableRows() {
+  private static async getVotesTableRows(): Promise<any> {
     return EosClient.getTableRowsWithBatching(
       SMART_CONTRACT__EOSIO,
       SMART_CONTRACT__EOSIO,
@@ -122,4 +107,4 @@ class BlockchainNodesRegistry {
   }
 }
 
-module.exports = BlockchainNodesRegistry;
+export = BlockProducersService;

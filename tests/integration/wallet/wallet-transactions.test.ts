@@ -1,10 +1,8 @@
 /* eslint-disable no-bitwise,security/detect-object-injection,jest/no-disabled-tests */
 import Helper = require('../../helpers/helper');
 
-
 const delay = require('delay');
-/* eslint-disable max-len,unicorn/import-index */
-const { WalletApi } = require('../../../index.js');
+const { WalletApi } = require('../../..');
 const BlockchainRegistry = require('../../../build/lib/blockchain-registry');
 
 Helper.initForTestEnv();
@@ -28,14 +26,6 @@ const JEST_TIMEOUT = 20000;
 describe('Send transactions to blockchain', () => {
   describe('voting', () => {
     describe('Positive', () => {
-      it('should run sample method to vote for calculatorNode', async () => {
-        // TODO - sample method is tested
-        await WalletApi.voteForCalculatorNodes(accountName, privateKey, [
-          firstBp,
-          secondBp,
-        ]);
-      });
-
       it('should be possible to vote for nobody', async () => {
         await Helper.stakeSomethingIfNecessary(accountName, privateKey);
         await WalletApi.voteForBlockProducers(accountName, privateKey, [

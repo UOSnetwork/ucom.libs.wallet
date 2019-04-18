@@ -1,3 +1,5 @@
+import ActionsService from "./service/actions-service";
+
 const BlockchainRegistry = require('./blockchain-registry');
 const TransactionSender = require('./transaction-sender');
 const EosClient = require('./eos-client');
@@ -59,86 +61,24 @@ class WalletApi {
   }
 
   /**
-   * TODO - this is sample method-interface
    * @param {string} accountName
    * @param {string} privateKey
    * @param {string[]} nodeTitles
    * @return {Promise<Object>}
    */
   static async voteForCalculatorNodes(accountName, privateKey, nodeTitles) {
+    if (!Array.isArray(nodeTitles)) {
+      throw new BadRequestError('Please provide nodeTitles as a valid javascript array');
+    }
+
     if (nodeTitles.length > 30) {
       throw new BadRequestError('It is possible to vote up to 30 block producers');
     }
-
     nodeTitles.sort();
 
-    return {
-      "transaction_id": "847472ec081518683e22a8ffeea15ac8ebb0ba7827764a7457b2c7f4a540c69f",
-      "processed": {
-      "id": "847472ec081518683e22a8ffeea15ac8ebb0ba7827764a7457b2c7f4a540c69f",
-        "block_num": 35944982,
-        "block_time": "2019-03-14T12:16:49.000",
-        "producer_block_id": null,
-        "receipt": {
-        "status": "executed",
-          "cpu_usage_us": 680,
-          "net_usage_words": 14
-      },
-      "elapsed": 680,
-        "net_usage": 112,
-        "scheduled": false,
-        "action_traces": [
-        {
-          "receipt": {
-            "receiver": "eosio",
-            "act_digest": "d3c009a970643ed176dc31c3d2967701511daa39a6991700b096618908a7dae6",
-            "global_sequence": 128540278,
-            "recv_sequence": 35949612,
-            "auth_sequence": [
-              [
-                "vladvladvlad",
-                5367
-              ]
-            ],
-            "code_sequence": 3,
-            "abi_sequence": 3
-          },
-          "act": {
-            "account": "eosio",
-            "name": "voteproducer",
-            "authorization": [
-              {
-                "actor": "vladvladvlad",
-                "permission": "active"
-              }
-            ],
-            "data": {
-              "voter": "vladvladvlad",
-              "proxy": "",
-              "producers": []
-            },
-            "hex_data": "904cdcc9c49d4cdc000000000000000000"
-          },
-          "context_free": false,
-          "elapsed": 368,
-          "console": "",
-          "trx_id": "847472ec081518683e22a8ffeea15ac8ebb0ba7827764a7457b2c7f4a540c69f",
-          "block_num": 35944982,
-          "block_time": "2019-03-14T12:16:49.000",
-          "producer_block_id": null,
-          "account_ram_deltas": [
-            {
-              "account": "vladvladvlad",
-              "delta": -16
-            }
-          ],
-          "except": null,
-          "inline_traces": []
-        }
-      ],
-        "except": null
-    }
-    }
+    const action = ActionsService.getVoteForCalculators(accountName, nodeTitles);
+
+    return EosClient.sendTransaction(privateKey, [ action ]);
   }
 
   static async getBlockchainNodes() {

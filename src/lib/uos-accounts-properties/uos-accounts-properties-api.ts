@@ -17,6 +17,31 @@ class UosAccountsPropertiesApi {
       query,
     );
   }
+
+  public static async getAllAccountsTableRows(): Promise<any[]> {
+    let lowerBound = 0;
+    const limit = 500;
+
+    let result: any = [];
+    do {
+      const response = await this.getAccountsTableRows(lowerBound, limit);
+      if (response.accounts.length === 0) {
+        break;
+      }
+
+      result = Array.prototype.concat(result, response.accounts);
+
+      lowerBound += limit;
+
+      if (lowerBound >= 100000) {
+        throw new Error('Overflow trigger');
+      }
+
+      // eslint-disable-next-line no-constant-condition
+    } while (true);
+
+    return result;
+  }
 }
 
 export = UosAccountsPropertiesApi;
