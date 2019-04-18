@@ -21,10 +21,6 @@ describe('Get blockchain info and validation checks', () => {
   describe('GET requests', () => {
     describe('Get info from blockchain', () => {
       describe('Positive', () => {
-        it.skip('Get blockchain nodes', async () => {
-          // TODO
-        });
-
         it('Get account state', async () => {
           const accountState = await WalletApi.getAccountState(accountName);
 

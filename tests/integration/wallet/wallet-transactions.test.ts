@@ -136,9 +136,9 @@ describe('Send transactions to blockchain', () => {
 
       const balanceAfter = await BlockchainRegistry.getAccountBalance(accountName);
 
-      // TODO - check exact value
       expect(balanceAfter).toBeGreaterThan(balanceBefore);
     }, 20000);
+
     it('buyRam', async () => {
       const freeRam = await BlockchainRegistry.getFreeRamAmountInBytes(accountName);
       const ramToBuy = Math.floor(freeRam / 100);
@@ -153,9 +153,9 @@ describe('Send transactions to blockchain', () => {
       const balanceAfter = await BlockchainRegistry.getAccountBalance(accountName);
       const totalRamAfter = await BlockchainRegistry.getTotalRamAmount(accountName);
 
-      // TODO check why ram amount is not same as amount to buy - maybe blockchain feature
+      // #task check why ram amount is not same as amount to buy - maybe blockchain feature
       expect(totalRamAfter).toBeGreaterThan(totalRamBefore);
-      // TODO - check exact value
+      // #task - check exact value
       expect(balanceAfter).toBeLessThan(balanceBefore);
     }, 20000);
     it('Send tokens', async () => {
@@ -467,7 +467,7 @@ describe('Send transactions to blockchain', () => {
       }, 20000);
     });
     it.skip('claim emission', async () => {
-      // TODO it is necessary to manually set emission before this test
+      // #task it is necessary to manually set emission before this test
     });
   });
 
