@@ -5,8 +5,6 @@ const { BadRequestError } = require('./errors/errors');
 const converterHelper = require('./helpers/converter');
 
 let isNode  = false;
-// noinspection JSUnusedLocalSymbols
-let env     = 'test';
 
 const BLOCKS_BEHIND         = 3;
 const EXPIRATION_IN_SECONDS = 30;
@@ -20,7 +18,7 @@ const configStorage = {
         smartContract: 'testairdrop1',
         scope: 'testairdrop1',
         table: 'receipt',
-      }
+      },
     },
   },
   staging: {
@@ -31,7 +29,7 @@ const configStorage = {
         smartContract: 'testairdrop1',
         scope: 'testairdrop1',
         table: 'receipt',
-      }
+      },
     },
   },
   production: {
@@ -43,9 +41,9 @@ const configStorage = {
         smartContract: 'testairdrop1',
         scope: 'testairdrop1',
         table: 'receipt',
-      }
+      },
     },
-  }
+  },
 };
 
 let config = configStorage.test;
@@ -99,9 +97,7 @@ class EosClient {
   }
 
   static getCurrentConfigTableRows() {
-    const config = this.getCurrentConfig();
-
-    return config.tableRows;
+    return this.getCurrentConfig().tableRows;
   }
 
   static getCurrentConfig() {
@@ -113,7 +109,8 @@ class EosClient {
    * @return {JsonRpc}
    */
   static getRpcClient() {
-    if(isNode)  {
+    if (isNode)  {
+      // eslint-disable-next-line global-require
       const fetch = require('node-fetch');
 
       return new JsonRpc(config.nodeUrl, { fetch });
@@ -138,16 +135,15 @@ class EosClient {
       const rpc = this.getRpcClient();
 
       return rpc.push_transaction(signedTransaction);
-    } catch (err) {
-
-      if (err instanceof RpcError && err.json.code === 401) {
+    } catch (error) {
+      if (error instanceof RpcError && error.json.code === 401) {
         throw new BadRequestError('Private key is not valid');
       }
 
-      if (err.message === 'Non-base58 character') {
+      if (error.message === 'Non-base58 character') {
         throw new BadRequestError('Malformed private key');
       }
-      throw err;
+      throw error;
     }
   }
 
@@ -161,7 +157,7 @@ class EosClient {
    */
   static async sendTransaction(actorPrivateKey, actions, broadcast = true) {
     try {
-      const api = this._getApiClient(actorPrivateKey);
+      const api = this.getApiClient(actorPrivateKey);
 
       const params = {
         broadcast,
@@ -170,36 +166,31 @@ class EosClient {
       };
 
       return await api.transact({
-        actions
+        actions,
       }, params);
-
-    } catch (err) {
-
-      if (err instanceof RpcError && err.json.code === 401) {
+    } catch (error) {
+      if (error instanceof RpcError && error.json.code === 401) {
         throw new BadRequestError('Private key is not valid');
       }
 
-      if (err.message === 'Non-base58 character') {
+      if (error.message === 'Non-base58 character') {
         throw new BadRequestError('Malformed private key');
       }
-      throw err;
+      throw error;
     }
   }
 
-  /**
-   *
-   * @param {string} privateKey
-   * @return {Api}
-   * @private
-   */
-  static _getApiClient(privateKey) {
+  private static getApiClient(privateKey: string) {
     const rpc = this.getRpcClient();
-    const signatureProvider = new JsSignatureProvider([ privateKey ]);
+    const signatureProvider = new JsSignatureProvider([privateKey]);
 
     if (isNode) {
+      // eslint-disable-next-line global-require
       const { TextEncoder, TextDecoder } = require('util');
 
-      return new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() });
+      return new Api({
+        rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder(),
+      });
     }
 
     return new Api({ rpc, signatureProvider });
@@ -236,11 +227,11 @@ class EosClient {
       limit,
       lowerBound,
       indexPosition,
-      keyType
+      keyType,
     );
 
     let iterations = 0;
-    let maxIterationsLimit = limit * 100;
+    const maxIterationsLimit = limit * 100;
 
     let result = [];
     while (tableRows.length !== 0) {
@@ -308,7 +299,7 @@ class EosClient {
 
     const rpc = EosClient.getRpcClient();
 
-    const query = {
+    const query: any = {
       limit,
       scope,
       table,
@@ -340,4 +331,4 @@ class EosClient {
   }
 }
 
-module.exports = EosClient;
+export = EosClient;

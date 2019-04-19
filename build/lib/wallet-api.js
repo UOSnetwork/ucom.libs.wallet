@@ -7,6 +7,7 @@ const actions_service_1 = __importDefault(require("./service/actions-service"));
 const BlockchainRegistry = require('./blockchain-registry');
 const TransactionSender = require('./transaction-sender');
 const EosClient = require('./eos-client');
+const BlockProducersFetchService = require('../../build/lib/governance/service/block-producers-fetch-service');
 const { BadRequestError } = require('./errors/errors');
 const { InputValidator } = require('./validators');
 class WalletApi {
@@ -71,7 +72,7 @@ class WalletApi {
         return EosClient.sendTransaction(privateKey, [action]);
     }
     static async getBlockchainNodes() {
-        return BlockchainRegistry.getBlockchainNodes();
+        return BlockProducersFetchService.getBlockProducers();
     }
     /**
      * @deprecated

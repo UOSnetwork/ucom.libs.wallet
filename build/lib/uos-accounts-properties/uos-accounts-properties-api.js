@@ -9,7 +9,7 @@ class UosAccountsPropertiesApi {
         };
         return rpc.fetch('/v1/uos_rates/get_accounts', query);
     }
-    static async getAllAccountsTableRows() {
+    static async getAllAccountsTableRows(indexBy = null, flatten = true) {
         let lowerBound = 0;
         const limit = 500;
         let result = [];
@@ -25,7 +25,24 @@ class UosAccountsPropertiesApi {
             }
             // eslint-disable-next-line no-constant-condition
         } while (true);
-        return result;
+        if (indexBy === null) {
+            return result;
+        }
+        const processedResult = {};
+        for (const item of result) {
+            let processed;
+            if (flatten) {
+                processed = Object.assign({}, item.values, { account_name: item.name });
+            }
+            else {
+                processed = item;
+            }
+            if (!item[indexBy]) {
+                throw new Error(`There is no field ${indexBy} inside: ${JSON.stringify(item)}`);
+            }
+            processedResult[item[indexBy]] = processed;
+        }
+        return processedResult;
     }
 }
 module.exports = UosAccountsPropertiesApi;

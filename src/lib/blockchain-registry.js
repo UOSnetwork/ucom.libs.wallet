@@ -13,8 +13,6 @@ const TABLE_ROWS_LIMIT_ALL = 999999;
 
 const _ = require('lodash');
 
-const BlockchainNodesRegistry = require('./blockchain-nodes-registry');
-
 class BlockchainRegistry {
 
   /**
@@ -27,14 +25,6 @@ class BlockchainRegistry {
     const balance = await this.getAccountBalance(accountName);
 
     return +balance.toFixed(4) >= +amount.toFixed(4);
-  }
-
-  /**
-   *
-   * @return {Promise<Object>}
-   */
-  static async getBlockchainNodes() {
-    return BlockchainNodesRegistry.getBlockchainNodes();
   }
 
   /**

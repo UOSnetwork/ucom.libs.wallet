@@ -1,0 +1,195 @@
+/* eslint-disable no-bitwise,security/detect-object-injection,jest/no-disabled-tests */
+import EosClient from '../../../../src/lib/eos-client';
+
+import {
+  CheckManyObjectsOptionsDto,
+  ObjectInterfaceRulesDto,
+} from '../../../helpers/common/interfaces/options-interfaces';
+
+const { WalletApi } = require('../../../..');
+
+import Helper = require('../../../helpers/helper');
+import ConfigService = require('../../../../src/config/config-service');
+import BlockchainNodesApi = require('../../../../src/lib/governance/api/blockchain-nodes-api');
+import CommonChecker = require('../../../helpers/common/common-checker');
+import UosAccountsPropertiesApi = require('../../../../src/lib/uos-accounts-properties/uos-accounts-properties-api');
+import BlockchainNodesHelper = require('../../../helpers/blockchain-nodes/blockchain-nodes-helper');
+
+ConfigService.initNodeJsEnv();
+ConfigService.initForTestEnv();
+
+EosClient.initForTestEnv();
+EosClient.setNodeJsEnv();
+
+Helper.initForTestEnv();
+
+const JEST_TIMEOUT = 20000;
+
+const accountName = Helper.getTesterAccountName();
+const privateKey = Helper.getTesterAccountPrivateKey();
+
+describe('Blockchain nodes fetching', () => {
+  describe('Positive', () => {
+    it('Vote for block producers and check nodes state', async () => {
+      await Helper.stakeSomethingIfNecessary(accountName, privateKey);
+      await WalletApi.voteForBlockProducers(accountName, privateKey, []);
+
+      const uosAccounts = await UosAccountsPropertiesApi.getAllAccountsTableRows('name', true);
+      const stakedBalance = +uosAccounts[accountName].staked_balance;
+      const scaledImportance = +uosAccounts[accountName].scaled_importance;
+
+      const { blockProducersWithVoters } = await BlockchainNodesApi.getAll();
+
+      const amountToVote = 2;
+
+      const twoNodesToTest = BlockchainNodesHelper.getNodesAmountWithData(blockProducersWithVoters, amountToVote);
+
+      await WalletApi.voteForBlockProducers(accountName, privateKey, Object.keys(twoNodesToTest));
+
+      const { blockProducersWithVoters:nodesAfterTwoVotes } = await BlockchainNodesApi.getAll();
+
+
+      for (const title in twoNodesToTest) {
+        if (!twoNodesToTest.hasOwnProperty(title)) {
+          continue;
+        }
+
+        const before = twoNodesToTest[title];
+
+        const after = nodesAfterTwoVotes.indexedNodes[title];
+        CommonChecker.expectNotEmpty(after);
+
+        expect(after.votes_count).toBe(before.votes_count + 1);
+        expect(after.votes_amount).toBe(before.votes_amount + stakedBalance);
+        expect(after.scaled_importance_amount).toBe(before.scaled_importance_amount + scaledImportance);
+      }
+
+      const singleNodeToVote = Object.keys(twoNodesToTest)[0];
+      await WalletApi.voteForBlockProducers(accountName, privateKey, [singleNodeToVote]);
+
+      const { blockProducersWithVoters:nodesAfterSingleVote } = await BlockchainNodesApi.getAll();
+
+      for (const title in twoNodesToTest) {
+        if (!twoNodesToTest.hasOwnProperty(title)) {
+          continue;
+        }
+
+        const nodeAfterSingle = nodesAfterSingleVote.indexedNodes[title];
+        const nodeAfterTwo = nodesAfterTwoVotes.indexedNodes[title];
+
+        CommonChecker.expectNotEmpty(nodeAfterSingle);
+        CommonChecker.expectNotEmpty(nodeAfterTwo);
+
+        if (title === singleNodeToVote) {
+          expect(nodeAfterSingle.votes_count).toBe(nodeAfterTwo.votes_count);
+          expect(nodeAfterSingle.votes_amount).toBe(nodeAfterTwo.votes_amount);
+          expect(nodeAfterSingle.scaled_importance_amount).toBe(nodeAfterTwo.scaled_importance_amount);
+        } else {
+          expect(nodeAfterSingle.votes_count).toBe(nodeAfterTwo.votes_count - 1);
+          expect(nodeAfterSingle.votes_amount).toBe(nodeAfterTwo.votes_amount - stakedBalance);
+          expect(nodeAfterSingle.scaled_importance_amount).toBe(nodeAfterTwo.scaled_importance_amount - scaledImportance);
+        }
+      }
+    }, JEST_TIMEOUT * 2);
+
+    it('Vote for calculators and check nodes state', async () => {
+      // select user and vote for empty
+      // fetch given user stake and importance
+
+      // fetch before with empty and save data
+
+      // vote for two bp
+
+      // fetch after
+      // expect that appropriate values are increased
+
+      // then vote only for one of them
+
+      // fetch again
+
+      // expect that one bp value remains the same
+      // but another is decreased
+    });
+
+    it('Fetch current block producers and check interfaces', async () => {
+      const { blockProducersWithVoters, calculatorsWithVoters } = await BlockchainNodesApi.getAll();
+
+      const expectedProducersFields: ObjectInterfaceRulesDto = {
+        title: {
+          type: 'string',
+          length: 1,
+        },
+        votes_count: {
+          type: 'number',
+          length: 0,
+        },
+        votes_amount: {
+          type: 'number',
+          length: 0,
+        },
+        currency: {
+          type: 'string',
+          length: 1,
+          value: 'UOS',
+        },
+        scaled_importance_amount: {
+          type: 'number',
+          length: 0,
+        },
+        bp_status: {
+          type: 'number',
+          length: 0,
+        },
+      };
+
+      const blockProducersOptions: CheckManyObjectsOptionsDto = {
+        exactKeysAmount: true,
+        keyIs: 'title',
+      };
+
+      CommonChecker.checkManyObjectsInterface(
+        blockProducersWithVoters.indexedNodes,
+        expectedProducersFields,
+        blockProducersOptions,
+      );
+
+      CommonChecker.checkManyObjectsInterface(
+        calculatorsWithVoters.indexedNodes,
+        expectedProducersFields,
+        blockProducersOptions,
+      );
+
+      const expectedVotersFields: ObjectInterfaceRulesDto = {
+        account_name: {
+          type: 'string',
+          length: 1,
+        },
+        staked_balance: {
+          type: 'number',
+          length: 0,
+        },
+        scaled_importance: {
+          type: 'number',
+          length: 0,
+        },
+      };
+
+      const votersOptions: CheckManyObjectsOptionsDto = {
+        exactKeysAmount: true,
+        keyIs: 'account_name',
+      };
+
+      CommonChecker.checkManyObjectsInterface(
+        blockProducersWithVoters.indexedVoters,
+        expectedVotersFields,
+        votersOptions,
+      );
+
+      CommonChecker.checkManyObjectsInterface(
+        calculatorsWithVoters.indexedVoters,
+        expectedVotersFields,
+        votersOptions,
+      );
+    }, JEST_TIMEOUT);
+  });
+});
