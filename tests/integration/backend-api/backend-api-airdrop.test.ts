@@ -142,7 +142,7 @@ describe('Backend API airdrop', () => {
 
       const janeExpected = Helper.getSamplePushResponse(janeData);
       TransactionsPushResponseChecker.checkOneTransaction(janeResponse, janeExpected);
-    }, JEST_TIMEOUT);
+    }, JEST_TIMEOUT * 2);
   });
 
   describe('Negative', () => {

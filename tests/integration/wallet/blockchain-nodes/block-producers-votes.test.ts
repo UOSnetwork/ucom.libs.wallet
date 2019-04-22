@@ -2,12 +2,10 @@
 import Helper = require('../../../helpers/helper');
 import ConfigService = require('../../../../src/config/config-service');
 import EosClient = require('../../../../src/lib/common/client/eos-client');
+import WalletApi = require('../../../../src/lib/wallet/api/wallet-api');
 
 ConfigService.initNodeJsEnv();
 ConfigService.initForTestEnv();
-
-const { WalletApi } = require('../../../..');
-
 
 EosClient.initForTestEnv();
 EosClient.setNodeJsEnv();
@@ -49,33 +47,6 @@ describe('Block producers voting', () => {
 
       const voteInfoAfter = await WalletApi.getRawVoteInfo(accountName);
       expect(voteInfoAfter.producers.length).toBe(0);
-    }, JEST_TIMEOUT);
-
-    it('should vote for block producers', async () => {
-      await Helper.resetVotingState(accountName, privateKey);
-      await Helper.stakeSomethingIfNecessary(accountName, privateKey);
-
-      const { producerData: producerDataBefore } = await WalletApi.getBlockchainNodes();
-      const firstProducerBefore = producerDataBefore[firstBp];
-      const secondProducerBefore = producerDataBefore[secondBp];
-
-      const accountState = await WalletApi.getAccountState(accountName);
-      const votingTokens = accountState.tokens.staked;
-
-      await WalletApi.voteForBlockProducers(accountName, privateKey, [
-        firstBp,
-        secondBp,
-      ]);
-
-      const { producerData } = await WalletApi.getBlockchainNodes();
-      const firstProducerAfter = producerData[firstBp];
-      const secondProducerAfter = producerData[secondBp];
-
-      expect(firstProducerAfter.votes_count).toBe(firstProducerBefore.votes_count + 1);
-      expect(secondProducerAfter.votes_count).toBe(secondProducerBefore.votes_count + 1);
-
-      expect(firstProducerAfter.votes_amount).toBe(firstProducerBefore.votes_amount + votingTokens);
-      expect(secondProducerAfter.votes_amount).toBe(secondProducerBefore.votes_amount + votingTokens);
     }, JEST_TIMEOUT);
   });
 

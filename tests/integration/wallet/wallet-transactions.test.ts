@@ -1,9 +1,9 @@
 /* eslint-disable no-bitwise,security/detect-object-injection,jest/no-disabled-tests */
 import Helper = require('../../helpers/helper');
+import BlockchainRegistry = require('../../../src/lib/blockchain-registry');
+import WalletApi = require('../../../src/lib/wallet/api/wallet-api');
 
 const delay = require('delay');
-const { WalletApi } = require('../../..');
-const BlockchainRegistry = require('../../../build/lib/blockchain-registry');
 
 Helper.initForTestEnv();
 

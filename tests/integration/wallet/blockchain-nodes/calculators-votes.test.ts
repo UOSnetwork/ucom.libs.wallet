@@ -2,8 +2,7 @@
 import Helper = require('../../../helpers/helper');
 import TransactionsPushResponseChecker = require('../../../helpers/common/transactions-push-response-checker');
 import TransactionsSamplesGenerator = require('../../../helpers/wallet/transactions-samples-generator');
-
-const { WalletApi } = require('../../../..');
+import WalletApi = require('../../../../src/lib/wallet/api/wallet-api');
 
 Helper.initForTestEnv();
 
@@ -24,14 +23,14 @@ describe('Send transactions to blockchain', () => {
         const expected = TransactionsSamplesGenerator.getVoteForCalculatorsSample();
 
         TransactionsPushResponseChecker.checkOneTransaction(res, expected);
-      }, JEST_TIMEOUT);
+      }, JEST_TIMEOUT * 2);
 
       it('vote for nobody', async () => {
         const response = await WalletApi.voteForCalculatorNodes(accountName, privateKey, []);
         const expected = TransactionsSamplesGenerator.getVoteForCalculatorsEmptySample();
 
         TransactionsPushResponseChecker.checkOneTransaction(response, expected);
-      }, JEST_TIMEOUT);
+      }, JEST_TIMEOUT * 2);
     });
   });
 });

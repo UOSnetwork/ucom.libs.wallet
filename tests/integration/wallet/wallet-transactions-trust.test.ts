@@ -2,8 +2,8 @@
 import Helper = require('../../helpers/helper');
 import TrustExpectedDataHelper = require('../../helpers/social/trust-expected-data-helper');
 import TransactionsPushResponseChecker = require('../../helpers/common/transactions-push-response-checker');
-
-const { SocialApi, EosClient } = require('../../..');
+import SocialApi = require('../../../src/lib/social-api');
+import EosClient = require('../../../src/lib/common/client/eos-client');
 
 const JEST_TIMEOUT = 10000;
 

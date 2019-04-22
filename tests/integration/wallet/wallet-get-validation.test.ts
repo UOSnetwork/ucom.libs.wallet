@@ -1,7 +1,6 @@
 /* eslint-disable unicorn/import-index,max-len,jest/no-disabled-tests */
 import Helper = require('../../helpers/helper');
-
-const { WalletApi } = require('../../../index.js');
+import WalletApi = require('../../../src/lib/wallet/api/wallet-api');
 
 Helper.initForTestEnv();
 
