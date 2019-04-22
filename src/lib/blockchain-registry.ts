@@ -1,20 +1,21 @@
+/* eslint-disable no-console */
+import { BadRequestError } from './errors/errors';
+
+import EosClient = require('./common/client/eos-client');
+import ConverterHelper = require('./helpers/converter-helper');
+import AccountInfo = require('./account-info');
+
 const SMART_CONTRACT__EMISSION  = 'uos.calcs';
 const TABLE_NAME__EMISSION      = 'account';
 const TABLE_NAME__RAM_MARKET    = 'rammarket';
 
 const SMART_CONTRACT__EOSIO = 'eosio';
 
-const EosClient           = require('./eos-client');
-const AccountInfo         = require('./account-info');
-const { BadRequestError } = require('./errors/errors');
-const Converter           = require('./helpers/converter');
-
 const TABLE_ROWS_LIMIT_ALL = 999999;
 
 const _ = require('lodash');
 
 class BlockchainRegistry {
-
   /**
    *
    * @param {string} accountName
@@ -52,7 +53,7 @@ class BlockchainRegistry {
       await rpc.get_account(accountName);
 
       return true;
-    } catch (err) {
+    } catch (error) {
       throw new BadRequestError('Probably account does not exist. Please check spelling.');
     }
   }
@@ -82,10 +83,10 @@ class BlockchainRegistry {
   static async doBlockProducersExist(producers) {
     const rpc = EosClient.getRpcClient();
 
-    const allProducers = await rpc.get_producers(true, "", TABLE_ROWS_LIMIT_ALL);
+    const allProducers = await rpc.get_producers(true, '', TABLE_ROWS_LIMIT_ALL);
 
-    const producersIndex = [];
-    for (let i = 0; i < allProducers.rows.length; i++) {
+    const producersIndex: any[] = [];
+    for (let i = 0; i < allProducers.rows.length; i += 1) {
       const producer = allProducers.rows[i];
 
       producersIndex.push(producer.owner);
@@ -94,7 +95,7 @@ class BlockchainRegistry {
     const notExisted = _.difference(producers, producersIndex);
 
     if (notExisted.length > 0) {
-      throw new BadRequestError(`There is no such block producers: ${notExisted.join(', ')}`)
+      throw new BadRequestError(`There is no such block producers: ${notExisted.join(', ')}`);
     }
   }
 
@@ -123,7 +124,7 @@ class BlockchainRegistry {
       return true;
     }
 
-    throw new BadRequestError(`Not enough free RAM. Please correct input data`);
+    throw new BadRequestError('Not enough free RAM. Please correct input data');
   }
 
   /**
@@ -169,7 +170,7 @@ class BlockchainRegistry {
       return true;
     }
 
-    throw new BadRequestError(`Not enough tokens. Please correct input data`);
+    throw new BadRequestError('Not enough tokens. Please correct input data');
   }
 
   /**
@@ -188,9 +189,9 @@ class BlockchainRegistry {
 
     const data = response.rows[0];
 
-    const connectorBalance            = Converter.getTokensAmountFromString(data.quote.balance);
-    const smartTokenOutstandingSupply = Converter.getRamAmountFromString(data.base.balance);
-    const connectorWeight             = 1; //+data.quote.weight; this weight leads to wrong price calculations
+    const connectorBalance            = ConverterHelper.getTokensAmountFromString(data.quote.balance);
+    const smartTokenOutstandingSupply = ConverterHelper.getRamAmountFromString(data.base.balance);
+    const connectorWeight             = 1; // +data.quote.weight; this weight leads to wrong price calculations
 
     return connectorBalance / (smartTokenOutstandingSupply * connectorWeight);
   }
@@ -208,7 +209,7 @@ class BlockchainRegistry {
       code:   SMART_CONTRACT__EMISSION,
       scope:  accountName,
       table:  TABLE_NAME__EMISSION,
-      json:   true
+      json:   true,
     });
 
     if (response.rows.length === 0) {
@@ -239,9 +240,9 @@ class BlockchainRegistry {
 
     if (response.self_delegated_bandwidth) {
       data.net =
-        Converter.getTokensAmountFromString(response.self_delegated_bandwidth.net_weight);
+        ConverterHelper.getTokensAmountFromString(response.self_delegated_bandwidth.net_weight);
       data.cpu =
-        Converter.getTokensAmountFromString(response.self_delegated_bandwidth.cpu_weight);
+        ConverterHelper.getTokensAmountFromString(response.self_delegated_bandwidth.cpu_weight);
     }
 
     return data;
@@ -261,7 +262,7 @@ class BlockchainRegistry {
       return 0;
     }
 
-    return Converter.getTokensAmountFromString(balanceResponse[0], symbol);
+    return ConverterHelper.getTokensAmountFromString(balanceResponse[0], symbol);
   }
 
   /**
@@ -272,8 +273,8 @@ class BlockchainRegistry {
   static async getEmission(accountName) {
     try {
       return await BlockchainRegistry.getUnclaimedEmissionAmount(accountName);
-    } catch (err) {
-      console.error('Get unclaimed emission amount error. Emission will be set to 0 for GET response. Error is: ', err);
+    } catch (error) {
+      console.error('Get unclaimed emission amount error. Emission will be set to 0 for GET response. Error is:', error);
 
       return 0;
     }
@@ -298,7 +299,7 @@ class BlockchainRegistry {
     let response;
     try {
       response = await rpc.get_account(accountName);
-    } catch (err) {
+    } catch (error) {
       console.warn(`Probably there is no account with name: ${accountName}`);
       return {};
     }
@@ -321,7 +322,7 @@ class BlockchainRegistry {
         response.self_delegated_bandwidth.cpu_weight,
 
         response.total_resources.net_weight,
-        response.total_resources.cpu_weight
+        response.total_resources.cpu_weight,
       );
     }
 
@@ -333,7 +334,7 @@ class BlockchainRegistry {
       info.setUnstakedRequestData(
         response.refund_request.request_time,
         response.refund_request.net_amount,
-        response.refund_request.cpu_amount
+        response.refund_request.cpu_amount,
       );
     }
 
@@ -341,4 +342,4 @@ class BlockchainRegistry {
   }
 }
 
-module.exports = BlockchainRegistry;
+export = BlockchainRegistry;

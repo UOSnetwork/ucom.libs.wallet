@@ -1,15 +1,12 @@
-import ActionsService from "./service/actions-service";
+import ActionsService from '../../service/actions-service';
+import { BadRequestError } from '../../errors/errors';
 
-const BlockchainRegistry = require('./blockchain-registry');
-const TransactionSender = require('./transaction-sender');
-const EosClient = require('./eos-client');
-const BlockProducersFetchService = require('../../build/lib/governance/service/block-producers-fetch-service');
-
-const { BadRequestError } = require('./errors/errors');
-const { InputValidator }  = require('./validators');
+import EosClient = require('../../common/client/eos-client');
+import InputValidator = require('../../validators/input-validator');
+import BlockchainRegistry = require('../../blockchain-registry');
+import TransactionSender = require('../../transaction-sender');
 
 class WalletApi {
-
   /**
    * @return {void}
    */
@@ -48,7 +45,7 @@ class WalletApi {
    * @param {string[]} producers
    * @return {Promise<Object>}
    */
-  static async voteForBlockProducers(accountName, privateKey, producers) {
+  public static async voteForBlockProducers(accountName, privateKey, producers) {
     if (producers.length > 30) {
       throw new BadRequestError('It is possible to vote up to 30 block producers');
     }
@@ -79,11 +76,7 @@ class WalletApi {
 
     const action = ActionsService.getVoteForCalculators(accountName, nodeTitles);
 
-    return EosClient.sendTransaction(privateKey, [ action ]);
-  }
-
-  static async getBlockchainNodes() {
-    return BlockProducersFetchService.getBlockProducers();
+    return EosClient.sendTransaction(privateKey, [action]);
   }
 
   /**
@@ -120,7 +113,7 @@ class WalletApi {
     await BlockchainRegistry.doesAccountExist(accountName);
     await BlockchainRegistry.isEnoughRamOrException(accountName, bytesAmount);
 
-    await this._isMinUosAmountForRamOrException(bytesAmount);
+    await this.isMinUosAmountForRamOrException(bytesAmount);
 
     return TransactionSender.sellRamBytes(accountName, privateKey, bytesAmount);
   }
@@ -136,11 +129,11 @@ class WalletApi {
     InputValidator.isPositiveInt(bytesAmount);
     await BlockchainRegistry.doesAccountExist(accountName);
 
-    const price = await this._isMinUosAmountForRamOrException(bytesAmount);
+    const price = await this.isMinUosAmountForRamOrException(bytesAmount);
 
     await BlockchainRegistry.isEnoughBalanceOrException(accountName, price);
 
-    return TransactionSender.buyRamBytes(accountName, privateKey, bytesAmount)
+    return TransactionSender.buyRamBytes(accountName, privateKey, bytesAmount);
   }
 
   /**
@@ -152,7 +145,7 @@ class WalletApi {
   static async claimEmission(accountName, privateKey) {
     await BlockchainRegistry.doesAccountExist(accountName);
 
-    return await TransactionSender.claimEmission(accountName, privateKey);
+    return TransactionSender.claimEmission(accountName, privateKey);
   }
 
   /**
@@ -171,12 +164,12 @@ class WalletApi {
 
     await BlockchainRegistry.isEnoughBalanceOrException(accountNameFrom, amount);
 
-    return await TransactionSender.sendTokens(
+    return TransactionSender.sendTokens(
       accountNameFrom,
       privateKey,
       accountNameTo,
       amount,
-      memo
+      memo,
     );
   }
 
@@ -192,7 +185,7 @@ class WalletApi {
     accountName,
     privateKey,
     netAmount,
-    cpuAmount
+    cpuAmount,
   ) {
     InputValidator.isNonNegativeInt(netAmount);
     InputValidator.isNonNegativeInt(cpuAmount);
@@ -203,7 +196,7 @@ class WalletApi {
       accountName,
       privateKey,
       netAmount,
-      cpuAmount
+      cpuAmount,
     );
   }
 
@@ -212,7 +205,7 @@ class WalletApi {
    * @return {{tokens: {active: number}}}
    */
   static async getAccountState(accountName) {
-    return await BlockchainRegistry.getAccountInfo(accountName);
+    return BlockchainRegistry.getAccountInfo(accountName);
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -237,7 +230,7 @@ class WalletApi {
    * @return {Promise<number>}
    * @private
    */
-  static async _isMinUosAmountForRamOrException(bytesAmount) {
+  private static async isMinUosAmountForRamOrException(bytesAmount) {
     const price = await this.getApproximateRamPriceByBytesAmount(bytesAmount);
 
     if (price < 1) {
@@ -248,4 +241,4 @@ class WalletApi {
   }
 }
 
-module.exports = WalletApi;
+export = WalletApi;

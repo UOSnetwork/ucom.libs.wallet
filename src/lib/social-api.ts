@@ -1,7 +1,6 @@
-const SocialTransactionService = require('./service/social-transactions-service');
-const SmartContractsDictionary = require('../lib/dictionary/smart-contracts-dictionary');
-
-const EosClient = require('../lib/eos-client');
+import EosClient = require('./common/client/eos-client');
+import SmartContractsDictionary = require('./dictionary/smart-contracts-dictionary');
+import SocialTransactionsService = require('./service/social-transactions-service');
 
 class SocialApi {
   // noinspection JSUnusedGlobalSymbols
@@ -19,6 +18,7 @@ class SocialApi {
   static signedTransactionToString(signed) {
     return JSON.stringify(signed);
   }
+
   /**
    *
    * @param {string} signedTransactionJson
@@ -30,6 +30,7 @@ class SocialApi {
 
     return signedParsed;
   }
+
   /**
    *
    * @param {string} accountNameFrom
@@ -40,7 +41,7 @@ class SocialApi {
   static async getTrustUserSignedTransaction(accountNameFrom, privateKey, accountNameTo) {
     const smartContract = SmartContractsDictionary.uosActivity();
 
-    return SocialTransactionService.getTrustUserSignedTransactions(
+    return SocialTransactionsService.getTrustUserSignedTransactions(
       accountNameFrom,
       privateKey,
       accountNameTo,
@@ -51,7 +52,7 @@ class SocialApi {
   static async getUntrustUserSignedTransaction(accountNameFrom, privateKey, accountNameTo) {
     const smartContract = SmartContractsDictionary.uosActivity();
 
-    return SocialTransactionService.getUntrustUserSignedTransactions(
+    return SocialTransactionsService.getUntrustUserSignedTransactions(
       accountNameFrom,
       privateKey,
       accountNameTo,
@@ -87,4 +88,4 @@ class SocialApi {
   }
 }
 
-module.exports = SocialApi;
+export = SocialApi;

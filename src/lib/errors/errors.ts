@@ -1,5 +1,7 @@
 class AppError extends Error {
-  constructor (message, status) {
+  public status;
+
+  constructor(message, status) {
     // noinspection JSCheckFunctionSignatures
     super(message);
 
@@ -13,8 +15,9 @@ class AppError extends Error {
 }
 
 class BadRequestError extends Error {
-  constructor (fieldsAndMessages) {
+  public status;
 
+  constructor(fieldsAndMessages) {
     if (typeof fieldsAndMessages === 'string') {
       fieldsAndMessages = [{
         field:    'general',
@@ -23,7 +26,7 @@ class BadRequestError extends Error {
     }
 
     const message = {
-      errors: fieldsAndMessages
+      errors: fieldsAndMessages,
     };
 
     // noinspection JSCheckFunctionSignatures
@@ -38,9 +41,7 @@ class BadRequestError extends Error {
   }
 }
 
-
-// noinspection JSUnusedGlobalSymbols
-module.exports = {
+export {
   AppError,
   BadRequestError,
 };

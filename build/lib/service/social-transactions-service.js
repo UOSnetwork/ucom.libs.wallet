@@ -1,9 +1,9 @@
 "use strict";
-const PermissionsDictionary = require('../dictionary/permissions-dictionary');
-const SmartContractsActionsDictionary = require('../dictionary/smart-contracts-actions-dictionary');
-const InteractionsDictionary = require('../dictionary/interactions-dictionary');
-const TransactionsBuilder = require('./transactions-builder');
-const EosClient = require('../eos-client');
+const PermissionsDictionary = require("../dictionary/permissions-dictionary");
+const InteractionsDictionary = require("../dictionary/interactions-dictionary");
+const SmartContractsActionsDictionary = require("../dictionary/smart-contracts-actions-dictionary");
+const TransactionsBuilder = require("./transactions-builder");
+const EosClient = require("../common/client/eos-client");
 const PERMISSION_ACTIVE = PermissionsDictionary.active();
 class SocialTransactionsService {
     /**
@@ -20,7 +20,7 @@ class SocialTransactionsService {
             account_from: accountNameFrom,
             account_to: accountNameTo,
         };
-        return this._getSignedTransaction(accountNameFrom, privateKey, smartContract, interactionName, actionJsonData);
+        return this.getSignedTransaction(accountNameFrom, privateKey, smartContract, interactionName, actionJsonData);
     }
     /**
      *
@@ -36,7 +36,7 @@ class SocialTransactionsService {
             account_from: accountNameFrom,
             account_to: accountNameTo,
         };
-        return this._getSignedTransaction(accountNameFrom, privateKey, smartContract, interactionName, actionJsonData);
+        return this.getSignedTransaction(accountNameFrom, privateKey, smartContract, interactionName, actionJsonData);
     }
     /**
      *
@@ -48,11 +48,11 @@ class SocialTransactionsService {
      * @returns {Promise<Object>}
      * @private
      */
-    static _getSignedTransaction(accountName, privateKey, smartContract, interactionName, actionJsonData) {
+    static getSignedTransaction(accountName, privateKey, smartContract, interactionName, actionJsonData) {
         const actionName = SmartContractsActionsDictionary.socialAction();
         const actionJson = {
             interaction: interactionName,
-            data: actionJsonData
+            data: actionJsonData,
         };
         const data = {
             acc: accountName,

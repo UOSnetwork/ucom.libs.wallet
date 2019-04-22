@@ -6,4 +6,4 @@ class PermissionsDictionary {
   }
 }
 
-module.exports = PermissionsDictionary;
+export = PermissionsDictionary;

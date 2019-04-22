@@ -1,7 +1,7 @@
 "use strict";
-const SocialTransactionService = require('./service/social-transactions-service');
-const SmartContractsDictionary = require('../lib/dictionary/smart-contracts-dictionary');
-const EosClient = require('../lib/eos-client');
+const EosClient = require("./common/client/eos-client");
+const SmartContractsDictionary = require("./dictionary/smart-contracts-dictionary");
+const SocialTransactionsService = require("./service/social-transactions-service");
 class SocialApi {
     // noinspection JSUnusedGlobalSymbols
     static async pushSignedTransactionJson(signedTransactionJson) {
@@ -35,11 +35,11 @@ class SocialApi {
      */
     static async getTrustUserSignedTransaction(accountNameFrom, privateKey, accountNameTo) {
         const smartContract = SmartContractsDictionary.uosActivity();
-        return SocialTransactionService.getTrustUserSignedTransactions(accountNameFrom, privateKey, accountNameTo, smartContract);
+        return SocialTransactionsService.getTrustUserSignedTransactions(accountNameFrom, privateKey, accountNameTo, smartContract);
     }
     static async getUntrustUserSignedTransaction(accountNameFrom, privateKey, accountNameTo) {
         const smartContract = SmartContractsDictionary.uosActivity();
-        return SocialTransactionService.getUntrustUserSignedTransactions(accountNameFrom, privateKey, accountNameTo, smartContract);
+        return SocialTransactionsService.getUntrustUserSignedTransactions(accountNameFrom, privateKey, accountNameTo, smartContract);
     }
     /**
      *

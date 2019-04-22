@@ -1,8 +1,8 @@
 "use strict";
+const errors_1 = require("../../errors/errors");
+const ConverterHelper = require("../../helpers/converter-helper");
 const { Api, JsonRpc, RpcError } = require('eosjs');
 const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig');
-const { BadRequestError } = require('./errors/errors');
-const converterHelper = require('./helpers/converter');
 let isNode = false;
 const BLOCKS_BEHIND = 3;
 const EXPIRATION_IN_SECONDS = 30;
@@ -120,10 +120,10 @@ class EosClient {
         }
         catch (error) {
             if (error instanceof RpcError && error.json.code === 401) {
-                throw new BadRequestError('Private key is not valid');
+                throw new errors_1.BadRequestError('Private key is not valid');
             }
             if (error.message === 'Non-base58 character') {
-                throw new BadRequestError('Malformed private key');
+                throw new errors_1.BadRequestError('Malformed private key');
             }
             throw error;
         }
@@ -150,10 +150,10 @@ class EosClient {
         }
         catch (error) {
             if (error instanceof RpcError && error.json.code === 401) {
-                throw new BadRequestError('Private key is not valid');
+                throw new errors_1.BadRequestError('Private key is not valid');
             }
             if (error.message === 'Non-base58 character') {
-                throw new BadRequestError('Malformed private key');
+                throw new errors_1.BadRequestError('Malformed private key');
             }
             throw error;
         }
@@ -195,7 +195,7 @@ class EosClient {
             result = result.concat(tableRows);
             const lastBoundValue = tableRows[tableRows.length - 1][boundFieldName];
             if (boundFieldName === 'owner') {
-                lowerBound = converterHelper.getAccountNameAsBoundString(lastBoundValue);
+                lowerBound = ConverterHelper.getAccountNameAsBoundString(lastBoundValue);
             }
             else {
                 lowerBound = lastBoundValue;

@@ -1,6 +1,6 @@
-const _         = require('lodash');
+import ConverterHelper = require('./helpers/converter-helper');
 
-const Converter = require('./helpers/converter');
+const _         = require('lodash');
 
 const dataSchema = {
   tokens: {
@@ -13,7 +13,7 @@ const dataSchema = {
       currency: 'UOS',
       request_datetime: null,
       unstaked_on_datetime: null,
-    }
+    },
   },
   resources: {
     ram: {
@@ -56,10 +56,12 @@ const dataSchema = {
         unstaked_on_datetime: null,
       },
     },
-  }
+  },
 };
 
 class AccountInfo {
+  public info;
+
   constructor() {
     this.info = _.cloneDeep(dataSchema);
   }
@@ -127,11 +129,10 @@ class AccountInfo {
    * @param {string} cpuTotalDelegatedString
    */
   setResourcesTokens(netSelfDelegatedString, cpuSelfDelegatedString, netTotalDelegatedString, cpuTotalDelegatedString) {
-
-    const netSelfDelegated  = Converter.getTokensAmountFromString(netSelfDelegatedString);
-    const cpuSelfDelegated  = Converter.getTokensAmountFromString(cpuSelfDelegatedString);
-    const netTotalDelegated = Converter.getTokensAmountFromString(netTotalDelegatedString);
-    const cpuTotalDelegated = Converter.getTokensAmountFromString(cpuTotalDelegatedString);
+    const netSelfDelegated  = ConverterHelper.getTokensAmountFromString(netSelfDelegatedString);
+    const cpuSelfDelegated  = ConverterHelper.getTokensAmountFromString(cpuSelfDelegatedString);
+    const netTotalDelegated = ConverterHelper.getTokensAmountFromString(netTotalDelegatedString);
+    const cpuTotalDelegated = ConverterHelper.getTokensAmountFromString(cpuTotalDelegatedString);
 
     this.info.resources.net.tokens.self_delegated = netSelfDelegated;
     this.info.resources.cpu.tokens.self_delegated = cpuSelfDelegated;
@@ -153,8 +154,8 @@ class AccountInfo {
    * @param {string} cpuTotalDelegatedString
    */
   setNonSelfDelegatedResourcesOnly(netTotalDelegatedString, cpuTotalDelegatedString) {
-    const netTotalDelegated = Converter.getTokensAmountFromString(netTotalDelegatedString);
-    const cpuTotalDelegated = Converter.getTokensAmountFromString(cpuTotalDelegatedString);
+    const netTotalDelegated = ConverterHelper.getTokensAmountFromString(netTotalDelegatedString);
+    const cpuTotalDelegated = ConverterHelper.getTokensAmountFromString(cpuTotalDelegatedString);
 
     const netStakedDelegated = netTotalDelegated;
     const cpuStakedDelegated = cpuTotalDelegated;
@@ -172,11 +173,11 @@ class AccountInfo {
    * @param {string} cpuAmountString
    */
   setUnstakedRequestData(requestTime, netAmountString, cpuAmountString) {
-    const requestDatetime     = Converter.getRequestDateTime(requestTime);
-    const unstakedOnDatetime  = Converter.getUnstakedOnDatetime(requestTime);
+    const requestDatetime     = ConverterHelper.getRequestDateTime(requestTime);
+    const unstakedOnDatetime  = ConverterHelper.getUnstakedOnDatetime(requestTime);
 
-    const netAmount = Converter.getTokensAmountFromString(netAmountString);
-    const cpuAmount = Converter.getTokensAmountFromString(cpuAmountString);
+    const netAmount = ConverterHelper.getTokensAmountFromString(netAmountString);
+    const cpuAmount = ConverterHelper.getTokensAmountFromString(cpuAmountString);
 
     this.info.resources.net.unstaking_request.request_datetime      = requestDatetime;
     this.info.resources.net.unstaking_request.unstaked_on_datetime  = unstakedOnDatetime;
@@ -208,4 +209,4 @@ class AccountInfo {
   }
 }
 
-module.exports = AccountInfo;
+export = AccountInfo;

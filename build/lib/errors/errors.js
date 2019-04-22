@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 class AppError extends Error {
     constructor(message, status) {
         // noinspection JSCheckFunctionSignatures
@@ -10,6 +11,7 @@ class AppError extends Error {
         this.status = status;
     }
 }
+exports.AppError = AppError;
 class BadRequestError extends Error {
     constructor(fieldsAndMessages) {
         if (typeof fieldsAndMessages === 'string') {
@@ -19,7 +21,7 @@ class BadRequestError extends Error {
                 }];
         }
         const message = {
-            errors: fieldsAndMessages
+            errors: fieldsAndMessages,
         };
         // noinspection JSCheckFunctionSignatures
         super(JSON.stringify(message));
@@ -30,8 +32,4 @@ class BadRequestError extends Error {
         this.status = 400;
     }
 }
-// noinspection JSUnusedGlobalSymbols
-module.exports = {
-    AppError,
-    BadRequestError,
-};
+exports.BadRequestError = BadRequestError;

@@ -1,8 +1,7 @@
 /* eslint-disable no-bitwise,security/detect-object-injection,jest/no-disabled-tests */
-import EosClient from '../../../../src/lib/eos-client';
-
 import Helper = require('../../../helpers/helper');
 import ConfigService = require('../../../../src/config/config-service');
+import EosClient = require('../../../../src/lib/common/client/eos-client');
 
 ConfigService.initNodeJsEnv();
 ConfigService.initForTestEnv();

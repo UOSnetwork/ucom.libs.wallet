@@ -1,7 +1,7 @@
-import EosClient from '../../eos-client';
 import SmartContractsDictionary from '../../dictionary/smart-contracts-dictionary';
 
 import BlockchainNodesDictionary = require('../api/dictionary/blockchain-nodes-dictionary');
+import EosClient = require('../../common/client/eos-client');
 
 const _ = require('lodash');
 

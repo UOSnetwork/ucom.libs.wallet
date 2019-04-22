@@ -1,8 +1,8 @@
-const PermissionsDictionary           = require('../dictionary/permissions-dictionary');
-const SmartContractsActionsDictionary = require('../dictionary/smart-contracts-actions-dictionary');
-const InteractionsDictionary          = require('../dictionary/interactions-dictionary');
-const TransactionsBuilder             = require('./transactions-builder');
-const EosClient                       = require('../eos-client');
+import PermissionsDictionary = require('../dictionary/permissions-dictionary');
+import InteractionsDictionary = require('../dictionary/interactions-dictionary');
+import SmartContractsActionsDictionary = require('../dictionary/smart-contracts-actions-dictionary');
+import TransactionsBuilder = require('./transactions-builder');
+import EosClient = require('../common/client/eos-client');
 
 const PERMISSION_ACTIVE = PermissionsDictionary.active();
 
@@ -22,7 +22,7 @@ class SocialTransactionsService {
       account_to: accountNameTo,
     };
 
-    return this._getSignedTransaction(accountNameFrom, privateKey, smartContract, interactionName, actionJsonData);
+    return this.getSignedTransaction(accountNameFrom, privateKey, smartContract, interactionName, actionJsonData);
   }
 
   /**
@@ -40,7 +40,7 @@ class SocialTransactionsService {
       account_to: accountNameTo,
     };
 
-    return this._getSignedTransaction(accountNameFrom, privateKey, smartContract, interactionName, actionJsonData);
+    return this.getSignedTransaction(accountNameFrom, privateKey, smartContract, interactionName, actionJsonData);
   }
 
   /**
@@ -53,12 +53,12 @@ class SocialTransactionsService {
    * @returns {Promise<Object>}
    * @private
    */
-  static _getSignedTransaction(accountName, privateKey, smartContract, interactionName, actionJsonData) {
+  static getSignedTransaction(accountName, privateKey, smartContract, interactionName, actionJsonData) {
     const actionName = SmartContractsActionsDictionary.socialAction();
 
     const actionJson = {
       interaction: interactionName,
-      data: actionJsonData
+      data: actionJsonData,
     };
 
     const data = {
@@ -74,8 +74,8 @@ class SocialTransactionsService {
       PERMISSION_ACTIVE,
     );
 
-    return EosClient.getSignedTransaction(privateKey, [ actions ]);
+    return EosClient.getSignedTransaction(privateKey, [actions]);
   }
 }
 
-module.exports = SocialTransactionsService;
+export = SocialTransactionsService;

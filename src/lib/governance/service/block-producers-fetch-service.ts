@@ -1,14 +1,13 @@
-import EosClient from '../../eos-client';
 import SmartContractsDictionary from '../../dictionary/smart-contracts-dictionary';
 
 import BlockchainNodesDictionary = require('../api/dictionary/blockchain-nodes-dictionary');
+import EosClient = require('../../common/client/eos-client');
 
 class BlockProducersFetchService {
   public static async getAllWithVoters(
     uosAccounts,
   ): Promise<{ indexedNodes, indexedVoters }> {
     const rpc = EosClient.getRpcClient();
-
     const [manyVotersRows, producersSchedule, manyNodes] = await Promise.all([
       this.getVotesTableRows(),
       rpc.get_producer_schedule(),
@@ -55,6 +54,7 @@ class BlockProducersFetchService {
     }
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   private static processVotersAndVotedProducers(
     votersRows,
     activeProducers,

@@ -1,4 +1,4 @@
-const { BadRequestError } = require('../errors/errors');
+import { BadRequestError } from '../errors/errors';
 
 class InputValidator {
   /**
@@ -36,4 +36,4 @@ class InputValidator {
   }
 }
 
-module.exports = InputValidator;
+export = InputValidator;

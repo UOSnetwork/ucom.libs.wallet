@@ -1,4 +1,7 @@
 /* eslint-disable unicorn/prevent-abbreviations,max-len,no-shadow,jest/valid-expect,no-unused-vars,security/detect-object-injection,no-console */
+import WalletApi = require('../../src/lib/wallet/api/wallet-api');
+import EosClient = require('../../src/lib/common/client/eos-client');
+
 const resources = [
   'cpu', 'net', 'ram',
 ];
@@ -6,8 +9,6 @@ const resources = [
 const TransactionSender = require('../../build/lib/transaction-sender');
 const BlockchainRegistry = require('../../build/lib/blockchain-registry');
 const accountsData = require('../../accounts-data');
-const WalletApi = require('../../build/lib/wallet-api');
-const EosClient = require('../../build/lib/eos-client');
 
 require('jest-expect-message');
 
@@ -201,7 +202,8 @@ class Helper {
       actorPrivateKey,
       // @ts-ignore
       actions,
-    ) => ({
+    ): Promise<any> => ({
+      // @ts-ignore
       success: true,
     });
   }

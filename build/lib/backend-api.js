@@ -1,6 +1,6 @@
 "use strict";
-const TransactionsBuilder = require('../lib/service/transactions-builder.js');
-const EosClient = require('../lib/eos-client');
+const EosClient = require("./common/client/eos-client");
+const TransactionsBuilder = require("./service/transactions-builder");
 const EXTERNAL_ID_INDEX_POSITION = 2;
 const EXTERNAL_ID_KEY_TYPE = 'i64';
 class BackendApi {

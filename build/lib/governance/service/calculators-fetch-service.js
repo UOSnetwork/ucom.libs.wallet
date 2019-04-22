@@ -5,48 +5,55 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 const smart_contracts_dictionary_1 = __importDefault(require("../../dictionary/smart-contracts-dictionary"));
 const BlockchainNodesDictionary = require("../api/dictionary/blockchain-nodes-dictionary");
 const EosClient = require("../../common/client/eos-client");
-class BlockProducersFetchService {
+const _ = require('lodash');
+class CalculatorsFetchService {
     static async getAllWithVoters(uosAccounts) {
-        const rpc = EosClient.getRpcClient();
-        const [manyVotersRows, producersSchedule, manyNodes] = await Promise.all([
-            this.getVotesTableRows(),
-            rpc.get_producer_schedule(),
-            rpc.get_producers(true, '', 1000),
+        const [manyNodes, manyVotersRows] = await Promise.all([
+            this.getAllNodes(),
+            this.getAllVoters(),
         ]);
-        const activeNodes = this.extractActiveProducers(producersSchedule);
-        const { indexedNodes, indexedVoters } = this.processVotersAndVotedProducers(manyVotersRows, activeNodes, uosAccounts);
+        const activeCalculators = this.extractActiveNodes(manyNodes);
+        const { indexedNodes, indexedVoters } = this.processVotersAndVotedNodes(manyVotersRows, activeCalculators, uosAccounts, 'calculators');
         this.addOtherProducers(manyNodes, indexedNodes);
         return {
             indexedNodes,
             indexedVoters,
         };
     }
-    static extractActiveProducers(producersSchedule) {
+    static extractActiveNodes(manyProducers) {
         const activeProducers = {};
-        if (producersSchedule && producersSchedule.active && producersSchedule.active.producers) {
-            for (const producerData of producersSchedule.active.producers) {
-                activeProducers[producerData.producer_name] = true;
+        const sortedProducers = _.cloneDeep(manyProducers)
+            .sort((a, b) => +b.total_votes - a.total_votes);
+        let counter = 0;
+        for (const producer of sortedProducers) {
+            if (producer.is_active !== 1) {
+                continue;
+            }
+            activeProducers[producer.owner] = true;
+            counter += 1;
+            if (counter === BlockchainNodesDictionary.activeNumber()) {
+                break;
             }
         }
         return activeProducers;
     }
-    static addOtherProducers(manyNodes, processedNodes) {
-        for (let i = 0; i < manyNodes.rows.length; i += 1) {
-            const producerSet = manyNodes.rows[i];
-            if (processedNodes[producerSet.owner]) {
+    static addOtherProducers(manyNodes, activeNodes) {
+        for (const node of manyNodes) {
+            if (activeNodes[node.owner]) {
                 continue;
             }
-            processedNodes[producerSet.owner] = {
-                title: producerSet.owner,
+            activeNodes[node.owner] = {
+                title: node.owner,
                 votes_count: 0,
                 votes_amount: 0,
+                scaled_importance_amount: 0,
                 currency: 'UOS',
-                bp_status: BlockchainNodesDictionary.getBackupOrInactive(producerSet),
+                bp_status: BlockchainNodesDictionary.getBackupOrInactive(node),
             };
         }
     }
     // eslint-disable-next-line sonarjs/cognitive-complexity
-    static processVotersAndVotedProducers(votersRows, activeProducers, uosAccounts) {
+    static processVotersAndVotedNodes(votersRows, activeProducers, uosAccounts, votesIndex) {
         const indexedVoters = {};
         const indexedNodes = {};
         for (const voter of votersRows) {
@@ -60,7 +67,7 @@ class BlockProducersFetchService {
             if (!properties.staked_balance) {
                 throw new Error(`There is no staked_balance inside properties for voter: ${voter.owner}`);
             }
-            for (const producer of voter.producers) {
+            for (const producer of voter[votesIndex]) {
                 if (!indexedNodes[producer]) {
                     indexedNodes[producer] = {
                         title: producer,
@@ -88,8 +95,11 @@ class BlockProducersFetchService {
             indexedVoters,
         };
     }
-    static async getVotesTableRows() {
-        return EosClient.getTableRowsWithBatching(smart_contracts_dictionary_1.default.eosIo(), smart_contracts_dictionary_1.default.eosIo(), smart_contracts_dictionary_1.default.votersTableName(), 'owner', 500);
+    static async getAllNodes() {
+        return EosClient.getTableRowsWithBatching(smart_contracts_dictionary_1.default.eosIo(), smart_contracts_dictionary_1.default.eosIo(), smart_contracts_dictionary_1.default.calculatorsTableName(), 'owner', 500);
+    }
+    static async getAllVoters() {
+        return EosClient.getTableRowsWithBatching(smart_contracts_dictionary_1.default.eosIo(), smart_contracts_dictionary_1.default.eosIo(), smart_contracts_dictionary_1.default.calculatorsVotersTableName(), 'owner', 500);
     }
 }
-module.exports = BlockProducersFetchService;
+module.exports = CalculatorsFetchService;

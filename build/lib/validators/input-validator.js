@@ -1,5 +1,5 @@
 "use strict";
-const { BadRequestError } = require('../errors/errors');
+const errors_1 = require("../errors/errors");
 class InputValidator {
     /**
      *
@@ -11,7 +11,7 @@ class InputValidator {
         if (Number.isInteger(value) && +value > 0) {
             return true;
         }
-        throw new BadRequestError([{
+        throw new errors_1.BadRequestError([{
                 field: exceptionField,
                 message: 'Input value must be an integer and greater than zero',
             }]);
@@ -26,7 +26,7 @@ class InputValidator {
         if (Number.isInteger(value) && +value >= 0) {
             return true;
         }
-        throw new BadRequestError([{
+        throw new errors_1.BadRequestError([{
                 field: exceptionField,
                 message: 'Input value must be an integer and greater than or equal to zero',
             }]);

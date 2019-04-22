@@ -11,4 +11,4 @@ class InteractionsDictionary {
   }
 }
 
-module.exports = InteractionsDictionary;
+export = InteractionsDictionary;

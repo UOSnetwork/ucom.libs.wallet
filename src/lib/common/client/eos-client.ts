@@ -1,8 +1,9 @@
+import { BadRequestError } from '../../errors/errors';
+
+import ConverterHelper = require('../../helpers/converter-helper');
+
 const { Api, JsonRpc, RpcError } = require('eosjs');
 const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig');
-
-const { BadRequestError } = require('./errors/errors');
-const converterHelper = require('./helpers/converter');
 
 let isNode  = false;
 
@@ -209,14 +210,14 @@ class EosClient {
    * @returns {Promise<*[]>}
    */
   static async getTableRowsWithBatching(
-    smartContract,
-    scope,
-    table,
-    boundFieldName,
-    limit,
-    indexPosition = null,
-    keyType = null,
-    argLowerBound = null,
+    smartContract: string,
+    scope: string,
+    table: string,
+    boundFieldName: string,
+    limit: number,
+    indexPosition: any = null,
+    keyType: string | null = null,
+    argLowerBound: any = null,
   ) {
     let lowerBound = argLowerBound;
 
@@ -244,7 +245,7 @@ class EosClient {
       const lastBoundValue = tableRows[tableRows.length - 1][boundFieldName];
 
       if (boundFieldName === 'owner') {
-        lowerBound = converterHelper.getAccountNameAsBoundString(lastBoundValue);
+        lowerBound = ConverterHelper.getAccountNameAsBoundString(lastBoundValue);
       } else {
         lowerBound = lastBoundValue;
       }
@@ -285,13 +286,13 @@ class EosClient {
    * @returns {Promise<Object[]>}
    */
   static async getJsonTableRows(
-    smartContract,
-    scope,
-    table,
-    limit,
-    lowerBound = null,
-    indexPosition = null,
-    keyType = null,
+    smartContract: string,
+    scope: string,
+    table: string,
+    limit: number,
+    lowerBound: any = null,
+    indexPosition: number | null = null,
+    keyType: string | null = null,
   ) {
     if (limit > 1000) {
       throw new Error('It is not recommended to have limit value more than 1000');

@@ -1,8 +1,7 @@
-const TransactionsBuilder = require('../lib/service/transactions-builder.js');
+import EosClient = require('./common/client/eos-client');
+import TransactionsBuilder = require('./service/transactions-builder');
 
-const EosClient = require('../lib/eos-client');
-
-const EXTERNAL_ID_INDEX_POSITION = 2;
+const EXTERNAL_ID_INDEX_POSITION: number = 2;
 const EXTERNAL_ID_KEY_TYPE = 'i64';
 
 class BackendApi {
@@ -29,7 +28,7 @@ class BackendApi {
       limit,
       EXTERNAL_ID_INDEX_POSITION,
       EXTERNAL_ID_KEY_TYPE,
-      externalId
+      externalId,
     );
   }
 
@@ -96,8 +95,8 @@ class BackendApi {
       permission,
     );
 
-    return EosClient.getSignedTransaction(privateKey, [ actions ]);
+    return EosClient.getSignedTransaction(privateKey, [actions]);
   }
 }
 
-module.exports = BackendApi;
+export = BackendApi;

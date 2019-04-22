@@ -1,12 +1,10 @@
 /* eslint-disable no-bitwise,security/detect-object-injection,jest/no-disabled-tests */
-import EosClient from '../../../../src/lib/eos-client';
 
 import {
   CheckManyObjectsOptionsDto,
   ObjectInterfaceRulesDto,
 } from '../../../helpers/common/interfaces/options-interfaces';
 
-const { WalletApi } = require('../../../..');
 
 import Helper = require('../../../helpers/helper');
 import ConfigService = require('../../../../src/config/config-service');
@@ -14,6 +12,8 @@ import BlockchainNodesApi = require('../../../../src/lib/governance/api/blockcha
 import CommonChecker = require('../../../helpers/common/common-checker');
 import UosAccountsPropertiesApi = require('../../../../src/lib/uos-accounts-properties/uos-accounts-properties-api');
 import BlockchainNodesHelper = require('../../../helpers/blockchain-nodes/blockchain-nodes-helper');
+import WalletApi = require('../../../../src/lib/wallet/api/wallet-api');
+import EosClient = require('../../../../src/lib/common/client/eos-client');
 
 ConfigService.initNodeJsEnv();
 ConfigService.initForTestEnv();
@@ -29,6 +29,7 @@ const accountName = Helper.getTesterAccountName();
 const privateKey = Helper.getTesterAccountPrivateKey();
 
 describe('Blockchain nodes fetching', () => {
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   describe('Positive', () => {
     it('Vote for block producers and check nodes state', async () => {
       await Helper.stakeSomethingIfNecessary(accountName, privateKey);
@@ -93,23 +94,65 @@ describe('Blockchain nodes fetching', () => {
     }, JEST_TIMEOUT * 2);
 
     it('Vote for calculators and check nodes state', async () => {
-      // select user and vote for empty
-      // fetch given user stake and importance
+      await Helper.stakeSomethingIfNecessary(accountName, privateKey);
+      await WalletApi.voteForCalculatorNodes(accountName, privateKey, []);
 
-      // fetch before with empty and save data
+      const uosAccounts = await UosAccountsPropertiesApi.getAllAccountsTableRows('name', true);
+      const stakedBalance = +uosAccounts[accountName].staked_balance;
+      const scaledImportance = +uosAccounts[accountName].scaled_importance;
 
-      // vote for two bp
+      const { calculatorsWithVoters } = await BlockchainNodesApi.getAll();
 
-      // fetch after
-      // expect that appropriate values are increased
+      const amountToVote = 2;
 
-      // then vote only for one of them
+      const twoNodesToTest = BlockchainNodesHelper.getNodesAmountWithData(calculatorsWithVoters, amountToVote);
 
-      // fetch again
+      await WalletApi.voteForCalculatorNodes(accountName, privateKey, Object.keys(twoNodesToTest));
 
-      // expect that one bp value remains the same
-      // but another is decreased
-    });
+      const { calculatorsWithVoters:nodesAfterTwoVotes } = await BlockchainNodesApi.getAll();
+
+      for (const title in twoNodesToTest) {
+        if (!twoNodesToTest.hasOwnProperty(title)) {
+          continue;
+        }
+
+        const before = twoNodesToTest[title];
+
+        const after = nodesAfterTwoVotes.indexedNodes[title];
+        CommonChecker.expectNotEmpty(after);
+
+        expect(after.votes_count).toBe(before.votes_count + 1);
+        expect(after.votes_amount).toBe(before.votes_amount + stakedBalance);
+        expect(after.scaled_importance_amount).toBe(before.scaled_importance_amount + scaledImportance);
+      }
+
+      const singleNodeToVote = Object.keys(twoNodesToTest)[0];
+      await WalletApi.voteForCalculatorNodes(accountName, privateKey, [singleNodeToVote]);
+
+      const { calculatorsWithVoters:nodesAfterSingleVote } = await BlockchainNodesApi.getAll();
+
+      for (const title in twoNodesToTest) {
+        if (!twoNodesToTest.hasOwnProperty(title)) {
+          continue;
+        }
+
+        const nodeAfterSingle = nodesAfterSingleVote.indexedNodes[title];
+        const nodeAfterTwo = nodesAfterTwoVotes.indexedNodes[title];
+
+        CommonChecker.expectNotEmpty(nodeAfterSingle);
+        CommonChecker.expectNotEmpty(nodeAfterTwo);
+
+        if (title === singleNodeToVote) {
+          expect(nodeAfterSingle.votes_count).toBe(nodeAfterTwo.votes_count);
+          expect(nodeAfterSingle.votes_amount).toBe(nodeAfterTwo.votes_amount);
+          expect(nodeAfterSingle.scaled_importance_amount).toBe(nodeAfterTwo.scaled_importance_amount);
+        } else {
+          expect(nodeAfterSingle.votes_count).toBe(nodeAfterTwo.votes_count - 1);
+          expect(nodeAfterSingle.votes_amount).toBe(nodeAfterTwo.votes_amount - stakedBalance);
+          expect(nodeAfterSingle.scaled_importance_amount).toBe(nodeAfterTwo.scaled_importance_amount - scaledImportance);
+        }
+      }
+    }, JEST_TIMEOUT * 2);
 
     it('Fetch current block producers and check interfaces', async () => {
       const { blockProducersWithVoters, calculatorsWithVoters } = await BlockchainNodesApi.getAll();

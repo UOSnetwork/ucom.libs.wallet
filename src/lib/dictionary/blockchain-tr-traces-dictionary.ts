@@ -31,7 +31,6 @@ const TRANSACTION_TYPES = [
 ];
 
 class BlockchainTrTracesDictionary {
-
   /**
    *
    * @returns {number}
@@ -146,4 +145,4 @@ class BlockchainTrTracesDictionary {
   }
 }
 
-module.exports = BlockchainTrTracesDictionary;
+export = BlockchainTrTracesDictionary;

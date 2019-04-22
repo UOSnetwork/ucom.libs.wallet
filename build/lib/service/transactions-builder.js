@@ -1,5 +1,5 @@
 "use strict";
-const PermissionsDictionary = require('../dictionary/permissions-dictionary');
+const PermissionsDictionary = require("../dictionary/permissions-dictionary");
 const PERMISSION_ACTIVE = PermissionsDictionary.active();
 class TransactionsBuilder {
     /**
@@ -12,7 +12,7 @@ class TransactionsBuilder {
      * @return Object
      */
     static getSingleUserAction(actorAccountName, smartContractName, actionName, data, permission = PERMISSION_ACTIVE) {
-        const authorization = this._getSingleUserAuthorization(actorAccountName, permission);
+        const authorization = this.getSingleUserAuthorization(actorAccountName, permission);
         return {
             account: smartContractName,
             name: actionName,
@@ -27,7 +27,7 @@ class TransactionsBuilder {
      * @return {{actor: *, permission: string}[]}
      * @private
      */
-    static _getSingleUserAuthorization(actorAccountName, permission) {
+    static getSingleUserAuthorization(actorAccountName, permission) {
         return [{
                 permission,
                 actor: actorAccountName,

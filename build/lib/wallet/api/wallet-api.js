@@ -2,14 +2,12 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-const actions_service_1 = __importDefault(require("./service/actions-service"));
-const BlockchainRegistry = require('./blockchain-registry');
-const TransactionSender = require('./transaction-sender');
-const EosClient = require('./eos-client');
-const BlockProducersFetchService = require('../../build/lib/governance/service/block-producers-fetch-service');
-const { BadRequestError } = require('./errors/errors');
-const { InputValidator } = require('./validators');
+const actions_service_1 = __importDefault(require("../../service/actions-service"));
+const errors_1 = require("../../errors/errors");
+const EosClient = require("../../common/client/eos-client");
+const InputValidator = require("../../validators/input-validator");
+const BlockchainRegistry = require("../../blockchain-registry");
+const TransactionSender = require("../../transaction-sender");
 class WalletApi {
     /**
      * @return {void}
@@ -47,7 +45,7 @@ class WalletApi {
      */
     static async voteForBlockProducers(accountName, privateKey, producers) {
         if (producers.length > 30) {
-            throw new BadRequestError('It is possible to vote up to 30 block producers');
+            throw new errors_1.BadRequestError('It is possible to vote up to 30 block producers');
         }
         await BlockchainRegistry.doBlockProducersExist(producers);
         await BlockchainRegistry.isSelfDelegatedStake(accountName);
@@ -62,17 +60,14 @@ class WalletApi {
      */
     static async voteForCalculatorNodes(accountName, privateKey, nodeTitles) {
         if (!Array.isArray(nodeTitles)) {
-            throw new BadRequestError('Please provide nodeTitles as a valid javascript array');
+            throw new errors_1.BadRequestError('Please provide nodeTitles as a valid javascript array');
         }
         if (nodeTitles.length > 30) {
-            throw new BadRequestError('It is possible to vote up to 30 block producers');
+            throw new errors_1.BadRequestError('It is possible to vote up to 30 block producers');
         }
         nodeTitles.sort();
         const action = actions_service_1.default.getVoteForCalculators(accountName, nodeTitles);
         return EosClient.sendTransaction(privateKey, [action]);
-    }
-    static async getBlockchainNodes() {
-        return BlockProducersFetchService.getBlockProducers();
     }
     /**
      * @deprecated
@@ -103,7 +98,7 @@ class WalletApi {
         InputValidator.isPositiveInt(bytesAmount);
         await BlockchainRegistry.doesAccountExist(accountName);
         await BlockchainRegistry.isEnoughRamOrException(accountName, bytesAmount);
-        await this._isMinUosAmountForRamOrException(bytesAmount);
+        await this.isMinUosAmountForRamOrException(bytesAmount);
         return TransactionSender.sellRamBytes(accountName, privateKey, bytesAmount);
     }
     /**
@@ -116,7 +111,7 @@ class WalletApi {
     static async buyRam(accountName, privateKey, bytesAmount) {
         InputValidator.isPositiveInt(bytesAmount);
         await BlockchainRegistry.doesAccountExist(accountName);
-        const price = await this._isMinUosAmountForRamOrException(bytesAmount);
+        const price = await this.isMinUosAmountForRamOrException(bytesAmount);
         await BlockchainRegistry.isEnoughBalanceOrException(accountName, price);
         return TransactionSender.buyRamBytes(accountName, privateKey, bytesAmount);
     }
@@ -128,7 +123,7 @@ class WalletApi {
      */
     static async claimEmission(accountName, privateKey) {
         await BlockchainRegistry.doesAccountExist(accountName);
-        return await TransactionSender.claimEmission(accountName, privateKey);
+        return TransactionSender.claimEmission(accountName, privateKey);
     }
     /**
      *
@@ -144,7 +139,7 @@ class WalletApi {
         await BlockchainRegistry.doesAccountExist(accountNameFrom);
         await BlockchainRegistry.doesAccountExist(accountNameTo);
         await BlockchainRegistry.isEnoughBalanceOrException(accountNameFrom, amount);
-        return await TransactionSender.sendTokens(accountNameFrom, privateKey, accountNameTo, amount, memo);
+        return TransactionSender.sendTokens(accountNameFrom, privateKey, accountNameTo, amount, memo);
     }
     /**
      *
@@ -165,7 +160,7 @@ class WalletApi {
      * @return {{tokens: {active: number}}}
      */
     static async getAccountState(accountName) {
-        return await BlockchainRegistry.getAccountInfo(accountName);
+        return BlockchainRegistry.getAccountInfo(accountName);
     }
     // noinspection JSUnusedGlobalSymbols
     static async getAccountBalance(accountName, symbol) {
@@ -186,10 +181,10 @@ class WalletApi {
      * @return {Promise<number>}
      * @private
      */
-    static async _isMinUosAmountForRamOrException(bytesAmount) {
+    static async isMinUosAmountForRamOrException(bytesAmount) {
         const price = await this.getApproximateRamPriceByBytesAmount(bytesAmount);
         if (price < 1) {
-            throw new BadRequestError('Please increase amounts of bytes - total UOS price must be more or equal 1');
+            throw new errors_1.BadRequestError('Please increase amounts of bytes - total UOS price must be more or equal 1');
         }
         return price;
     }

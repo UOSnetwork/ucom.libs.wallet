@@ -1,8 +1,7 @@
 "use strict";
-const EosClient = require('./eos-client');
-const TransactionBuilder = require('./service/transactions-builder');
-const SmartContractsActionsDictionary = require('../lib/dictionary/smart-contracts-actions-dictionary');
-const SmartContractsDictionary = require('../lib/dictionary/smart-contracts-dictionary');
+const EosClient = require("./common/client/eos-client");
+const BlockchainRegistry = require("./blockchain-registry");
+const TransactionsBuilder = require("./service/transactions-builder");
 const SMART_CONTRACT__EISIO = 'eosio';
 const SMART_CONTRACT__EMISSION = 'uos.calcs';
 const SMART_CONTRACT__EOSIO_TOKEN = 'eosio.token';
@@ -17,7 +16,6 @@ const CORE_TOKEN_NAME = 'UOS';
 const BASIC_RESOURCE__RAM = 8192;
 const BASIC_RESOURCE__CPU_TOKENS = `1.0000 ${CORE_TOKEN_NAME}`;
 const BASIC_RESOURCE__NET_TOKENS = `1.0000 ${CORE_TOKEN_NAME}`;
-const BlockchainRegistry = require('./blockchain-registry');
 const _ = require('lodash');
 class TransactionSender {
     /**
@@ -28,8 +26,9 @@ class TransactionSender {
      * @return {Promise<Object>}
      */
     static async voteForBlockProducers(accountName, privateKey, producers) {
-        const action = this._getVoteForBlockProducersAction(accountName, _.uniq(producers));
-        return await EosClient.sendTransaction(privateKey, [action]);
+        // eslint-disable-next-line you-dont-need-lodash-underscore/uniq
+        const action = this.getVoteForBlockProducersAction(accountName, _.uniq(producers));
+        return EosClient.sendTransaction(privateKey, [action]);
     }
     /**
      *
@@ -39,8 +38,8 @@ class TransactionSender {
      * @return {Promise<Object>}
      */
     static async sellRamBytes(accountName, privateKey, bytesAmount) {
-        const action = this._getSellRamAction(accountName, bytesAmount);
-        return await EosClient.sendTransaction(privateKey, [action]);
+        const action = this.getSellRamAction(accountName, bytesAmount);
+        return EosClient.sendTransaction(privateKey, [action]);
     }
     /**
      *
@@ -50,7 +49,7 @@ class TransactionSender {
      * @return {Promise<any>}
      */
     static async buyRamBytes(accountName, privateKey, bytesAmount) {
-        const action = this._getBuyRamAction(accountName, bytesAmount, accountName);
+        const action = this.getBuyRamAction(accountName, bytesAmount, accountName);
         return EosClient.sendTransaction(privateKey, [action]);
     }
     /**
@@ -60,7 +59,7 @@ class TransactionSender {
      * @return {Promise<any>}
      */
     static async claimEmission(accountName, actorPrivateKey) {
-        const action = this._getClaimEmissionAction(accountName);
+        const action = this.getClaimEmissionAction(accountName);
         return EosClient.sendTransaction(actorPrivateKey, [action]);
     }
     /**
@@ -80,27 +79,27 @@ class TransactionSender {
         if (cpuDelta > 0) {
             await BlockchainRegistry.isEnoughBalanceOrException(accountName, cpuDelta);
         }
-        let actions = [];
+        const actions = [];
         if (netDelta !== 0) {
-            const netString = this._getUosAmountAsString(Math.abs(netDelta));
-            const cpuString = this._getUosAmountAsString(0);
+            const netString = this.getUosAmountAsString(Math.abs(netDelta));
+            const cpuString = this.getUosAmountAsString(0);
             const action = netDelta > 0 ?
-                this._getDelegateBandwidthAction(accountName, netString, cpuString, accountName, false) :
-                this._getUnstakeTokensAction(accountName, netString, cpuString, accountName, false);
+                this.getDelegateBandwidthAction(accountName, netString, cpuString, accountName, false) :
+                this.getUnstakeTokensAction(accountName, netString, cpuString, accountName, false);
             actions.push(action);
         }
         if (cpuDelta !== 0) {
-            const netString = this._getUosAmountAsString(0);
-            const cpuString = this._getUosAmountAsString(Math.abs(cpuDelta));
+            const netString = this.getUosAmountAsString(0);
+            const cpuString = this.getUosAmountAsString(Math.abs(cpuDelta));
             const action = cpuDelta > 0 ?
-                this._getDelegateBandwidthAction(accountName, netString, cpuString, accountName, false) :
-                this._getUnstakeTokensAction(accountName, netString, cpuString, accountName, false);
+                this.getDelegateBandwidthAction(accountName, netString, cpuString, accountName, false) :
+                this.getUnstakeTokensAction(accountName, netString, cpuString, accountName, false);
             actions.push(action);
         }
         if (actions.length === 0) {
-            return;
+            return null;
         }
-        return await EosClient.sendTransaction(privateKey, actions);
+        return EosClient.sendTransaction(privateKey, actions);
     }
     // noinspection JSUnusedGlobalSymbols
     /**
@@ -112,9 +111,9 @@ class TransactionSender {
      * @return {Promise<any>}
      */
     static async stakeForYourself(accountNameFrom, actorPrivateKey, stakeNetQuantity, stakeCpuQuantity) {
-        const stakeNetQuantityString = this._getUosAmountAsString(stakeNetQuantity);
-        const stakeCpuQuantityString = this._getUosAmountAsString(stakeCpuQuantity);
-        const delegateBwAction = this._getDelegateBandwidthAction(accountNameFrom, stakeNetQuantityString, stakeCpuQuantityString, accountNameFrom, false);
+        const stakeNetQuantityString = this.getUosAmountAsString(stakeNetQuantity);
+        const stakeCpuQuantityString = this.getUosAmountAsString(stakeCpuQuantity);
+        const delegateBwAction = this.getDelegateBandwidthAction(accountNameFrom, stakeNetQuantityString, stakeCpuQuantityString, accountNameFrom, false);
         return EosClient.sendTransaction(actorPrivateKey, [delegateBwAction]);
     }
     // noinspection JSUnusedGlobalSymbols
@@ -127,8 +126,8 @@ class TransactionSender {
      */
     static async delegateBasicResourcesToUser(accountNameFrom, actorPrivateKey, accountNameTo) {
         const actions = [];
-        actions.push(this._getBuyRamAction(accountNameFrom, BASIC_RESOURCE__RAM, accountNameTo));
-        actions.push(this._getDelegateBandwidthAction(accountNameFrom, BASIC_RESOURCE__NET_TOKENS, BASIC_RESOURCE__CPU_TOKENS, accountNameTo, false));
+        actions.push(this.getBuyRamAction(accountNameFrom, BASIC_RESOURCE__RAM, accountNameTo));
+        actions.push(this.getDelegateBandwidthAction(accountNameFrom, BASIC_RESOURCE__NET_TOKENS, BASIC_RESOURCE__CPU_TOKENS, accountNameTo, false));
         return EosClient.sendTransaction(actorPrivateKey, actions);
     }
     // noinspection JSUnusedGlobalSymbols
@@ -141,9 +140,9 @@ class TransactionSender {
      * @return {Promise<any>}
      */
     static async unstakeYourselfTokens(accountNameFrom, actorPrivateKey, netQuantity, cpuQuantity) {
-        const netQuantityString = this._getUosAmountAsString(netQuantity);
-        const cpuQuantityString = this._getUosAmountAsString(cpuQuantity);
-        const delegateBwAction = this._getUnstakeTokensAction(accountNameFrom, netQuantityString, cpuQuantityString, accountNameFrom, false);
+        const netQuantityString = this.getUosAmountAsString(netQuantity);
+        const cpuQuantityString = this.getUosAmountAsString(cpuQuantity);
+        const delegateBwAction = this.getUnstakeTokensAction(accountNameFrom, netQuantityString, cpuQuantityString, accountNameFrom, false);
         return EosClient.sendTransaction(actorPrivateKey, [delegateBwAction]);
     }
     /**
@@ -157,8 +156,8 @@ class TransactionSender {
      * @return {Promise<Object>}
      */
     static async sendTokens(accountNameFrom, privateKey, accountNameTo, amount, memo = '', symbol = CORE_TOKEN_NAME) {
-        const stringAmount = this._getUosAmountAsString(amount, symbol);
-        const action = this._getSendTokensAction(accountNameFrom, accountNameTo, stringAmount, memo);
+        const stringAmount = this.getUosAmountAsString(amount, symbol);
+        const action = this.getSendTokensAction(accountNameFrom, accountNameTo, stringAmount, memo);
         return EosClient.sendTransaction(privateKey, [action]);
     }
     /**
@@ -168,32 +167,15 @@ class TransactionSender {
      * @return {{account: *, name: *, authorization: *, data: *}}
      * @private
      */
-    static _getVoteForBlockProducersAction(accountNameFrom, producers) {
+    static getVoteForBlockProducersAction(accountNameFrom, producers) {
         const smartContract = SMART_CONTRACT__EISIO;
         const actionName = ACTION__VOTE_PRODUCER;
         const data = {
             voter: accountNameFrom,
             proxy: '',
-            producers
+            producers,
         };
-        return TransactionBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
-    }
-    /**
-     *
-     * @param {string} accountNameFrom
-     * @param {string[]} nodeTitles
-     * @return {{account: *, name: *, authorization: *, data: *}}
-     * @private
-     */
-    static _getVoteForCalculatorsAction(accountNameFrom, nodeTitles) {
-        const smartContract = SmartContractsDictionary.eosIo();
-        const actionName = SmartContractsActionsDictionary.voteForCalculators();
-        const data = {
-            voter: accountNameFrom,
-            proxy: '',
-            calculators: nodeTitles,
-        };
-        return TransactionBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
+        return TransactionsBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
     }
     /**
      *
@@ -203,7 +185,7 @@ class TransactionSender {
      * @return {Object}
      * @private
      */
-    static _getBuyRamAction(accountNameFrom, amount, accountNameTo) {
+    static getBuyRamAction(accountNameFrom, amount, accountNameTo) {
         const smartContract = SMART_CONTRACT__EISIO;
         const actionName = ACTION__BUY_RAM_BYTES;
         const data = {
@@ -211,7 +193,7 @@ class TransactionSender {
             receiver: accountNameTo,
             bytes: amount,
         };
-        return TransactionBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
+        return TransactionsBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
     }
     /**
      *
@@ -220,14 +202,14 @@ class TransactionSender {
      * @return {Object}
      * @private
      */
-    static _getSellRamAction(accountName, amount) {
+    static getSellRamAction(accountName, amount) {
         const smartContract = SMART_CONTRACT__EISIO;
         const actionName = ACTION__SELL_RAM_BYTES;
         const data = {
             account: accountName,
             bytes: amount,
         };
-        return TransactionBuilder.getSingleUserAction(accountName, smartContract, actionName, data);
+        return TransactionsBuilder.getSingleUserAction(accountName, smartContract, actionName, data);
     }
     /**
      *
@@ -238,16 +220,16 @@ class TransactionSender {
      * @return {Object}
      * @private
      */
-    static _getSendTokensAction(accountNameFrom, accountNameTo, amount, memo) {
+    static getSendTokensAction(accountNameFrom, accountNameTo, amount, memo) {
         const smartContract = SMART_CONTRACT__EOSIO_TOKEN;
         const actionName = ACTION__TRANSFER;
         const data = {
             from: accountNameFrom,
             to: accountNameTo,
             quantity: amount,
-            memo: memo,
+            memo,
         };
-        return TransactionBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
+        return TransactionsBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
     }
     /**
      *
@@ -255,13 +237,13 @@ class TransactionSender {
      * @return {{account: *, name: *, authorization: *, data: *}}
      * @private
      */
-    static _getClaimEmissionAction(accountNameFrom) {
+    static getClaimEmissionAction(accountNameFrom) {
         const smartContract = SMART_CONTRACT__EMISSION;
         const actionName = ACTION__WITHDRAWAL;
         const data = {
-            owner: accountNameFrom
+            owner: accountNameFrom,
         };
-        return TransactionBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
+        return TransactionsBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
     }
     /**
      *
@@ -273,7 +255,7 @@ class TransactionSender {
      * @return {{account: *, name: *, authorization: *, data: *}}
      * @private
      */
-    static _getDelegateBandwidthAction(accountNameFrom, stakeNetAmount, stakeCpuAmount, accountNameTo, transfer) {
+    static getDelegateBandwidthAction(accountNameFrom, stakeNetAmount, stakeCpuAmount, accountNameTo, transfer) {
         accountNameTo = accountNameTo || accountNameFrom;
         const smartContract = SMART_CONTRACT__EISIO;
         const actionName = ACTION__DELEGATE_BANDWIDTH;
@@ -284,7 +266,7 @@ class TransactionSender {
             stake_cpu_quantity: stakeCpuAmount,
             transfer,
         };
-        return TransactionBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
+        return TransactionsBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
     }
     /**
      *
@@ -296,7 +278,7 @@ class TransactionSender {
      * @return {{account: *, name: *, authorization: *, data: *}}
      * @private
      */
-    static _getUnstakeTokensAction(accountNameFrom, netAmount, cpuAmount, accountNameTo, transfer) {
+    static getUnstakeTokensAction(accountNameFrom, netAmount, cpuAmount, accountNameTo, transfer) {
         const smartContract = SMART_CONTRACT__EISIO;
         const actionName = ACTION__UNDELEGATE_BANDWIDTH;
         const data = {
@@ -306,7 +288,7 @@ class TransactionSender {
             unstake_cpu_quantity: cpuAmount,
             transfer,
         };
-        return TransactionBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
+        return TransactionsBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
     }
     /**
      *
@@ -315,7 +297,7 @@ class TransactionSender {
      * @return {string}
      * @private
      */
-    static _getUosAmountAsString(amount, symbol = CORE_TOKEN_NAME) {
+    static getUosAmountAsString(amount, symbol = CORE_TOKEN_NAME) {
         return `${Math.floor(amount)}.0000 ${symbol}`;
     }
 }
