@@ -1,13 +1,13 @@
 /* eslint-disable unicorn/prevent-abbreviations,max-len,no-shadow,jest/valid-expect,no-unused-vars,security/detect-object-injection,no-console */
 import WalletApi = require('../../src/lib/wallet/api/wallet-api');
 import EosClient = require('../../src/lib/common/client/eos-client');
+import BlockchainRegistry = require('../../src/lib/blockchain-registry');
+import TransactionSender = require('../../src/lib/transaction-sender');
 
 const resources = [
   'cpu', 'net', 'ram',
 ];
 
-const TransactionSender = require('../../build/lib/transaction-sender');
-const BlockchainRegistry = require('../../build/lib/blockchain-registry');
 const accountsData = require('../../accounts-data');
 
 require('jest-expect-message');

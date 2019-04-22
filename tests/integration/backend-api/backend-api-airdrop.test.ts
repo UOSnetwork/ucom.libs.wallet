@@ -2,9 +2,8 @@
 import Helper = require('../../helpers/helper');
 import NumbersHelper = require('../../helpers/common/numbers-helper');
 import TransactionsPushResponseChecker = require('../../helpers/common/transactions-push-response-checker');
-
-// eslint-disable-next-line unicorn/import-index
-const { BackendApi, EosClient } = require('../../../index.js');
+import BackendApi = require('../../../src/lib/backend-api');
+import EosClient = require('../../../src/lib/common/client/eos-client');
 
 const internalServiceErrorPattern = new RegExp('Internal Service Error');
 
