@@ -2,9 +2,20 @@ const BP_STATUS__ACTIVE   = 1;
 const BP_STATUS__BACKUP   = 2;
 const BP_STATUS__INACTIVE = 3;
 
+const TYPE_BLOCK_PRODUCER = 1;
+const TYPE_CALCULATOR = 2;
+
 const ACTIVE_NUMBER = 21;
 
 class BlockchainNodesDictionary {
+  public static typeBlockProducer(): number {
+    return TYPE_BLOCK_PRODUCER;
+  }
+
+  public static typeCalculator(): number {
+    return TYPE_CALCULATOR;
+  }
+
   public static activeNumber(): number {
     return ACTIVE_NUMBER;
   }

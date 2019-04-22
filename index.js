@@ -12,5 +12,6 @@ module.exports = {
   BlockchainNodes: require('./build/lib/governance/api/blockchain-nodes-api'),
   Dictionary: {
     BlockchainTrTraces: require('./build/lib/dictionary/blockchain-tr-traces-dictionary'),
+    BlockchainNodes: require('./build/lib/governance/dictionary/blockchain-nodes-dictionary')
   },
 };

@@ -1,7 +1,7 @@
 import SmartContractsDictionary from '../../dictionary/smart-contracts-dictionary';
 
-import BlockchainNodesDictionary = require('../api/dictionary/blockchain-nodes-dictionary');
 import EosClient = require('../../common/client/eos-client');
+import BlockchainNodesDictionary = require('../dictionary/blockchain-nodes-dictionary');
 
 class BlockProducersFetchService {
   public static async getAllWithVoters(
@@ -102,6 +102,7 @@ class BlockProducersFetchService {
         account_name:   voter.owner,
         staked_balance: +properties.staked_balance,
         scaled_importance: +properties.scaled_importance,
+        nodes: voter.producers,
       };
     }
 

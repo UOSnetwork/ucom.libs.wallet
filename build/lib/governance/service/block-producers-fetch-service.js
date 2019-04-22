@@ -3,8 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 const smart_contracts_dictionary_1 = __importDefault(require("../../dictionary/smart-contracts-dictionary"));
-const BlockchainNodesDictionary = require("../api/dictionary/blockchain-nodes-dictionary");
 const EosClient = require("../../common/client/eos-client");
+const BlockchainNodesDictionary = require("../dictionary/blockchain-nodes-dictionary");
 class BlockProducersFetchService {
     static async getAllWithVoters(uosAccounts) {
         const rpc = EosClient.getRpcClient();
@@ -81,6 +81,7 @@ class BlockProducersFetchService {
                 account_name: voter.owner,
                 staked_balance: +properties.staked_balance,
                 scaled_importance: +properties.scaled_importance,
+                nodes: voter.producers,
             };
         }
         return {

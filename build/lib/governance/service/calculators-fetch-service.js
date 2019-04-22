@@ -3,8 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 const smart_contracts_dictionary_1 = __importDefault(require("../../dictionary/smart-contracts-dictionary"));
-const BlockchainNodesDictionary = require("../api/dictionary/blockchain-nodes-dictionary");
 const EosClient = require("../../common/client/eos-client");
+const BlockchainNodesDictionary = require("../dictionary/blockchain-nodes-dictionary");
 const _ = require('lodash');
 class CalculatorsFetchService {
     static async getAllWithVoters(uosAccounts) {
@@ -88,6 +88,7 @@ class CalculatorsFetchService {
                 account_name: voter.owner,
                 staked_balance: +properties.staked_balance,
                 scaled_importance: +properties.scaled_importance,
+                nodes: voter[votesIndex],
             };
         }
         return {

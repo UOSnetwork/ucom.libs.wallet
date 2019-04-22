@@ -8,11 +8,13 @@ const EosClient = require("../../common/client/eos-client");
 const InputValidator = require("../../validators/input-validator");
 const BlockchainRegistry = require("../../blockchain-registry");
 const TransactionSender = require("../../transaction-sender");
+const ConfigService = require("../../../config/config-service");
 class WalletApi {
     /**
      * @return {void}
      */
     static setNodeJsEnv() {
+        ConfigService.initNodeJsEnv();
         EosClient.setNodeJsEnv();
     }
     // noinspection JSUnusedGlobalSymbols
@@ -20,6 +22,7 @@ class WalletApi {
      * @return void
      */
     static initForTestEnv() {
+        ConfigService.initForTestEnv();
         EosClient.initForTestEnv();
     }
     // noinspection JSUnusedGlobalSymbols
@@ -27,6 +30,7 @@ class WalletApi {
      * @return void
      */
     static initForStagingEnv() {
+        ConfigService.initForStagingEnv();
         EosClient.initForStagingEnv();
     }
     // noinspection JSUnusedGlobalSymbols
@@ -34,6 +38,7 @@ class WalletApi {
      * @return void
      */
     static initForProductionEnv() {
+        ConfigService.initForStagingEnv();
         EosClient.initForProductionEnv();
     }
     /**

@@ -5,12 +5,14 @@ import EosClient = require('../../common/client/eos-client');
 import InputValidator = require('../../validators/input-validator');
 import BlockchainRegistry = require('../../blockchain-registry');
 import TransactionSender = require('../../transaction-sender');
+import ConfigService = require('../../../config/config-service');
 
 class WalletApi {
   /**
    * @return {void}
    */
-  static setNodeJsEnv() {
+  public static setNodeJsEnv(): void {
+    ConfigService.initNodeJsEnv();
     EosClient.setNodeJsEnv();
   }
 
@@ -18,7 +20,8 @@ class WalletApi {
   /**
    * @return void
    */
-  static initForTestEnv() {
+  public static initForTestEnv(): void {
+    ConfigService.initForTestEnv();
     EosClient.initForTestEnv();
   }
 
@@ -26,7 +29,8 @@ class WalletApi {
   /**
    * @return void
    */
-  static initForStagingEnv() {
+  public static initForStagingEnv(): void {
+    ConfigService.initForStagingEnv();
     EosClient.initForStagingEnv();
   }
 
@@ -34,7 +38,8 @@ class WalletApi {
   /**
    * @return void
    */
-  static initForProductionEnv() {
+  public static initForProductionEnv(): void {
+    ConfigService.initForStagingEnv();
     EosClient.initForProductionEnv();
   }
 
