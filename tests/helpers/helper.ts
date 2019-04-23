@@ -306,7 +306,7 @@ class Helper {
 
     expect(data.tokens.active).toBeGreaterThan(0);
     expect(data.tokens.staked_delegated).toBeGreaterThan(0);
-    expect(data.tokens.emission).toBeGreaterThan(0);
+    expect(data.tokens.emission).toBeGreaterThanOrEqual(0);
 
     this.checkUnstakingRequest(data.tokens.unstaking_request, 'tokens');
 

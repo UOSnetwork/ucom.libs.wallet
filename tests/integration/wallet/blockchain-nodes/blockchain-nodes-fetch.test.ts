@@ -215,6 +215,10 @@ describe('Blockchain nodes fetching', () => {
           type: 'number',
           length: 0,
         },
+        nodes: {
+          type: 'string_array',
+          length: 0,
+        },
       };
 
       const votersOptions: CheckManyObjectsOptionsDto = {
