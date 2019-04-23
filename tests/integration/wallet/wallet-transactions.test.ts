@@ -17,6 +17,15 @@ const accountNameToPrivateKey = Helper.getAccountNameToPrivateKey();
 const JEST_TIMEOUT = 20000;
 
 describe('Send transactions to blockchain', () => {
+  beforeAll(async () => {
+    try {
+      await WalletApi.claimEmission(accountName, privateKey);
+    } catch (error) {
+      // no emission. Do nothing
+      // @ts-ignore
+    }
+  });
+
   describe('Positive', () => {
     it('sellRam', async () => {
       const freeRam = await BlockchainRegistry.getFreeRamAmountInBytes(accountName);

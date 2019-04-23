@@ -156,7 +156,7 @@ class Helper {
     const state = await BlockchainRegistry.getAccountInfo(accountNameFrom);
 
     if (state.resources.net.unstaking_request.amount === 0 && state.resources.cpu.unstaking_request.amount === 0) {
-      console.warn('nothing to rollback');
+      console.log('nothing to rollback');
 
       return;
     }

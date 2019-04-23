@@ -1,12 +1,12 @@
 const ConfigStorage = {
   test: {
-    calculatorUrl: 'http://116.203.29.193:8888',
+    calculatorUrl: 'https://staging-web-calculator-node-1.u.community:7889',
   },
   staging: {
-    calculatorUrl: 'http://116.203.29.193:8888',
+    calculatorUrl: 'https://staging-web-calculator-node-1.u.community:7889',
   },
   production: {
-    calculatorUrl: 'http://159.69.43.17:8888',
+    calculatorUrl: 'https://web-calculator-node.u.community:7889',
   },
 };
 

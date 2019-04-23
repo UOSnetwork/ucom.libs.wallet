@@ -4,7 +4,7 @@ import ConfigService = require('../../../src/config/config-service');
 import _ = require('lodash');
 import UosAccountsPropertiesApi = require('../../../src/lib/uos-accounts-properties/uos-accounts-properties-api');
 
-const JEST_TIMEOUT = 10000;
+const JEST_TIMEOUT = 15000;
 
 ConfigService.initNodeJsEnv();
 ConfigService.initForStagingEnv();
@@ -12,13 +12,13 @@ ConfigService.initForStagingEnv();
 describe('UOS accounts properties', () => {
   it('get all at once', async () => {
     const lowerBound = 0;
-    const limit = 1500;
+    const limit = 5000;
 
     const allRows = await UosAccountsPropertiesApi.getAccountsTableRows(lowerBound, limit);
     const allRowsWithPagination = await UosAccountsPropertiesApi.getAllAccountsTableRows();
 
     expect(allRows.accounts.length).toBe(allRowsWithPagination.length);
-  });
+  }, JEST_TIMEOUT);
 
   it('get table rows and check the interface', async () => {
     const lowerBound = 0;
