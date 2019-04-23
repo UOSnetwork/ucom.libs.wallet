@@ -34,8 +34,7 @@ const configStorage = {
     },
   },
   production: {
-    nodeUrl: 'https://mini-mongo-2.u.community:7889',
-    calculatorUrl: 'http://159.69.43.17:8888/v1/uos_rates/get_accounts',
+    nodeUrl: 'https://mini-mongo.u.community:7889',
     env: 'production',
     tableRows: {
       airdropsReceipt: {
