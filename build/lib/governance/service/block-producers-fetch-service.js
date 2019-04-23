@@ -41,6 +41,7 @@ class BlockProducersFetchService {
                 votes_count: 0,
                 votes_amount: 0,
                 currency: 'UOS',
+                scaled_importance_amount: 0,
                 bp_status: BlockchainNodesDictionary.getBackupOrInactive(producerSet),
             };
         }
