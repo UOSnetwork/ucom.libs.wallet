@@ -68,7 +68,8 @@ describe('Blockchain nodes fetching', () => {
 
         expect(after.votes_count).toBe(before.votes_count + 1);
         expect(after.votes_amount).toBe(before.votes_amount + stakedBalance);
-        expect(after.scaled_importance_amount).toBe(before.scaled_importance_amount + scaledImportance);
+        expect(after.scaled_importance_amount.toFixed(10))
+          .toBe((before.scaled_importance_amount + scaledImportance).toFixed(10));
       }
 
       const singleNodeToVote = Object.keys(twoNodesToTest)[0];
@@ -246,3 +247,5 @@ describe('Blockchain nodes fetching', () => {
     }, JEST_TIMEOUT);
   });
 });
+
+export {};

@@ -5,7 +5,7 @@ import WalletApi = require('../../../src/lib/wallet/api/wallet-api');
 
 const delay = require('delay');
 
-Helper.initForTestEnv();
+Helper.initForStagingEnv();
 
 const accountName = Helper.getTesterAccountName();
 const privateKey = Helper.getTesterAccountPrivateKey();
@@ -13,19 +13,9 @@ const privateKey = Helper.getTesterAccountPrivateKey();
 const accountNameTo = Helper.getAccountNameTo();
 const accountNameToPrivateKey = Helper.getAccountNameToPrivateKey();
 
-
 const JEST_TIMEOUT = 20000;
 
 describe('Send transactions to blockchain', () => {
-  beforeAll(async () => {
-    try {
-      await WalletApi.claimEmission(accountName, privateKey);
-    } catch (error) {
-      // no emission. Do nothing
-      // @ts-ignore
-    }
-  });
-
   describe('Positive', () => {
     it('sellRam', async () => {
       const freeRam = await BlockchainRegistry.getFreeRamAmountInBytes(accountName);
@@ -63,7 +53,8 @@ describe('Send transactions to blockchain', () => {
       expect(totalRamAfter).toBeGreaterThan(totalRamBefore);
       // #task - check exact value
       expect(balanceAfter).toBeLessThan(balanceBefore);
-    }, 20000);
+    }, JEST_TIMEOUT);
+
     it('Send tokens', async () => {
       const amountToSend = 2;
 
@@ -87,7 +78,7 @@ describe('Send transactions to blockchain', () => {
 
       // rollback
       await WalletApi.sendTokens(accountNameTo, accountNameToPrivateKey, accountName, amountToSend);
-    }, 20000);
+    }, JEST_TIMEOUT);
 
     describe('stakeOrUnstakeTokens', () => {
       it('Unstake and rollback it', async () => {
@@ -388,3 +379,5 @@ describe('Send transactions to blockchain', () => {
     });
   });
 });
+
+export {};

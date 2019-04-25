@@ -72,3 +72,5 @@ describe('Untrust', () => {
     TransactionsPushResponseChecker.checkOneTransaction(trustTrxResponse, expected);
   }, JEST_TIMEOUT);
 });
+
+export {};

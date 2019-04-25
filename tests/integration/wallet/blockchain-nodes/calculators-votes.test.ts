@@ -34,3 +34,5 @@ describe('Send transactions to blockchain', () => {
     });
   });
 });
+
+export {};

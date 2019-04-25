@@ -82,3 +82,5 @@ describe('Block producers voting', () => {
       .rejects.toThrow(noSuchBlockProducersErrorRegex);
   }, JEST_TIMEOUT);
 });
+
+export {};

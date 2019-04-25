@@ -163,3 +163,5 @@ describe('Get blockchain info and validation checks', () => {
     });
   });
 });
+
+export {};

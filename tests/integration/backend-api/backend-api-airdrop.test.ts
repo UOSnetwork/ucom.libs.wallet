@@ -166,7 +166,7 @@ describe('Backend API airdrop', () => {
       );
 
       await expect(EosClient.pushTransaction(signed)).rejects.toThrow(internalServiceErrorPattern);
-    });
+    }, JEST_TIMEOUT);
 
     it('Send duplicate airdrop ID', async () => {
       const externalId = NumbersHelper.generateRandomInteger(1, 1000000);
@@ -188,7 +188,7 @@ describe('Backend API airdrop', () => {
       );
 
       await expect(EosClient.pushTransaction(signed)).rejects.toThrow(internalServiceErrorPattern);
-    });
+    }, JEST_TIMEOUT);
   });
 
   describe('Get airdrops receipt table rows', () => {
@@ -233,3 +233,5 @@ describe('Backend API airdrop', () => {
     }, JEST_TIMEOUT);
   });
 });
+
+export {};

@@ -96,3 +96,5 @@ describe('UOS accounts properties', () => {
     expect(actualRows).toMatchObject(expectedRowsSet.accounts);
   }, JEST_TIMEOUT);
 });
+
+export {};
