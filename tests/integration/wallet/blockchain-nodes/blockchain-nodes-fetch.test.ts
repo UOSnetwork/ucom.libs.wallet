@@ -31,6 +31,12 @@ const privateKey = Helper.getTesterAccountPrivateKey();
 describe('Blockchain nodes fetching', () => {
   // eslint-disable-next-line sonarjs/cognitive-complexity
   describe('Positive', () => {
+    it('Get active block producers', async () => {
+      const active: string[] = await BlockchainNodesApi.getActiveBlockProducers();
+
+      CommonChecker.expectIsNotEmptyArray(active);
+    }, JEST_TIMEOUT);
+
     it('Vote for block producers and check nodes state', async () => {
       await Helper.stakeSomethingIfNecessary(accountName, privateKey);
       await WalletApi.voteForBlockProducers(accountName, privateKey, []);

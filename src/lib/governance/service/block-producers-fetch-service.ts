@@ -4,6 +4,12 @@ import EosClient = require('../../common/client/eos-client');
 import BlockchainNodesDictionary = require('../dictionary/blockchain-nodes-dictionary');
 
 class BlockProducersFetchService {
+  public static async getActiveBlockProducers(): Promise<any> {
+    const rpc = EosClient.getRpcClient();
+
+    return rpc.get_producer_schedule();
+  }
+
   public static async getAllWithVoters(
     uosAccounts,
   ): Promise<{ indexedNodes, indexedVoters }> {

@@ -3,6 +3,10 @@ import UosAccountsPropertiesApi = require('../../uos-accounts-properties/uos-acc
 import CalculatorsFetchService = require('./calculators-fetch-service');
 
 class BlockchainNodesFetchService {
+  public static getActiveBlockProducers() {
+    return BlockProducersFetchService.getActiveBlockProducers();
+  }
+
   public static async getBlockProducersAndCalculatorsWithVoters(
 
   ): Promise<{ blockProducersWithVoters, calculatorsWithVoters }> {

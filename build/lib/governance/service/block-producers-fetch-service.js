@@ -6,6 +6,10 @@ const smart_contracts_dictionary_1 = __importDefault(require("../../dictionary/s
 const EosClient = require("../../common/client/eos-client");
 const BlockchainNodesDictionary = require("../dictionary/blockchain-nodes-dictionary");
 class BlockProducersFetchService {
+    static async getActiveBlockProducers() {
+        const rpc = EosClient.getRpcClient();
+        return rpc.get_producer_schedule();
+    }
     static async getAllWithVoters(uosAccounts) {
         const rpc = EosClient.getRpcClient();
         const [manyVotersRows, producersSchedule, manyNodes] = await Promise.all([

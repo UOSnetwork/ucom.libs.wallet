@@ -5,6 +5,14 @@ const _ = require('lodash');
 require('jest-expect-message');
 
 class CommonChecker {
+  public static expectIsNotEmptyArray(array: any[]): void {
+    this.expectNotEmpty(array);
+
+    expect(Array.isArray(array)).toBeTruthy();
+
+    expect(array.length).toBeGreaterThan(0);
+  }
+
   public static expectNotEmpty(object: any) {
     expect(_.isEmpty(object)).toBeFalsy();
   }
