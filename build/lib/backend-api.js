@@ -35,7 +35,7 @@ class BackendApi {
      * @returns {Promise<Object>}
      */
     static async getSignedAirdropTransaction(accountNameFrom, privateKey, permission, externalId, airdropId, accountNameTo, amountInMinor, symbol) {
-        const smartContract = 'testairdrop1';
+        const smartContract = accountNameFrom;
         const actionName = 'send';
         const data = {
             symbol,

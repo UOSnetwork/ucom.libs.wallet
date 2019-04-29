@@ -38,8 +38,8 @@ const configStorage = {
     env: 'production',
     tableRows: {
       airdropsReceipt: {
-        smartContract: 'testairdrop1',
-        scope: 'testairdrop1',
+        smartContract: 'airdrop11111',
+        scope: 'airdrop11111',
         table: 'receipt',
       },
     },

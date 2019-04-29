@@ -76,7 +76,7 @@ class BackendApi {
     amountInMinor,
     symbol,
   ) {
-    const smartContract = 'testairdrop1';
+    const smartContract = accountNameFrom;
     const actionName = 'send';
 
     const data = {
