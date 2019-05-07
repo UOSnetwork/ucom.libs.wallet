@@ -1,9 +1,9 @@
 const ConfigStorage = {
   test: {
-    calculatorUrl: 'https://staging-web-calculator-node-1.u.community:7889',
+    calculatorUrl: 'http://116.203.29.193:8888',
   },
   staging: {
-    calculatorUrl: 'https://staging-web-calculator-node-1.u.community:7889',
+    calculatorUrl: 'http://116.203.29.193:8888',
   },
   production: {
     calculatorUrl: 'https://web-calculator-node.u.community:7889',
