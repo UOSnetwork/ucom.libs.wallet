@@ -14,7 +14,7 @@ module.exports = {
     "plugin:security/recommended",
     "plugin:promise/recommended",
     "plugin:jest/recommended",
-    "plugin:node/recommended",
+    // "plugin:node/recommended",
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:sonarjs/recommended",
