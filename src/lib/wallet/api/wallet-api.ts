@@ -39,7 +39,7 @@ class WalletApi {
    * @return void
    */
   public static initForProductionEnv(): void {
-    ConfigService.initForStagingEnv();
+    ConfigService.initForProductionEnv();
     EosClient.initForProductionEnv();
   }
 
