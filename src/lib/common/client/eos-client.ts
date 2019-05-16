@@ -126,8 +126,9 @@ class EosClient {
    *
    * @return {Promise<Object>}
    */
-  static async getSignedTransaction(actorPrivateKey, actions) {
-    return this.sendTransaction(actorPrivateKey, actions, false);
+  public static async getSignedTransaction(actorPrivateKey, actions) {
+    const broadcast = false;
+    return this.sendTransaction(actorPrivateKey, actions, broadcast);
   }
 
   static async pushTransaction(signedTransaction) {

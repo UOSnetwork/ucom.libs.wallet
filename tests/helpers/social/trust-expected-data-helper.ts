@@ -1,8 +1,10 @@
 /* eslint-disable no-useless-escape */
 class TrustExpectedDataHelper {
-  static getOneUserToOtherPushResponse(accountNameFrom, accountNameTo, isTrust = true) {
-    const interaction = isTrust ? 'trust' : 'untrust';
-
+  static getOneUserToOtherPushResponse(
+    accountNameFrom: string,
+    accountNameTo: string,
+    interaction: string,
+  ) {
     return {
       producer_block_id: null,
       receipt: {

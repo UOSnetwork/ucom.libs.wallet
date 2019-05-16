@@ -2,8 +2,9 @@
 import Helper = require('../../helpers/helper');
 import TrustExpectedDataHelper = require('../../helpers/social/trust-expected-data-helper');
 import TransactionsPushResponseChecker = require('../../helpers/common/transactions-push-response-checker');
-import SocialApi = require('../../../src/lib/social-api');
+import SocialApi = require('../../../src/lib/social-transactions/api/social-api');
 import EosClient = require('../../../src/lib/common/client/eos-client');
+import InteractionsDictionary = require('../../../src/lib/dictionary/interactions-dictionary');
 
 const JEST_TIMEOUT = 10000;
 
@@ -21,7 +22,11 @@ async function signAndSendTransaction() {
 
   const trustTrxResponse = await EosClient.pushTransaction(signedParsed);
 
-  const expected = TrustExpectedDataHelper.getOneUserToOtherPushResponse(accountName, accountNameTo);
+  const expected = TrustExpectedDataHelper.getOneUserToOtherPushResponse(
+    accountName,
+    accountNameTo,
+    InteractionsDictionary.trust(),
+  );
   TransactionsPushResponseChecker.checkOneTransaction(trustTrxResponse, expected);
 }
 
@@ -50,7 +55,11 @@ describe('Trust', () => {
 
     const trustTrxResponse = await EosClient.pushTransaction(signedParsed);
 
-    const expected = TrustExpectedDataHelper.getOneUserToOtherPushResponse(accountName, accountNameTo);
+    const expected = TrustExpectedDataHelper.getOneUserToOtherPushResponse(
+      accountName,
+      accountNameTo,
+      InteractionsDictionary.trust(),
+    );
     TransactionsPushResponseChecker.checkOneTransaction(trustTrxResponse, expected);
   }, JEST_TIMEOUT);
 });
@@ -68,7 +77,11 @@ describe('Untrust', () => {
 
     const trustTrxResponse = await EosClient.pushTransaction(signedParsed);
 
-    const expected = TrustExpectedDataHelper.getOneUserToOtherPushResponse(accountName, accountNameTo, false);
+    const expected = TrustExpectedDataHelper.getOneUserToOtherPushResponse(
+      accountName,
+      accountNameTo,
+      InteractionsDictionary.untrust(),
+    );
     TransactionsPushResponseChecker.checkOneTransaction(trustTrxResponse, expected);
   }, JEST_TIMEOUT);
 });

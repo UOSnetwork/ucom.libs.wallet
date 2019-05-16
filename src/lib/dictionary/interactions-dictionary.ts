@@ -1,12 +1,18 @@
 const TRUST = 'trust';
 const UNTRUST = 'untrust';
 
+const REFERRAL = 'referral';
+
 class InteractionsDictionary {
-  static trust() {
+  public static referral(): string {
+    return REFERRAL;
+  }
+
+  public static trust(): string {
     return TRUST;
   }
 
-  static untrust() {
+  public static untrust(): string {
     return UNTRUST;
   }
 }

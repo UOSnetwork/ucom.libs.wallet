@@ -7,7 +7,7 @@
     "check-by-eslint": "eslint **/*.ts",
     "test": "jest --runInBand",
     "test-watch": "jest --watchAll --verbose --runInBand",
-    "compile-ts": "tsc",
+    "compile-ts": "rm -rf ./build && tsc",
     "compile-ts-watch": "tsc --watch"
   },
   "engines": {

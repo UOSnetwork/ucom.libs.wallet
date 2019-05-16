@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 module.exports = {
   WalletApi: require('./build/lib/wallet/api/wallet-api'),
-  SocialApi: require('./build/lib/social-api'),
+  SocialApi: require('./build/lib/social-transactions/api/social-api'),
 
   BackendApi: require('./build/lib/backend-api'),
 
