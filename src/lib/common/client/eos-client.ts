@@ -1,81 +1,49 @@
 import { BadRequestError } from '../../errors/errors';
 
 import ConverterHelper = require('../../helpers/converter-helper');
+import ConfigService = require('../../../config/config-service');
 
 const { Api, JsonRpc, RpcError } = require('eosjs');
 const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig');
 
-let isNode  = false;
-
 const BLOCKS_BEHIND         = 3;
 const EXPIRATION_IN_SECONDS = 30;
 
-const configStorage = {
-  test: {
-    nodeUrl: 'https://staging-api-node-2.u.community:7888',
-    env: 'test',
-    tableRows: {
-      airdropsReceipt: {
-        smartContract: 'testairdrop1',
-        scope: 'testairdrop1',
-        table: 'receipt',
-      },
-    },
-  },
-  staging: {
-    nodeUrl: 'https://staging-api-node-2.u.community:7888',
-    env: 'staging',
-    tableRows: {
-      airdropsReceipt: {
-        smartContract: 'testairdrop1',
-        scope: 'testairdrop1',
-        table: 'receipt',
-      },
-    },
-  },
-  production: {
-    nodeUrl: 'https://mini-mongo.u.community:7889',
-    env: 'production',
-    tableRows: {
-      airdropsReceipt: {
-        smartContract: 'airdrop11111',
-        scope: 'airdrop11111',
-        table: 'receipt',
-      },
-    },
-  },
-};
-
-let config = configStorage.test;
-
 class EosClient {
   /**
-   *
+   * @deprecated
+   * @see ConfigService.initNodeJsEnv
    * @return {void}
    */
   static setNodeJsEnv() {
-    isNode = true;
+    ConfigService.initNodeJsEnv();
   }
 
   /**
+   * @deprecated
+   * @see ConfigService.initForTestEnv
    * @return void
    */
-  static initForTestEnv() {
-    config = configStorage.test;
+  public static initForTestEnv(): void {
+    ConfigService.initForTestEnv();
   }
 
   /**
+   * @deprecated
+   * @see ConfigService.initForStagingEnv()
    * @return void
    */
-  static initForStagingEnv() {
-    config = configStorage.staging;
+  public static initForStagingEnv() {
+    ConfigService.initForStagingEnv();
   }
 
   /**
+   * @deprecated
+   * @see ConfigService.initForProductionEnv()
    * @return void
    */
-  static initForProductionEnv() {
-    config = configStorage.production;
+  public static initForProductionEnv() {
+    ConfigService.initForProductionEnv();
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -83,7 +51,9 @@ class EosClient {
    *
    * @return {boolean}
    */
-  static isProduction() {
+  public static isProduction() {
+    const config = ConfigService.getConfig();
+
     return config.env === 'production';
   }
 
@@ -92,16 +62,16 @@ class EosClient {
    *
    * @return {boolean}
    */
-  static isStaging() {
+  public static isStaging() {
+    const config = ConfigService.getConfig();
+
     return config.env === 'staging';
   }
 
-  static getCurrentConfigTableRows() {
-    return this.getCurrentConfig().tableRows;
-  }
+  public static getCurrentConfigTableRows() {
+    const config = ConfigService.getConfig();
 
-  static getCurrentConfig() {
-    return configStorage[config.env];
+    return config.tableRows;
   }
 
   /**
@@ -109,7 +79,9 @@ class EosClient {
    * @return {JsonRpc}
    */
   static getRpcClient() {
-    if (isNode)  {
+    const config = ConfigService.getConfig();
+
+    if (ConfigService.isNode())  {
       // eslint-disable-next-line global-require
       const fetch = require('node-fetch');
 
@@ -185,7 +157,7 @@ class EosClient {
     const rpc = this.getRpcClient();
     const signatureProvider = new JsSignatureProvider([privateKey]);
 
-    if (isNode) {
+    if (ConfigService.isNode()) {
       // eslint-disable-next-line global-require
       const { TextEncoder, TextDecoder } = require('util');
 
@@ -309,15 +281,15 @@ class EosClient {
       json:         true,
     };
 
-    if (lowerBound != null) {
+    if (lowerBound !== null) {
       query.lower_bound = lowerBound;
     }
 
-    if (indexPosition != null) {
+    if (indexPosition !== null) {
       query.index_position = `${indexPosition}`;
     }
 
-    if (keyType != null) {
+    if (keyType !== null) {
       query.key_type = keyType;
     }
 
