@@ -9,38 +9,42 @@ import ConfigService = require('../../../config/config-service');
 
 class WalletApi {
   /**
+   * @deprecated
+   * @see ConfigService.initNodeJsEnv()
    * @return {void}
    */
   public static setNodeJsEnv(): void {
     ConfigService.initNodeJsEnv();
-    EosClient.setNodeJsEnv();
   }
 
   // noinspection JSUnusedGlobalSymbols
   /**
+   * @deprecated
+   * @see ConfigService.initForTestEnv()
    * @return void
    */
   public static initForTestEnv(): void {
     ConfigService.initForTestEnv();
-    EosClient.initForTestEnv();
   }
 
   // noinspection JSUnusedGlobalSymbols
   /**
+   * @deprecated
+   * @see ConfigService.initForStagingEnv()
    * @return void
    */
   public static initForStagingEnv(): void {
     ConfigService.initForStagingEnv();
-    EosClient.initForStagingEnv();
   }
 
   // noinspection JSUnusedGlobalSymbols
   /**
+   * @deprecated
+   * @see ConfigService.initForProductionEnv()
    * @return void
    */
   public static initForProductionEnv(): void {
     ConfigService.initForProductionEnv();
-    EosClient.initForProductionEnv();
   }
 
   /**

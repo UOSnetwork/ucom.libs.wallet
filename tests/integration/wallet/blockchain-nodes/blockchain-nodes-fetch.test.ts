@@ -13,13 +13,12 @@ import CommonChecker = require('../../../helpers/common/common-checker');
 import UosAccountsPropertiesApi = require('../../../../src/lib/uos-accounts-properties/uos-accounts-properties-api');
 import BlockchainNodesHelper = require('../../../helpers/blockchain-nodes/blockchain-nodes-helper');
 import WalletApi = require('../../../../src/lib/wallet/api/wallet-api');
-import EosClient = require('../../../../src/lib/common/client/eos-client');
 
 ConfigService.initNodeJsEnv();
 ConfigService.initForTestEnv();
 
-EosClient.initForTestEnv();
-EosClient.setNodeJsEnv();
+ConfigService.initForTestEnv();
+ConfigService.initNodeJsEnv();
 
 Helper.initForTestEnv();
 

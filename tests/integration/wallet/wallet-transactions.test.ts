@@ -5,7 +5,7 @@ import WalletApi = require('../../../src/lib/wallet/api/wallet-api');
 
 const delay = require('delay');
 
-Helper.initForStagingEnv();
+Helper.initForTestEnv();
 
 const accountName = Helper.getTesterAccountName();
 const privateKey = Helper.getTesterAccountPrivateKey();
@@ -19,7 +19,7 @@ describe('Send transactions to blockchain', () => {
   describe('Positive', () => {
     it('sellRam', async () => {
       const freeRam = await BlockchainRegistry.getFreeRamAmountInBytes(accountName);
-      const ramToSell = Math.floor(freeRam / 100);
+      const ramToSell = Math.floor(freeRam / 50);
 
       const balanceBefore = await BlockchainRegistry.getAccountBalance(accountName);
 
@@ -37,7 +37,7 @@ describe('Send transactions to blockchain', () => {
 
     it('buyRam', async () => {
       const freeRam = await BlockchainRegistry.getFreeRamAmountInBytes(accountName);
-      const ramToBuy = Math.floor(freeRam / 100);
+      const ramToBuy = Math.floor(freeRam / 50);
 
       const totalRamBefore = await BlockchainRegistry.getTotalRamAmount(accountName);
       const balanceBefore = await BlockchainRegistry.getAccountBalance(accountName);
@@ -150,7 +150,7 @@ describe('Send transactions to blockchain', () => {
 
         // Active token amount is not increased
         expect(rollbackState.tokens.active).toBe(state.tokens.active);
-      }, 50000);
+      }, JEST_TIMEOUT);
 
       it('increase both net and cpu', async () => {
         const stateBefore = await WalletApi.getAccountState(accountName);

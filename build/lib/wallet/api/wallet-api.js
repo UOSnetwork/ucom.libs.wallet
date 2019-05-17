@@ -11,35 +11,39 @@ const TransactionSender = require("../../transaction-sender");
 const ConfigService = require("../../../config/config-service");
 class WalletApi {
     /**
+     * @deprecated
+     * @see ConfigService.initNodeJsEnv()
      * @return {void}
      */
     static setNodeJsEnv() {
         ConfigService.initNodeJsEnv();
-        EosClient.setNodeJsEnv();
     }
     // noinspection JSUnusedGlobalSymbols
     /**
+     * @deprecated
+     * @see ConfigService.initForTestEnv()
      * @return void
      */
     static initForTestEnv() {
         ConfigService.initForTestEnv();
-        EosClient.initForTestEnv();
     }
     // noinspection JSUnusedGlobalSymbols
     /**
+     * @deprecated
+     * @see ConfigService.initForStagingEnv()
      * @return void
      */
     static initForStagingEnv() {
         ConfigService.initForStagingEnv();
-        EosClient.initForStagingEnv();
     }
     // noinspection JSUnusedGlobalSymbols
     /**
+     * @deprecated
+     * @see ConfigService.initForProductionEnv()
      * @return void
      */
     static initForProductionEnv() {
         ConfigService.initForProductionEnv();
-        EosClient.initForProductionEnv();
     }
     /**
      *

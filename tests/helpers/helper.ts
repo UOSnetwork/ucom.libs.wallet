@@ -3,6 +3,7 @@ import WalletApi = require('../../src/lib/wallet/api/wallet-api');
 import EosClient = require('../../src/lib/common/client/eos-client');
 import BlockchainRegistry = require('../../src/lib/blockchain-registry');
 import TransactionSender = require('../../src/lib/transaction-sender');
+import ConfigService = require('../../src/config/config-service');
 
 const resources = [
   'cpu', 'net', 'ram',
@@ -63,8 +64,8 @@ class Helper {
 
     firstBlockProducer = 'calc1';
 
-    WalletApi.setNodeJsEnv();
-    WalletApi.initForTestEnv();
+    ConfigService.initNodeJsEnv();
+    ConfigService.initForTestEnv();
   }
 
   static initForStagingEnv() {
@@ -73,8 +74,8 @@ class Helper {
 
     firstBlockProducer = 'calc1';
 
-    WalletApi.setNodeJsEnv();
-    WalletApi.initForStagingEnv();
+    ConfigService.initNodeJsEnv();
+    ConfigService.initForStagingEnv();
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -85,8 +86,8 @@ class Helper {
     accountName = 'summerknight';
     accountNameTo = 'autumnknight';
 
-    WalletApi.setNodeJsEnv();
-    WalletApi.initForProductionEnv();
+    ConfigService.initNodeJsEnv();
+    ConfigService.initForProductionEnv();
   }
 
   /**
