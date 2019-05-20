@@ -171,7 +171,18 @@ describe('Blockchain nodes fetching', () => {
         } else {
           expect(nodeAfterSingle.votes_count).toBe(nodeAfterTwo.votes_count - 1);
           expect(nodeAfterSingle.votes_amount).toBe(nodeAfterTwo.votes_amount - stakedBalance);
-          expect(nodeAfterSingle.scaled_importance_amount).toBe(nodeAfterTwo.scaled_importance_amount - scaledImportance);
+
+          expect(
+            NumbersHelper.processFieldToBeNumeric(nodeAfterSingle.scaled_importance_amount, '', 10, true, true),
+          ).toBe(
+            NumbersHelper.processFieldToBeNumeric(
+              nodeAfterTwo.scaled_importance_amount - scaledImportance,
+              '',
+              10,
+              true,
+              true,
+            ),
+          );
         }
       }
     }, JEST_TIMEOUT * 2);

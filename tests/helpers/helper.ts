@@ -10,7 +10,7 @@ const resources = [
   'cpu', 'net', 'ram',
 ];
 
-const accountsData = require('../../accounts-data');
+const accountsData = require('../../../secrets/accounts-data');
 
 require('jest-expect-message');
 
