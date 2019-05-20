@@ -5,7 +5,7 @@ import WalletApi = require('../../../src/lib/wallet/api/wallet-api');
 
 const delay = require('delay');
 
-Helper.initForTestEnv();
+Helper.initForEnvByProcessVariable();
 
 const accountName = Helper.getTesterAccountName();
 const privateKey = Helper.getTesterAccountPrivateKey();

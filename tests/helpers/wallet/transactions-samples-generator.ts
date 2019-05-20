@@ -1,5 +1,5 @@
 class TransactionsSamplesGenerator {
-  public static getVoteForCalculatorsSample(): any {
+  public static getVoteForCalculatorsSample(accountNameFrom: string): any {
     return {
       action_traces: [
         {
@@ -11,18 +11,18 @@ class TransactionsSamplesGenerator {
             name: 'votecalc',
             authorization: [
               {
-                actor: 'vladvladvlad',
+                actor: accountNameFrom,
                 permission: 'active',
               },
             ],
             data: {
-              voter: 'vladvladvlad',
+              voter: accountNameFrom,
               calculators: [
                 'initcalc1111',
                 'initcalc1115',
               ],
             },
-            hex_data: '904cdcc9c49d4cdc02104208281a94dd74504208281a94dd74',
+            // hex_data: '904cdcc9c49d4cdc02104208281a94dd74504208281a94dd74',
           },
           context_free: false,
           console: '',
@@ -34,7 +34,7 @@ class TransactionsSamplesGenerator {
     };
   }
 
-  public static getVoteForCalculatorsEmptySample(): any {
+  public static getVoteForCalculatorsEmptySample(accountNameFrom: string): any {
     return {
       action_traces: [
         {
@@ -46,15 +46,15 @@ class TransactionsSamplesGenerator {
             name: 'votecalc',
             authorization: [
               {
-                actor: 'vladvladvlad',
+                actor: accountNameFrom,
                 permission: 'active',
               },
             ],
             data: {
-              voter: 'vladvladvlad',
+              voter: accountNameFrom,
               calculators: [],
             },
-            hex_data: '904cdcc9c49d4cdc00',
+            // hex_data: '904cdcc9c49d4cdc00',
           },
           context_free: false,
           console: '',

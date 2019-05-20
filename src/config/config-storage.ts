@@ -30,7 +30,7 @@ const ConfigStorage = {
   production: {
     env: 'production',
 
-    nodeUrl: 'https://mini-mongo.u.community:7889',
+    nodeUrl: 'https://mini-mongo.u.community:6889',
     tableRows: {
       airdropsReceipt: {
         smartContract: 'airdrop11111',
@@ -38,7 +38,7 @@ const ConfigStorage = {
         table: 'receipt',
       },
     },
-    calculatorUrl: 'https://web-calculator-node.u.community:7889',
+    calculatorUrl: 'https://web-calculator-node.u.community:6879',
   },
 };
 

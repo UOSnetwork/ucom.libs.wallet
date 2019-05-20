@@ -7,20 +7,14 @@ import {
 
 
 import Helper = require('../../../helpers/helper');
-import ConfigService = require('../../../../src/config/config-service');
 import BlockchainNodesApi = require('../../../../src/lib/governance/api/blockchain-nodes-api');
 import CommonChecker = require('../../../helpers/common/common-checker');
 import UosAccountsPropertiesApi = require('../../../../src/lib/uos-accounts-properties/uos-accounts-properties-api');
 import BlockchainNodesHelper = require('../../../helpers/blockchain-nodes/blockchain-nodes-helper');
 import WalletApi = require('../../../../src/lib/wallet/api/wallet-api');
+import NumbersHelper = require('../../../../src/lib/helpers/numbers-helper');
 
-ConfigService.initNodeJsEnv();
-ConfigService.initForTestEnv();
-
-ConfigService.initForTestEnv();
-ConfigService.initNodeJsEnv();
-
-Helper.initForTestEnv();
+Helper.initForEnvByProcessVariable();
 
 const JEST_TIMEOUT = 20000;
 
@@ -94,7 +88,18 @@ describe('Blockchain nodes fetching', () => {
         } else {
           expect(nodeAfterSingle.votes_count).toBe(nodeAfterTwo.votes_count - 1);
           expect(nodeAfterSingle.votes_amount).toBe(nodeAfterTwo.votes_amount - stakedBalance);
-          expect(nodeAfterSingle.scaled_importance_amount).toBe(nodeAfterTwo.scaled_importance_amount - scaledImportance);
+
+          expect(
+            NumbersHelper.processFieldToBeNumeric(nodeAfterSingle.scaled_importance_amount, '', 10, true, true),
+          ).toBe(
+            NumbersHelper.processFieldToBeNumeric(
+              nodeAfterTwo.scaled_importance_amount - scaledImportance,
+              '',
+              10,
+              true,
+              true,
+            ),
+          );
         }
       }
     }, JEST_TIMEOUT * 2);
@@ -129,7 +134,18 @@ describe('Blockchain nodes fetching', () => {
 
         expect(after.votes_count).toBe(before.votes_count + 1);
         expect(after.votes_amount).toBe(before.votes_amount + stakedBalance);
-        expect(after.scaled_importance_amount).toBe(before.scaled_importance_amount + scaledImportance);
+
+        expect(
+          NumbersHelper.processFieldToBeNumeric(after.scaled_importance_amount, '', 10, true, true),
+        ).toBe(
+          NumbersHelper.processFieldToBeNumeric(
+            before.scaled_importance_amount + scaledImportance,
+            '',
+            10,
+            true,
+            true,
+          ),
+        );
       }
 
       const singleNodeToVote = Object.keys(twoNodesToTest)[0];

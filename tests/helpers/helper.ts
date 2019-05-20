@@ -4,6 +4,7 @@ import EosClient = require('../../src/lib/common/client/eos-client');
 import BlockchainRegistry = require('../../src/lib/blockchain-registry');
 import TransactionSender = require('../../src/lib/transaction-sender');
 import ConfigService = require('../../src/config/config-service');
+import EnvHelper = require('../../src/lib/helpers/env-helper');
 
 const resources = [
   'cpu', 'net', 'ram',
@@ -21,7 +22,7 @@ let accountName = 'vladvladvlad';
 let accountNameTo = 'janejanejane';
 
 let firstBlockProducer = 'calc1';
-const secondBlockProducer = 'calc2';
+let secondBlockProducer = 'calc2';
 
 class Helper {
   /**
@@ -63,6 +64,7 @@ class Helper {
     accountNameTo = 'janejanejane';
 
     firstBlockProducer = 'calc1';
+    secondBlockProducer = 'calc2';
 
     ConfigService.initNodeJsEnv();
     ConfigService.initForTestEnv();
@@ -73,6 +75,7 @@ class Helper {
     accountNameTo = 'janejanejane';
 
     firstBlockProducer = 'calc1';
+    secondBlockProducer = 'calc2';
 
     ConfigService.initNodeJsEnv();
     ConfigService.initForStagingEnv();
@@ -86,8 +89,27 @@ class Helper {
     accountName = 'summerknight';
     accountNameTo = 'autumnknight';
 
+    firstBlockProducer = 'initbp111151';
+    secondBlockProducer = 'initbp111141';
+
     ConfigService.initNodeJsEnv();
     ConfigService.initForProductionEnv();
+  }
+
+  public static initForEnvByProcessVariable() {
+    const executors = {
+      [EnvHelper.testEnv()]: () => {
+        Helper.initForTestEnv();
+      },
+      [EnvHelper.stagingEnv()]: () => {
+        Helper.initForStagingEnv();
+      },
+      [EnvHelper.productionEnv()]: () => {
+        Helper.initForProductionEnv();
+      },
+    };
+
+    EnvHelper.executeByEnvironment(executors);
   }
 
   /**

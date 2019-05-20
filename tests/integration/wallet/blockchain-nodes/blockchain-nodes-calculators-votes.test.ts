@@ -4,7 +4,7 @@ import TransactionsPushResponseChecker = require('../../../helpers/common/transa
 import TransactionsSamplesGenerator = require('../../../helpers/wallet/transactions-samples-generator');
 import WalletApi = require('../../../../src/lib/wallet/api/wallet-api');
 
-Helper.initForTestEnv();
+Helper.initForEnvByProcessVariable();
 
 const accountName = Helper.getTesterAccountName();
 const privateKey = Helper.getTesterAccountPrivateKey();
@@ -20,14 +20,14 @@ describe('Send transactions to blockchain', () => {
           'initcalc1115',
         ]);
 
-        const expected = TransactionsSamplesGenerator.getVoteForCalculatorsSample();
+        const expected = TransactionsSamplesGenerator.getVoteForCalculatorsSample(accountName);
 
         TransactionsPushResponseChecker.checkOneTransaction(res, expected);
       }, JEST_TIMEOUT * 2);
 
       it('vote for nobody', async () => {
         const response = await WalletApi.voteForCalculatorNodes(accountName, privateKey, []);
-        const expected = TransactionsSamplesGenerator.getVoteForCalculatorsEmptySample();
+        const expected = TransactionsSamplesGenerator.getVoteForCalculatorsEmptySample(accountName);
 
         TransactionsPushResponseChecker.checkOneTransaction(response, expected);
       }, JEST_TIMEOUT * 2);

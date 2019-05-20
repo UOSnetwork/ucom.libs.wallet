@@ -2,7 +2,7 @@
 import Helper = require('../../helpers/helper');
 import WalletApi = require('../../../src/lib/wallet/api/wallet-api');
 
-Helper.initForTestEnv();
+Helper.initForEnvByProcessVariable();
 
 const accountName = Helper.getTesterAccountName();
 const accountNameTo = Helper.getAccountNameTo();
