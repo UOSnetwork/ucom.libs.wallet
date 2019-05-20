@@ -2,7 +2,7 @@
 const ConfigStorage = {
     test: {
         env: 'test',
-        nodeUrl: 'https://staging-api-node-2.u.community:7888',
+        nodeUrl: 'https://staging-mini-mongo.u.community:6888',
         tableRows: {
             airdropsReceipt: {
                 smartContract: 'testairdrop1',
@@ -10,11 +10,11 @@ const ConfigStorage = {
                 table: 'receipt',
             },
         },
-        calculatorUrl: 'http://116.203.29.193:8888',
+        calculatorUrl: 'https://staging-web-calculator-node.u.community:6878',
     },
     staging: {
         env: 'staging',
-        nodeUrl: 'https://staging-api-node-2.u.community:7888',
+        nodeUrl: 'https://staging-mini-mongo.u.community:6888',
         tableRows: {
             airdropsReceipt: {
                 smartContract: 'testairdrop1',
@@ -22,7 +22,7 @@ const ConfigStorage = {
                 table: 'receipt',
             },
         },
-        calculatorUrl: 'http://116.203.29.193:8888',
+        calculatorUrl: 'https://staging-web-calculator-node.u.community:6878',
     },
     production: {
         env: 'production',

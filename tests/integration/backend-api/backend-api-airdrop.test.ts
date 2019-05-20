@@ -5,7 +5,7 @@ import TransactionsPushResponseChecker = require('../../helpers/common/transacti
 import BackendApi = require('../../../src/lib/backend-api');
 import EosClient = require('../../../src/lib/common/client/eos-client');
 
-const internalServiceErrorPattern = new RegExp('Internal Service Error');
+const alreadyReceiptErrorPattern = new RegExp('assertion failure with message: Already have the receipt with the same');
 
 const JEST_TIMEOUT = 10000;
 
@@ -165,7 +165,7 @@ describe('Backend API airdrop', () => {
         symbol,
       );
 
-      await expect(EosClient.pushTransaction(signed)).rejects.toThrow(internalServiceErrorPattern);
+      await expect(EosClient.pushTransaction(signed)).rejects.toThrow(alreadyReceiptErrorPattern);
     }, JEST_TIMEOUT);
 
     it('Send duplicate airdrop ID', async () => {
@@ -187,7 +187,7 @@ describe('Backend API airdrop', () => {
         symbol,
       );
 
-      await expect(EosClient.pushTransaction(signed)).rejects.toThrow(internalServiceErrorPattern);
+      await expect(EosClient.pushTransaction(signed)).rejects.toThrow(alreadyReceiptErrorPattern);
     }, JEST_TIMEOUT);
   });
 
