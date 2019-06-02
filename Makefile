@@ -6,6 +6,12 @@ publish:
 	git push
 	npm publish
 
+publish-without-checks:
+	git checkout master
+	npm version ${VER}
+	git push
+	npm publish
+
 check-project:
 	make check-by-eslint
 	/bin/bash ./check-project.sh
