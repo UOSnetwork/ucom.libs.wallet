@@ -26,7 +26,7 @@ class SocialApi {
         return SocialTransactionsUserToUserFactory.getUserToUserSignedTransaction(accountNameReferrer, privateKey, accountNameSource, interactionName, permission);
     }
     static async getReferralFromUserSignedTransactionAsJson(accountNameReferrer, privateKey, accountNameSource, permission = PERMISSION_ACTIVE) {
-        const signed = SocialApi.getReferralFromUserSignedTransaction(accountNameReferrer, privateKey, accountNameSource, permission);
+        const signed = await SocialApi.getReferralFromUserSignedTransaction(accountNameReferrer, privateKey, accountNameSource, permission);
         return SocialApi.signedTransactionToString(signed);
     }
     /**

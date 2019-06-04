@@ -198,6 +198,7 @@ describe('Backend API airdrop', () => {
       const actual = await BackendApi.getAirdropsReceiptTableRows();
       const expected = Helper.getSampleAirdropsReceiptTableRows();
 
+      // eslint-disable-next-line unicorn/no-for-loop
       for (let i = 0; i < expected.length; i += 1) {
         expect(actual[i]).toMatchObject(expected[i]);
       }

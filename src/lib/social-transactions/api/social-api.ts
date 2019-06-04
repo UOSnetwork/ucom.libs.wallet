@@ -71,7 +71,7 @@ class SocialApi {
     accountNameSource: string,
     permission: string = PERMISSION_ACTIVE,
   ): Promise<string> {
-    const signed =  SocialApi.getReferralFromUserSignedTransaction(
+    const signed =  await SocialApi.getReferralFromUserSignedTransaction(
       accountNameReferrer,
       privateKey,
       accountNameSource,
