@@ -12,6 +12,7 @@ const TR_TYPE_CLAIM_EMISSION = 50;
 const TR_TYPE_BUY_RAM = 60;
 const TR_TYPE_SELL_RAM = 61;
 const TR_TYPE_MYSELF_REGISTRATION = 100;
+const TR_TYPE_UPVOTE_CONTENT = 110;
 const TR_TYPE_UNKNOWN = 1000;
 const TRANSACTION_TYPES = [
     TR_TYPE_TRANSFER,
@@ -36,6 +37,9 @@ class BlockchainTrTracesDictionary {
     }
     static getTypeTransfer() {
         return TR_TYPE_TRANSFER;
+    }
+    static getTypeUpvoteContent() {
+        return TR_TYPE_UPVOTE_CONTENT;
     }
     static getTypeStakeResources() {
         return TR_TYPE_STAKE_RESOURCES;
