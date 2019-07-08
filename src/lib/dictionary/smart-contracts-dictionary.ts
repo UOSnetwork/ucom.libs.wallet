@@ -1,12 +1,18 @@
-const UOS_ACTIVITY = 'uos.activity';
-const TST_ACTIVITY = 'tst.activity';
+const UOS_ACTIVITY          = 'uos.activity';
+const TST_ACTIVITY          = 'tst.activity';
+const UOS_ACCOUNT_INFO      = 'uaccountinfo';
 
 const EOS_IO = 'eosio';
-const TABLE_NAME__VOTERS   = 'voters';
-const TABLE_NAME__CALCULATORS_VOTERS   = 'calcvoters';
-const TABLE_NAME__CALCULATORS   = 'calculators';
+const TABLE_NAME__VOTERS                = 'voters';
+const TABLE_NAME__CALCULATORS_VOTERS    = 'calcvoters';
+const TABLE_NAME__CALCULATORS           = 'calculators';
+const TABLE_NAME__ACCOUNT_PROFILE       = 'accprofile';
 
 class SmartContractsDictionary {
+  public static accountProfileTableName(): string {
+    return TABLE_NAME__ACCOUNT_PROFILE;
+  }
+
   public static votersTableName(): string {
     return TABLE_NAME__VOTERS;
   }
@@ -21,6 +27,10 @@ class SmartContractsDictionary {
 
   public static uosActivity(): string {
     return UOS_ACTIVITY;
+  }
+
+  public static uosAccountInfo(): string {
+    return UOS_ACCOUNT_INFO;
   }
 
   public static eosIo(): string {

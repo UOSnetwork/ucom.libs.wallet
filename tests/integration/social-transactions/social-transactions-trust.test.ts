@@ -37,12 +37,6 @@ describe('Trust', () => {
     await signAndSendTransaction();
   }, JEST_TIMEOUT);
 
-  // it('Send signed transaction to production', async () => {
-  //   Helper.initForProductionEnv();
-  //
-  //   await signAndSendTransaction();
-  // }, JEST_TIMEOUT);
-
   it('Send signed transaction to staging uos.activity - fetch json', async () => {
     Helper.initForStagingEnv();
 

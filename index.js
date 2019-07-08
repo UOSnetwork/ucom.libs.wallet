@@ -4,6 +4,7 @@ module.exports = {
   SocialApi: require('./build/lib/social-transactions/api/social-api'),
 
   BackendApi: require('./build/lib/backend-api'),
+  ContentApi: require('./build/lib/content/api/content-api'),
 
   TransactionSender: require('./build/lib/transaction-sender'),
   UosAccountsPropertiesApi: require('./build/lib/uos-accounts-properties/uos-accounts-properties-api'),
