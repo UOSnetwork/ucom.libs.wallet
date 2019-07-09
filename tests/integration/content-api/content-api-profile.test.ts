@@ -11,7 +11,7 @@ const JEST_TIMEOUT = 10000;
 
 describe('Send profile and get profile status', () => {
   // Works only on production
-  Helper.initForProductionEnv();
+  Helper.initForStagingEnv();
 
   const accountNameFrom = Helper.getTesterAccountName();
   const privateKey      = Helper.getTesterAccountPrivateKey();

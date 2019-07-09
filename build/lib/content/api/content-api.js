@@ -4,6 +4,14 @@ const ContentTransactionsCommonFactory = require("../service/content-transaction
 const EosClient = require("../../common/client/eos-client");
 const SmartContractsDictionary = require("../../dictionary/smart-contracts-dictionary");
 class ContentApi {
+    static async createProfileAfterRegistration(accountNameFrom, privateKey, isTrackingAllowed, userCreatedAt, permission = PermissionsDictionary.active()) {
+        const profile = {
+            account_name: accountNameFrom,
+            is_tracking_allowed: isTrackingAllowed,
+            profile_updated_at: userCreatedAt,
+        };
+        return ContentApi.updateProfile(accountNameFrom, privateKey, profile, permission);
+    }
     static async updateProfile(accountNameFrom, privateKey, profileJsonObject, permission = PermissionsDictionary.active()) {
         return ContentTransactionsCommonFactory.getSendProfileTransaction(accountNameFrom, privateKey, profileJsonObject, permission);
     }
