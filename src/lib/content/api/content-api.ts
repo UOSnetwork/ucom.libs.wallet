@@ -2,6 +2,7 @@ import PermissionsDictionary = require('../../dictionary/permissions-dictionary'
 import ContentTransactionsCommonFactory = require('../service/content-transactions-common-factory');
 import EosClient = require('../../common/client/eos-client');
 import SmartContractsDictionary = require('../../dictionary/smart-contracts-dictionary');
+import WalletApi = require('../../wallet/api/wallet-api');
 
 class ContentApi {
   public static async createProfileAfterRegistration(
@@ -26,6 +27,8 @@ class ContentApi {
     profileJsonObject: any,
     permission: string = PermissionsDictionary.active(),
   ): Promise<any> {
+    await ContentApi.isEnoughRamOrException(accountNameFrom, profileJsonObject);
+
     return ContentTransactionsCommonFactory.getSendProfileTransaction(
       accountNameFrom,
       privateKey,
@@ -53,6 +56,36 @@ class ContentApi {
     }
 
     return data[0];
+  }
+
+  private static async isEnoughRamOrException(accountNameFrom: string, profileJsonObject: any) {
+    const newProfileLength = JSON.stringify(profileJsonObject).length;
+
+    const currentProfile: any = await ContentApi.getOneAccountProfileFromSmartContractTable(accountNameFrom);
+
+    let currentProfileLength = 0;
+    if (currentProfile) {
+      currentProfileLength = JSON.stringify(currentProfile.profile_json).length;
+    }
+
+    const requiredRamInBytes = newProfileLength - currentProfileLength;
+
+    if (requiredRamInBytes <= 0) {
+      // RAM will be decreased
+      return;
+    }
+
+    const currentState = await WalletApi.getAccountState(accountNameFrom);
+    const { ram } = currentState.resources;
+
+    const freeRamInBytes = ram.free * 1024;
+
+    if (requiredRamInBytes > freeRamInBytes) {
+      throw new Error(`
+        Account ${accountNameFrom} has insufficient RAM. 
+        Free RAM: ${ram.free} bytes, required: ${requiredRamInBytes} bytes. Overhead: ${requiredRamInBytes - freeRamInBytes} bytes
+      `);
+    }
   }
 }
 

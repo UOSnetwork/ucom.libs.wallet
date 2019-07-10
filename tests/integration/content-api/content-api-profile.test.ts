@@ -7,11 +7,10 @@ import WalletApi = require('../../../src/lib/wallet/api/wallet-api');
 import ContentProfileHelper = require('../../helpers/content/content-profile-helper');
 import moment = require('moment');
 
-const JEST_TIMEOUT = 10000;
+const JEST_TIMEOUT = 15000;
 
 describe('Send profile and get profile status', () => {
-  // Works only on production
-  Helper.initForStagingEnv();
+  Helper.initForEnvByProcessVariable();
 
   const accountNameFrom = Helper.getTesterAccountName();
   const privateKey      = Helper.getTesterAccountPrivateKey();
@@ -87,10 +86,11 @@ describe('Send profile and get profile status', () => {
 
   describe('Negative', () => {
     it('show error message if not enough RAM', async () => {
-      const alreadyReceiptErrorPattern = new RegExp('account autumnknight has insufficient ram');
-
       const accountNameTo = Helper.getAccountNameTo();
       const accountNameToPrivateKey = Helper.getAccountNameToPrivateKey();
+
+      // eslint-disable-next-line security/detect-non-literal-regexp
+      const alreadyReceiptErrorPattern = new RegExp(`Account ${accountNameTo} has insufficient RAM`);
 
       const profile = {
         about: ContentProfileHelper.getVeryLongString(),
