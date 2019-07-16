@@ -6,7 +6,8 @@ class SocialTransactionsUserToUserFactory {
             account_from: accountNameFrom,
             account_to: accountNameTo,
         };
-        return SocialTransactionsCommonFactory.getSignedTransaction(accountNameFrom, privateKey, interactionName, actionJsonData, permission);
+        const content = '';
+        return SocialTransactionsCommonFactory.getSignedTransaction(accountNameFrom, privateKey, interactionName, actionJsonData, content, permission);
     }
 }
 module.exports = SocialTransactionsUserToUserFactory;

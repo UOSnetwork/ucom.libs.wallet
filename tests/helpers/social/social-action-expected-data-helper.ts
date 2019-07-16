@@ -1,10 +1,18 @@
 /* eslint-disable no-useless-escape */
-class TrustExpectedDataHelper {
+import SmartContractsActionsDictionary = require('../../../src/lib/dictionary/smart-contracts-actions-dictionary');
+
+class SocialActionExpectedDataHelper {
   static getOneUserToOtherPushResponse(
     accountNameFrom: string,
     accountNameTo: string,
     interaction: string,
   ) {
+    const data = {
+      acc: accountNameFrom,
+      action_json: `{\"interaction\":\"${interaction}\",\"data\":{\"account_from\":\"${accountNameFrom}\",\"account_to\":\"${accountNameTo}\"}}`,
+      action_data: '',
+    };
+
     return {
       producer_block_id: null,
       receipt: {
@@ -18,17 +26,14 @@ class TrustExpectedDataHelper {
           },
           act: {
             account: 'uos.activity',
-            name: 'socialaction',
+            name: SmartContractsActionsDictionary.socialAction(),
             authorization: [
               {
                 actor: accountNameFrom,
                 permission: 'active',
               },
             ],
-            data: {
-              acc: accountNameFrom,
-              action_json: `{\"interaction\":\"${interaction}\",\"data\":{\"account_from\":\"${accountNameFrom}\",\"account_to\":\"${accountNameTo}\"}}`,
-            },
+            data,
           },
           context_free: false,
           console: '',
@@ -43,4 +48,4 @@ class TrustExpectedDataHelper {
   }
 }
 
-export = TrustExpectedDataHelper;
+export = SocialActionExpectedDataHelper;

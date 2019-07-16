@@ -4,16 +4,16 @@ const TransactionsBuilder = require("../../service/transactions-builder");
 const SmartContractsDictionary = require("../../dictionary/smart-contracts-dictionary");
 const EosClient = require("../../common/client/eos-client");
 class SocialTransactionsCommonFactory {
-    static async getSignedTransaction(accountName, privateKey, interactionName, actionJsonData, permission) {
+    static async getSignedTransaction(accountName, privateKey, interactionName, metaData, content, permission) {
         const actionName = SmartContractsActionsDictionary.socialAction();
         const smartContract = SmartContractsDictionary.uosActivity();
-        const actionJson = {
-            interaction: interactionName,
-            data: actionJsonData,
-        };
         const data = {
             acc: accountName,
-            action_json: JSON.stringify(actionJson),
+            action_json: JSON.stringify({
+                interaction: interactionName,
+                data: metaData,
+            }),
+            action_data: content === '' ? '' : JSON.stringify(content),
         };
         const actions = TransactionsBuilder.getSingleUserAction(accountName, smartContract, actionName, data, permission);
         return EosClient.getSignedTransaction(privateKey, [actions]);

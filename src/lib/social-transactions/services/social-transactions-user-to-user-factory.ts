@@ -13,11 +13,14 @@ class SocialTransactionsUserToUserFactory {
       account_to: accountNameTo,
     };
 
+    const content = '';
+
     return SocialTransactionsCommonFactory.getSignedTransaction(
       accountNameFrom,
       privateKey,
       interactionName,
       actionJsonData,
+      content,
       permission,
     );
   }

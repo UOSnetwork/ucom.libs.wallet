@@ -1,12 +1,13 @@
-/* eslint-disable max-len */
 import Helper = require('../../helpers/helper');
-import TrustExpectedDataHelper = require('../../helpers/social/trust-expected-data-helper');
+import TrustExpectedDataHelper = require('../../helpers/social/social-action-expected-data-helper');
 import TransactionsPushResponseChecker = require('../../helpers/common/transactions-push-response-checker');
 import SocialApi = require('../../../src/lib/social-transactions/api/social-api');
 import EosClient = require('../../../src/lib/common/client/eos-client');
 import InteractionsDictionary = require('../../../src/lib/dictionary/interactions-dictionary');
 
 const JEST_TIMEOUT = 10000;
+
+Helper.initForEnvByProcessVariable();
 
 async function signAndSendTransaction() {
   const accountName = Helper.getTesterAccountName();
@@ -32,14 +33,10 @@ async function signAndSendTransaction() {
 
 describe('Trust', () => {
   it('Send signed transaction to staging uos.activity', async () => {
-    Helper.initForStagingEnv();
-
     await signAndSendTransaction();
   }, JEST_TIMEOUT);
 
   it('Send signed transaction to staging uos.activity - fetch json', async () => {
-    Helper.initForStagingEnv();
-
     const accountName = Helper.getTesterAccountName();
     const privateKey = Helper.getTesterAccountPrivateKey();
     const accountNameTo = Helper.getAccountNameTo();
@@ -60,8 +57,6 @@ describe('Trust', () => {
 
 describe('Untrust', () => {
   it('Send signed untrust transaction to staging uos.activity - fetch json', async () => {
-    Helper.initForStagingEnv();
-
     const accountName = Helper.getTesterAccountName();
     const privateKey = Helper.getTesterAccountPrivateKey();
     const accountNameTo = Helper.getAccountNameTo();

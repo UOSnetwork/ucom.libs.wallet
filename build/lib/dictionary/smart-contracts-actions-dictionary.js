@@ -1,5 +1,5 @@
 "use strict";
-const SOCIAL_ACTION = 'socialaction';
+const SOCIAL_ACTION = 'socialactndt';
 const VOTE_FOR_CALCULATORS = 'votecalc';
 const SET_PROFILE = 'setprofile';
 class SmartContractsActionsDictionary {

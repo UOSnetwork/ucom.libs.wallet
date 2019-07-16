@@ -8,20 +8,20 @@ class SocialTransactionsCommonFactory {
     accountName: string,
     privateKey: string,
     interactionName: string,
-    actionJsonData: any,
+    metaData: any,
+    content: any,
     permission: string,
   ) {
-    const actionName = SmartContractsActionsDictionary.socialAction();
+    const actionName    = SmartContractsActionsDictionary.socialAction();
     const smartContract = SmartContractsDictionary.uosActivity();
-
-    const actionJson = {
-      interaction: interactionName,
-      data: actionJsonData,
-    };
 
     const data = {
       acc: accountName,
-      action_json: JSON.stringify(actionJson),
+      action_json: JSON.stringify({
+        interaction:  interactionName,
+        data:         metaData,
+      }),
+      action_data: content === '' ? '' : JSON.stringify(content),
     };
 
     const actions = TransactionsBuilder.getSingleUserAction(
