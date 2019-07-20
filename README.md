@@ -7,7 +7,7 @@
 ![Wallet interface](https://raw.githubusercontent.com/UOSnetwork/ucom.libs.wallet/master/documentation/img/wallet.png)
 
 ## Resources
-![Blockchain resources interface](https://raw.githubusercontent.com/UOSnetwork/ucom.libs.wallet/master/documentation/img/resources-only.png)
+![Blockchain resources interface](https://raw.githubusercontent.com/UOSnetwork/ucom.libs.wallet/master/documentation/img/resources-only-no-title.png)
 
 ## Main goals
 * The library implements a blockchain wallet for U°OS (EOS-based) network.
@@ -28,3 +28,5 @@
 * 10+ eslint/tslint rules to provide a high quality of implementation.
 
 See also [CONTRIBUTING](../../../uos.docs/blob/master/CONTRIBUTING.md) for detailed project information.
+
+![Social action workflow](https://raw.githubusercontent.com/UOSnetwork/ucom.backend/master/documentation/jpg/social-action-workflow.jpg)
