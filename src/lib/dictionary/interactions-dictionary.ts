@@ -6,6 +6,9 @@ const REFERRAL = 'referral';
 const CREATE_MEDIA_POST_FROM_ACCOUNT      = 'create_media_post_from_account';
 const CREATE_MEDIA_POST_FROM_ORGANIZATION = 'create_media_post_from_organization';
 
+const UPDATE_MEDIA_POST_FROM_ACCOUNT      = 'update_media_post_from_account';
+const UPDATE_MEDIA_POST_FROM_ORGANIZATION = 'update_media_post_from_organization';
+
 class InteractionsDictionary {
   public static referral(): string {
     return REFERRAL;
@@ -23,8 +26,16 @@ class InteractionsDictionary {
     return CREATE_MEDIA_POST_FROM_ACCOUNT;
   }
 
+  public static updateMediaPostFromAccount(): string {
+    return UPDATE_MEDIA_POST_FROM_ACCOUNT;
+  }
+
   public static createMediaPostFromOrganization(): string {
     return CREATE_MEDIA_POST_FROM_ORGANIZATION;
+  }
+
+  public static updateMediaPostFromOrganization(): string {
+    return UPDATE_MEDIA_POST_FROM_ORGANIZATION;
   }
 }
 

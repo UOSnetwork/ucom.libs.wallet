@@ -10,7 +10,7 @@ const { PostFieldsValidator } = require('ucom.libs.common').Posts.Validator;
 const { EntityNames } = require('ucom.libs.common').Common.Dictionary;
 
 class ContentPublicationsApi {
-  public static async signSendPublicationToBlockchainFromUser(
+  public static async signCreatePublicationFromUser(
     accountNameFrom: string,
     privateKey: string,
     givenContent: any,
@@ -30,8 +30,27 @@ class ContentPublicationsApi {
     );
   }
 
+  public static async signUpdatePublicationFromUser(
+    accountNameFrom: string,
+    privateKey: string,
+    givenContent: any,
+    permission: string = PermissionsDictionary.active(),
+  ): Promise<{ signed: any, contentId: string }> {
+    const interactionName = InteractionsDictionary.updateMediaPostFromAccount();
+    const entityNameFor: string = EntityNames.USERS;
 
-  public static async signSendPublicationToBlockchainFromOrganization(
+    return this.signSendPublicationToBlockchain(
+      accountNameFrom,
+      privateKey,
+      permission,
+      givenContent,
+      interactionName,
+      entityNameFor,
+      accountNameFrom,
+    );
+  }
+
+  public static async signCreatePublicationFromOrganization(
     accountNameFrom: string,
     privateKey: string,
     orgBlockchainId: string,
@@ -39,6 +58,36 @@ class ContentPublicationsApi {
     permission: string = PermissionsDictionary.active(),
   ): Promise<{ signed: any, contentId: string }> {
     const interactionName = InteractionsDictionary.createMediaPostFromOrganization();
+    const entityNameFor: string = EntityNames.ORGANIZATIONS;
+    const extraMetaData = {
+      organization_id_from: orgBlockchainId,
+    };
+
+    const content = {
+      ...givenContent,
+      organization_blockchain_id: orgBlockchainId,
+    };
+
+    return this.signSendPublicationToBlockchain(
+      accountNameFrom,
+      privateKey,
+      permission,
+      content,
+      interactionName,
+      entityNameFor,
+      orgBlockchainId,
+      extraMetaData,
+    );
+  }
+
+  public static async signUpdatePublicationFromOrganization(
+    accountNameFrom: string,
+    privateKey: string,
+    orgBlockchainId: string,
+    givenContent: any,
+    permission: string = PermissionsDictionary.active(),
+  ): Promise<{ signed: any, contentId: string }> {
+    const interactionName = InteractionsDictionary.updateMediaPostFromOrganization();
     const entityNameFor: string = EntityNames.ORGANIZATIONS;
     const extraMetaData = {
       organization_id_from: orgBlockchainId,

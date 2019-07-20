@@ -3,6 +3,10 @@ import Helper = require('../../helpers/helper');
 import PermissionsDictionary = require('../../../src/lib/dictionary/permissions-dictionary');
 import ContentPublicationsApi = require('../../../src/lib/content/api/content-publications-api');
 import EosClient = require('../../../src/lib/common/client/eos-client');
+import ContentPostsGenerator = require('../../helpers/content/posts/content-posts-generator');
+import ContentOrganizationsGenerator = require('../../helpers/content/posts/content-organizations-generator');
+import ContentPostsChecker = require('../../helpers/content/posts/content-posts-checker');
+import InteractionsDictionary = require('../../../src/lib/dictionary/interactions-dictionary');
 
 const JEST_TIMEOUT = 15000;
 
@@ -14,70 +18,88 @@ describe('Send profile and get profile status', () => {
   const permission      = PermissionsDictionary.active();
 
   describe('Positive', () => {
-    it('Send publication from User to the blockchain', async () => {
-      const content = {
-        title:          'Cool sample post',
-        description:    'Cool sample post description #winter #summer',
-        leading_text:   '',
-        entity_images:  {},
-        entity_tags:    ['winter', 'summer'],
-      };
+    describe('Create publication', () => {
+      it('Send a new publication from User to the blockchain', async () => {
+        const content = ContentPostsGenerator.getSamplePostInputFields();
+        const interactionName = InteractionsDictionary.createMediaPostFromAccount();
 
-      const { signed, contentId } = await ContentPublicationsApi.signSendPublicationToBlockchainFromUser(
-        accountNameFrom,
-        privateKey,
-        content,
-        permission,
-      );
+        const { signed, contentId } = await ContentPublicationsApi.signCreatePublicationFromUser(
+          accountNameFrom,
+          privateKey,
+          content,
+          permission,
+        );
 
-      const response = await EosClient.pushTransaction(signed);
+        const response = await EosClient.pushTransaction(signed);
 
-      const expectedData = {
-        acc: accountNameFrom,
-        action_json: `{\"interaction\":\"create_media_post_from_account\",\"data\":{\"account_from\":\"${accountNameFrom}\",\"content_id\":\"${contentId}\"}}`,
-        action_data: `{\"title\":\"Cool sample post\",\"description\":\"Cool sample post description\",\"leading_text\":\"\",\"entity_images\":{},\"entity_tags\":[\"winter\",\"summer\"],\"blockchain_id\":\"${contentId}",\"entity_name_for\":\"users     \",\"entity_blockchain_id_for\":\"${accountNameFrom}\",\"author_account_name\":\"${accountNameFrom}\",\"created_at\":\"`,
-      };
+        ContentPostsChecker.checkSamplePostPushingFromUserResponse(response, accountNameFrom, interactionName, contentId);
+      }, JEST_TIMEOUT);
 
-      const processedData = response.processed.action_traces[0].act.data;
+      it('Send a new publication from organization to the blockchain', async () => {
+        const content         = ContentPostsGenerator.getSamplePostInputFields();
+        const interactionName = InteractionsDictionary.createMediaPostFromOrganization();
+        const orgBlockchainId = ContentOrganizationsGenerator.getSampleOrganizationBlockchainId();
 
-      expect(processedData.acc).toBe(expectedData.acc);
-      expect(processedData.action_json).toBe(expectedData.action_json);
-      expect(processedData.action_data).toMatch(expectedData.action_data);
-    }, JEST_TIMEOUT);
+        const { signed, contentId } = await ContentPublicationsApi.signCreatePublicationFromOrganization(
+          accountNameFrom,
+          privateKey,
+          orgBlockchainId,
+          content,
+          permission,
+        );
 
-    it('Send publication from organization to the blockchain', async () => {
-      const content = {
-        title:          'Cool sample post',
-        description:    'Cool sample post description #winter #summer',
-        leading_text:   '',
-        entity_images:  {},
-        entity_tags:    ['winter', 'summer'],
-      };
+        const response = await EosClient.pushTransaction(signed);
 
-      const orgBlockchainId = 'org-12345';
+        ContentPostsChecker.checkSamplePostPushingFromOrganizationResponse(
+          response,
+          accountNameFrom,
+          interactionName,
+          contentId,
+          orgBlockchainId,
+        );
+      }, JEST_TIMEOUT);
+    });
+    describe('Update publication', () => {
+      it('Send an updated publication from User to the blockchain', async () => {
+        const content = ContentPostsGenerator.getSamplePostInputFields();
+        const interactionName = InteractionsDictionary.updateMediaPostFromAccount();
 
-      const { signed, contentId } = await ContentPublicationsApi.signSendPublicationToBlockchainFromOrganization(
-        accountNameFrom,
-        privateKey,
-        orgBlockchainId,
-        content,
-        permission,
-      );
+        const { signed, contentId } = await ContentPublicationsApi.signUpdatePublicationFromUser(
+          accountNameFrom,
+          privateKey,
+          content,
+          permission,
+        );
 
-      const response = await EosClient.pushTransaction(signed);
+        const response = await EosClient.pushTransaction(signed);
 
-      const expectedData = {
-        acc: accountNameFrom,
-        action_json: `{\"interaction\":\"create_media_post_from_organization\",\"data\":{\"account_from\":\"${accountNameFrom}\",\"content_id\":\"${contentId}\",\"organization_id_from\":\"${orgBlockchainId}\"}}`,
-        action_data: `{\"title\":\"Cool sample post\",\"description\":\"Cool sample post description #winter #summer\",\"leading_text\":\"\",\"entity_images\":{},\"entity_tags\":[\"winter\",\"summer\"],\"organization_blockchain_id\":\"${orgBlockchainId}\",\"blockchain_id\":\"${contentId}\",\"entity_name_for\":\"org       \",\"entity_blockchain_id_for\":\"${orgBlockchainId}\",\"author_account_name\":\"${accountNameFrom}\",\"created_at\":\"`,
-      };
+        ContentPostsChecker.checkSamplePostPushingFromUserResponse(response, accountNameFrom, interactionName, contentId);
+      }, JEST_TIMEOUT);
 
-      const processedData = response.processed.action_traces[0].act.data;
+      it('Send an updated publication from organization to the blockchain', async () => {
+        const content         = ContentPostsGenerator.getSamplePostInputFields();
+        const interactionName = InteractionsDictionary.updateMediaPostFromOrganization();
+        const orgBlockchainId = ContentOrganizationsGenerator.getSampleOrganizationBlockchainId();
 
-      expect(processedData.acc).toBe(expectedData.acc);
-      expect(processedData.action_json).toBe(expectedData.action_json);
-      expect(processedData.action_data).toMatch(expectedData.action_data);
-    }, JEST_TIMEOUT);
+        const { signed, contentId } = await ContentPublicationsApi.signUpdatePublicationFromOrganization(
+          accountNameFrom,
+          privateKey,
+          orgBlockchainId,
+          content,
+          permission,
+        );
+
+        const response = await EosClient.pushTransaction(signed);
+
+        ContentPostsChecker.checkSamplePostPushingFromOrganizationResponse(
+          response,
+          accountNameFrom,
+          interactionName,
+          contentId,
+          orgBlockchainId,
+        );
+      }, JEST_TIMEOUT);
+    });
   });
 });
 
