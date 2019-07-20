@@ -3,8 +3,9 @@
 [![dependencies Status](https://david-dm.org/UOSnetwork/ucom.libs.wallet/status.svg)](https://david-dm.org/UOSnetwork/ucom.libs.wallet) 
 [![devDependencies Status](https://david-dm.org/UOSnetwork/ucom.libs.wallet/dev-status.svg)](https://david-dm.org/UOSnetwork/ucom.libs.wallet?type=dev)
 
-![Wallet interface](https://raw.githubusercontent.com/UOSnetwork/ucom.libs.wallet/master/documentation/img/wallet.jpg)
-![Blockchain resources interface](https://raw.githubusercontent.com/UOSnetwork/ucom.libs.wallet/master/documentation/img/blockchain-resources.jpg)
+![Wallet interface](https://raw.githubusercontent.com/UOSnetwork/ucom.libs.wallet/master/documentation/img/wallet.png)
+
+![Blockchain resources interface](https://raw.githubusercontent.com/UOSnetwork/ucom.libs.wallet/master/documentation/img/blockchain-resources.png)
 
 ## Main goals
 * The library implements a blockchain wallet for U°OS (EOS-based) network.
