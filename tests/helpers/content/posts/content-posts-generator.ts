@@ -8,6 +8,10 @@ class ContentPostsGenerator {
       entity_tags:    ['winter', 'summer'],
     };
   }
+
+  public static getSamplePostBlockchainId(): string {
+    return 'pstms-12345';
+  }
 }
 
 export = ContentPostsGenerator;

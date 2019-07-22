@@ -16,10 +16,11 @@ class ContentPublicationsApi {
         const entityNameFor = EntityNames.USERS;
         return this.signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, givenContent, interactionName, entityNameFor, accountNameFrom);
     }
-    static async signUpdatePublicationFromUser(accountNameFrom, privateKey, givenContent, permission = PermissionsDictionary.active()) {
+    static async signUpdatePublicationFromUser(accountNameFrom, privateKey, givenContent, blockchainId, permission = PermissionsDictionary.active()) {
         const interactionName = InteractionsDictionary.updateMediaPostFromAccount();
         const entityNameFor = EntityNames.USERS;
-        return this.signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, givenContent, interactionName, entityNameFor, accountNameFrom);
+        const { signed_transaction } = await this.signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, givenContent, interactionName, entityNameFor, accountNameFrom, {}, blockchainId);
+        return signed_transaction;
     }
     static async signCreatePublicationFromOrganization(accountNameFrom, privateKey, orgBlockchainId, givenContent, permission = PermissionsDictionary.active()) {
         const interactionName = InteractionsDictionary.createMediaPostFromOrganization();
@@ -30,30 +31,31 @@ class ContentPublicationsApi {
         const content = Object.assign({}, givenContent, { organization_blockchain_id: orgBlockchainId });
         return this.signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, entityNameFor, orgBlockchainId, extraMetaData);
     }
-    static async signUpdatePublicationFromOrganization(accountNameFrom, privateKey, orgBlockchainId, givenContent, permission = PermissionsDictionary.active()) {
+    static async signUpdatePublicationFromOrganization(accountNameFrom, privateKey, orgBlockchainId, givenContent, blockchainId, permission = PermissionsDictionary.active()) {
         const interactionName = InteractionsDictionary.updateMediaPostFromOrganization();
         const entityNameFor = EntityNames.ORGANIZATIONS;
         const extraMetaData = {
             organization_id_from: orgBlockchainId,
         };
         const content = Object.assign({}, givenContent, { organization_blockchain_id: orgBlockchainId });
-        return this.signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, entityNameFor, orgBlockchainId, extraMetaData);
+        const { signed_transaction } = await this.signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, entityNameFor, orgBlockchainId, extraMetaData, blockchainId);
+        return signed_transaction;
     }
-    static async signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, givenContent, interactionName, entityNameFor, entityBlockchainIdFor, extraMetaData = {}) {
+    static async signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, givenContent, interactionName, entityNameFor, entityBlockchainIdFor, extraMetaData = {}, givenContentId = null) {
         if (lodash_1.default.isEmpty(givenContent)) {
             throw new TypeError('Content is empty');
         }
-        const contentId = ContentIdGenerator.getForMediaPost();
+        const contentId = givenContentId || ContentIdGenerator.getForMediaPost();
         const content = Object.assign({}, givenContent, this.getExtraFields(contentId, entityNameFor, entityBlockchainIdFor, accountNameFrom));
         const { error } = PostFieldsValidator.validatePublicationFromEntity(content, entityNameFor);
         if (error !== null) {
             throw new TypeError(JSON.stringify(error));
         }
         const metaData = Object.assign({ account_from: accountNameFrom, content_id: contentId }, extraMetaData);
-        const signed = await SocialTransactionsCommonFactory.getSignedTransaction(accountNameFrom, privateKey, interactionName, metaData, content, permission);
+        const signed_transaction = await SocialTransactionsCommonFactory.getSignedTransaction(accountNameFrom, privateKey, interactionName, metaData, content, permission);
         return {
-            signed,
-            contentId: metaData.content_id,
+            signed_transaction,
+            blockchain_id: metaData.content_id,
         };
     }
     static getExtraFields(contentId, entityNameFor, entityBlockchainIdFor, authorAccountName) {

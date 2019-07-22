@@ -23,16 +23,16 @@ describe('Send profile and get profile status', () => {
         const content = ContentPostsGenerator.getSamplePostInputFields();
         const interactionName = InteractionsDictionary.createMediaPostFromAccount();
 
-        const { signed, contentId } = await ContentPublicationsApi.signCreatePublicationFromUser(
+        const { signed_transaction, blockchain_id } = await ContentPublicationsApi.signCreatePublicationFromUser(
           accountNameFrom,
           privateKey,
           content,
           permission,
         );
 
-        const response = await EosClient.pushTransaction(signed);
+        const response = await EosClient.pushTransaction(signed_transaction);
 
-        ContentPostsChecker.checkSamplePostPushingFromUserResponse(response, accountNameFrom, interactionName, contentId);
+        ContentPostsChecker.checkSamplePostPushingFromUserResponse(response, accountNameFrom, interactionName, blockchain_id);
       }, JEST_TIMEOUT);
 
       it('Send a new publication from organization to the blockchain', async () => {
@@ -40,7 +40,7 @@ describe('Send profile and get profile status', () => {
         const interactionName = InteractionsDictionary.createMediaPostFromOrganization();
         const orgBlockchainId = ContentOrganizationsGenerator.getSampleOrganizationBlockchainId();
 
-        const { signed, contentId } = await ContentPublicationsApi.signCreatePublicationFromOrganization(
+        const { signed_transaction, blockchain_id } = await ContentPublicationsApi.signCreatePublicationFromOrganization(
           accountNameFrom,
           privateKey,
           orgBlockchainId,
@@ -48,32 +48,36 @@ describe('Send profile and get profile status', () => {
           permission,
         );
 
-        const response = await EosClient.pushTransaction(signed);
+        const response = await EosClient.pushTransaction(signed_transaction);
 
         ContentPostsChecker.checkSamplePostPushingFromOrganizationResponse(
           response,
           accountNameFrom,
           interactionName,
-          contentId,
+          blockchain_id,
           orgBlockchainId,
         );
       }, JEST_TIMEOUT);
     });
+
     describe('Update publication', () => {
       it('Send an updated publication from User to the blockchain', async () => {
         const content = ContentPostsGenerator.getSamplePostInputFields();
         const interactionName = InteractionsDictionary.updateMediaPostFromAccount();
 
-        const { signed, contentId } = await ContentPublicationsApi.signUpdatePublicationFromUser(
+        const blockchainId = ContentPostsGenerator.getSamplePostBlockchainId();
+
+        const signed_transaction = await ContentPublicationsApi.signUpdatePublicationFromUser(
           accountNameFrom,
           privateKey,
           content,
+          blockchainId,
           permission,
         );
 
-        const response = await EosClient.pushTransaction(signed);
+        const response = await EosClient.pushTransaction(signed_transaction);
 
-        ContentPostsChecker.checkSamplePostPushingFromUserResponse(response, accountNameFrom, interactionName, contentId);
+        ContentPostsChecker.checkSamplePostPushingFromUserResponse(response, accountNameFrom, interactionName, blockchainId);
       }, JEST_TIMEOUT);
 
       it('Send an updated publication from organization to the blockchain', async () => {
@@ -81,21 +85,24 @@ describe('Send profile and get profile status', () => {
         const interactionName = InteractionsDictionary.updateMediaPostFromOrganization();
         const orgBlockchainId = ContentOrganizationsGenerator.getSampleOrganizationBlockchainId();
 
-        const { signed, contentId } = await ContentPublicationsApi.signUpdatePublicationFromOrganization(
+        const blockchainId = ContentPostsGenerator.getSamplePostBlockchainId();
+
+        const signed_transaction = await ContentPublicationsApi.signUpdatePublicationFromOrganization(
           accountNameFrom,
           privateKey,
           orgBlockchainId,
           content,
+          blockchainId,
           permission,
         );
 
-        const response = await EosClient.pushTransaction(signed);
+        const response = await EosClient.pushTransaction(signed_transaction);
 
         ContentPostsChecker.checkSamplePostPushingFromOrganizationResponse(
           response,
           accountNameFrom,
           interactionName,
-          contentId,
+          blockchainId,
           orgBlockchainId,
         );
       }, JEST_TIMEOUT);

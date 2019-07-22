@@ -15,7 +15,7 @@ class ContentPublicationsApi {
     privateKey: string,
     givenContent: any,
     permission: string = PermissionsDictionary.active(),
-  ): Promise<{ signed: any, contentId: string }> {
+  ): Promise<{ signed_transaction: any, blockchain_id: string }> {
     const interactionName = InteractionsDictionary.createMediaPostFromAccount();
     const entityNameFor: string = EntityNames.USERS;
 
@@ -34,12 +34,13 @@ class ContentPublicationsApi {
     accountNameFrom: string,
     privateKey: string,
     givenContent: any,
+    blockchainId: string,
     permission: string = PermissionsDictionary.active(),
-  ): Promise<{ signed: any, contentId: string }> {
+  ): Promise<any> {
     const interactionName = InteractionsDictionary.updateMediaPostFromAccount();
     const entityNameFor: string = EntityNames.USERS;
 
-    return this.signSendPublicationToBlockchain(
+    const { signed_transaction } = await this.signSendPublicationToBlockchain(
       accountNameFrom,
       privateKey,
       permission,
@@ -47,7 +48,11 @@ class ContentPublicationsApi {
       interactionName,
       entityNameFor,
       accountNameFrom,
+      {},
+      blockchainId,
     );
+
+    return signed_transaction;
   }
 
   public static async signCreatePublicationFromOrganization(
@@ -56,7 +61,7 @@ class ContentPublicationsApi {
     orgBlockchainId: string,
     givenContent: any,
     permission: string = PermissionsDictionary.active(),
-  ): Promise<{ signed: any, contentId: string }> {
+  ): Promise<{ signed_transaction: any, blockchain_id: string }> {
     const interactionName = InteractionsDictionary.createMediaPostFromOrganization();
     const entityNameFor: string = EntityNames.ORGANIZATIONS;
     const extraMetaData = {
@@ -85,8 +90,9 @@ class ContentPublicationsApi {
     privateKey: string,
     orgBlockchainId: string,
     givenContent: any,
+    blockchainId: string,
     permission: string = PermissionsDictionary.active(),
-  ): Promise<{ signed: any, contentId: string }> {
+  ): Promise<any> {
     const interactionName = InteractionsDictionary.updateMediaPostFromOrganization();
     const entityNameFor: string = EntityNames.ORGANIZATIONS;
     const extraMetaData = {
@@ -98,7 +104,7 @@ class ContentPublicationsApi {
       organization_blockchain_id: orgBlockchainId,
     };
 
-    return this.signSendPublicationToBlockchain(
+    const { signed_transaction } = await this.signSendPublicationToBlockchain(
       accountNameFrom,
       privateKey,
       permission,
@@ -107,7 +113,10 @@ class ContentPublicationsApi {
       entityNameFor,
       orgBlockchainId,
       extraMetaData,
+      blockchainId,
     );
+
+    return signed_transaction;
   }
 
   private static async signSendPublicationToBlockchain(
@@ -119,12 +128,13 @@ class ContentPublicationsApi {
     entityNameFor: string,
     entityBlockchainIdFor: string,
     extraMetaData: any = {},
-  ): Promise<{ signed: any, contentId: string }> {
+    givenContentId: string | null = null,
+  ): Promise<{ signed_transaction: any, blockchain_id: string }> {
     if (_.isEmpty(givenContent)) {
       throw new TypeError('Content is empty');
     }
 
-    const contentId: string = ContentIdGenerator.getForMediaPost();
+    const contentId: string = givenContentId || ContentIdGenerator.getForMediaPost();
 
     const content = {
       ...givenContent,
@@ -143,7 +153,7 @@ class ContentPublicationsApi {
       ...extraMetaData,
     };
 
-    const signed = await SocialTransactionsCommonFactory.getSignedTransaction(
+    const signed_transaction = await SocialTransactionsCommonFactory.getSignedTransaction(
       accountNameFrom,
       privateKey,
       interactionName,
@@ -153,8 +163,8 @@ class ContentPublicationsApi {
     );
 
     return {
-      signed,
-      contentId: metaData.content_id,
+      signed_transaction,
+      blockchain_id: metaData.content_id,
     };
   }
 
