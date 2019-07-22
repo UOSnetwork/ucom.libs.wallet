@@ -6,6 +6,11 @@ module.exports = {
   BackendApi: require('./build/lib/backend-api'),
   ContentApi: require('./build/lib/content/api/content-api'),
 
+  Content: {
+    ProfileApi: require('./build/lib/content/api/content-api'),
+    PublicationsApi: require('./build/lib/content/api/content-publications-api'),
+  },
+
   TransactionSender: require('./build/lib/transaction-sender'),
   UosAccountsPropertiesApi: require('./build/lib/uos-accounts-properties/uos-accounts-properties-api'),
   EosClient: require('./build/lib/common/client/eos-client'),
