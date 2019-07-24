@@ -8,7 +8,13 @@ const TABLE_NAME__CALCULATORS_VOTERS    = 'calcvoters';
 const TABLE_NAME__CALCULATORS           = 'calculators';
 const TABLE_NAME__ACCOUNT_PROFILE       = 'accprofile';
 
+const HISTORICAL_SENDER_ACCOUNT_NAME = 'uoshistorian';
+
 class SmartContractsDictionary {
+  public static historicalSenderAccountName(): string {
+    return HISTORICAL_SENDER_ACCOUNT_NAME;
+  }
+
   public static accountProfileTableName(): string {
     return TABLE_NAME__ACCOUNT_PROFILE;
   }

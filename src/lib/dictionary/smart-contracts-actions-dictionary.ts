@@ -1,6 +1,7 @@
-const SOCIAL_ACTION         = 'socialactndt';
-const VOTE_FOR_CALCULATORS  = 'votecalc';
-const SET_PROFILE           = 'setprofile';
+const SOCIAL_ACTION             = 'socialactndt';
+const HISTORICAL_SOCIAL_ACTION  = 'histactndt';
+const VOTE_FOR_CALCULATORS      = 'votecalc';
+const SET_PROFILE               = 'setprofile';
 
 class SmartContractsActionsDictionary {
   public static setProfile(): string {
@@ -9,6 +10,10 @@ class SmartContractsActionsDictionary {
 
   public static socialAction(): string {
     return SOCIAL_ACTION;
+  }
+
+  public static historicalSocialAction(): string {
+    return HISTORICAL_SOCIAL_ACTION;
   }
 
   public static voteForCalculators(): string {

@@ -5,6 +5,7 @@ import BlockchainRegistry = require('../../src/lib/blockchain-registry');
 import TransactionSender = require('../../src/lib/transaction-sender');
 import ConfigService = require('../../src/config/config-service');
 import EnvHelper = require('../../src/lib/helpers/env-helper');
+import SmartContractsDictionary = require('../../src/lib/dictionary/smart-contracts-dictionary');
 
 const resources = [
   'cpu', 'net', 'ram',
@@ -25,11 +26,15 @@ let firstBlockProducer = 'calc1';
 let secondBlockProducer = 'calc2';
 
 class Helper {
-  /**
-   *
-   * @returns {string}
-   */
-  static getAirdropAccountName() {
+  public static getHistoricalSenderAccountName(): string {
+    return SmartContractsDictionary.historicalSenderAccountName();
+  }
+
+  public static getHistoricalSenderPrivateKey(): string {
+    return accountsData[this.getHistoricalSenderAccountName()].activePk;
+  }
+
+  public static getAirdropAccountName(): string {
     return airdropAccountName;
   }
 

@@ -9,6 +9,10 @@ class ContentPostsGenerator {
     };
   }
 
+  public static getSamplePostInputCreatedAt(): string {
+    return '2019-07-24T06:41:28Z';
+  }
+
   public static getSamplePostBlockchainId(): string {
     return 'pstms-12345';
   }

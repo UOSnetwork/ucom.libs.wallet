@@ -1,8 +1,4 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-const lodash_1 = __importDefault(require("lodash"));
 const PermissionsDictionary = require("../../dictionary/permissions-dictionary");
 const SocialTransactionsCommonFactory = require("../../social-transactions/services/social-transactions-common-factory");
 const moment = require("moment");
@@ -14,12 +10,14 @@ class ContentPublicationsApi {
     static async signCreatePublicationFromUser(accountNameFrom, privateKey, givenContent, permission = PermissionsDictionary.active()) {
         const interactionName = InteractionsDictionary.createMediaPostFromAccount();
         const entityNameFor = EntityNames.USERS;
-        return this.signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, givenContent, interactionName, entityNameFor, accountNameFrom);
+        const content = Object.assign({}, givenContent, this.getDateTimeFields(true, true));
+        return this.signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, entityNameFor, accountNameFrom);
     }
     static async signUpdatePublicationFromUser(accountNameFrom, privateKey, givenContent, blockchainId, permission = PermissionsDictionary.active()) {
         const interactionName = InteractionsDictionary.updateMediaPostFromAccount();
         const entityNameFor = EntityNames.USERS;
-        const { signed_transaction } = await this.signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, givenContent, interactionName, entityNameFor, accountNameFrom, {}, blockchainId);
+        const content = Object.assign({}, givenContent, { updated_at: moment().utc().format() });
+        const { signed_transaction } = await this.signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, entityNameFor, accountNameFrom, {}, blockchainId);
         return signed_transaction;
     }
     static async signCreatePublicationFromOrganization(accountNameFrom, privateKey, orgBlockchainId, givenContent, permission = PermissionsDictionary.active()) {
@@ -28,7 +26,7 @@ class ContentPublicationsApi {
         const extraMetaData = {
             organization_id_from: orgBlockchainId,
         };
-        const content = Object.assign({}, givenContent, { organization_blockchain_id: orgBlockchainId });
+        const content = Object.assign({}, givenContent, this.getDateTimeFields(true, true), { organization_blockchain_id: orgBlockchainId });
         return this.signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, entityNameFor, orgBlockchainId, extraMetaData);
     }
     static async signUpdatePublicationFromOrganization(accountNameFrom, privateKey, orgBlockchainId, givenContent, blockchainId, permission = PermissionsDictionary.active()) {
@@ -37,37 +35,74 @@ class ContentPublicationsApi {
         const extraMetaData = {
             organization_id_from: orgBlockchainId,
         };
-        const content = Object.assign({}, givenContent, { organization_blockchain_id: orgBlockchainId });
+        const content = Object.assign({}, givenContent, { organization_blockchain_id: orgBlockchainId, updated_at: moment().utc().format() });
         const { signed_transaction } = await this.signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, entityNameFor, orgBlockchainId, extraMetaData, blockchainId);
         return signed_transaction;
     }
+    static async signResendPublicationFromUser(authorAccountName, historicalSenderPrivateKey, givenContent, blockchainId) {
+        const interactionName = InteractionsDictionary.createMediaPostFromAccount();
+        const entityNameFor = EntityNames.USERS;
+        return this.signResendPublicationToBlockchain(authorAccountName, historicalSenderPrivateKey, givenContent, interactionName, entityNameFor, authorAccountName, {}, blockchainId);
+    }
+    static async signResendPublicationFromOrganization(authorAccountName, historicalSenderPrivateKey, orgBlockchainId, givenContent, blockchainId) {
+        const interactionName = InteractionsDictionary.createMediaPostFromOrganization();
+        const entityNameFor = EntityNames.ORGANIZATIONS;
+        const extraMetaData = {
+            organization_id_from: orgBlockchainId,
+        };
+        const content = Object.assign({}, givenContent, { organization_blockchain_id: orgBlockchainId });
+        return this.signResendPublicationToBlockchain(authorAccountName, historicalSenderPrivateKey, content, interactionName, entityNameFor, authorAccountName, extraMetaData, blockchainId);
+    }
     static async signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, givenContent, interactionName, entityNameFor, entityBlockchainIdFor, extraMetaData = {}, givenContentId = null) {
-        if (lodash_1.default.isEmpty(givenContent)) {
-            throw new TypeError('Content is empty');
-        }
         const contentId = givenContentId || ContentIdGenerator.getForMediaPost();
-        const content = Object.assign({}, givenContent, this.getExtraFields(contentId, entityNameFor, entityBlockchainIdFor, accountNameFrom));
+        const content = this.getContentWithExtraFields(givenContent, contentId, entityNameFor, entityBlockchainIdFor, accountNameFrom);
         const { error } = PostFieldsValidator.validatePublicationFromEntity(content, entityNameFor);
         if (error !== null) {
             throw new TypeError(JSON.stringify(error));
         }
-        const metaData = Object.assign({ account_from: accountNameFrom, content_id: contentId }, extraMetaData);
+        const metaData = this.getMetadata(accountNameFrom, contentId, extraMetaData);
         const signed_transaction = await SocialTransactionsCommonFactory.getSignedTransaction(accountNameFrom, privateKey, interactionName, metaData, content, permission);
         return {
             signed_transaction,
             blockchain_id: metaData.content_id,
         };
     }
-    static getExtraFields(contentId, entityNameFor, entityBlockchainIdFor, authorAccountName) {
-        const dateTime = moment().utc().format();
-        return {
+    static async signResendPublicationToBlockchain(contentAuthorAccountName, privateKey, givenContent, interactionName, entityNameFor, entityBlockchainIdFor, extraMetaData = {}, contentId) {
+        const content = this.getContentWithExtraFields(givenContent, contentId, entityNameFor, entityBlockchainIdFor, contentAuthorAccountName);
+        if (!content.created_at) {
+            throw new TypeError('created_at must exist inside a content');
+        }
+        if (!content.created_at.includes('Z')) {
+            throw new TypeError('created_at be an UTC string');
+        }
+        const momentDate = moment(content.created_at);
+        if (!momentDate.isValid()) {
+            throw new TypeError(`Provided created_at value is not a valid datetime string: ${content.created_at}`);
+        }
+        const metaData = this.getMetadata(contentAuthorAccountName, contentId, extraMetaData);
+        return SocialTransactionsCommonFactory.getSignedResendTransaction(privateKey, interactionName, metaData, content, content.created_at);
+    }
+    static getContentWithExtraFields(givenContent, contentId, entityNameFor, entityBlockchainIdFor, authorAccountName) {
+        const data = {
             blockchain_id: contentId,
             entity_name_for: entityNameFor,
             entity_blockchain_id_for: entityBlockchainIdFor,
             author_account_name: authorAccountName,
-            created_at: dateTime,
-            updated_at: dateTime,
         };
+        return Object.assign({}, givenContent, data);
+    }
+    static getDateTimeFields(createdAt, updatedAt) {
+        const data = {};
+        if (createdAt) {
+            data.created_at = moment().utc().format();
+        }
+        if (updatedAt) {
+            data.updated_at = moment().utc().format();
+        }
+        return data;
+    }
+    static getMetadata(accountNameFrom, contentId, extraMetaData) {
+        return Object.assign({ account_from: accountNameFrom, content_id: contentId }, extraMetaData);
     }
 }
 module.exports = ContentPublicationsApi;
