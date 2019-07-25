@@ -51,7 +51,7 @@ class ContentPublicationsApi {
             organization_id_from: orgBlockchainId,
         };
         const content = Object.assign({}, givenContent, { organization_blockchain_id: orgBlockchainId });
-        return this.signResendPublicationToBlockchain(authorAccountName, historicalSenderPrivateKey, content, interactionName, entityNameFor, authorAccountName, extraMetaData, blockchainId);
+        return this.signResendPublicationToBlockchain(authorAccountName, historicalSenderPrivateKey, content, interactionName, entityNameFor, orgBlockchainId, extraMetaData, blockchainId);
     }
     static async signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, givenContent, interactionName, entityNameFor, entityBlockchainIdFor, extraMetaData = {}, givenContentId = null) {
         const contentId = givenContentId || ContentIdGenerator.getForMediaPost();

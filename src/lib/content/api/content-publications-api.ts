@@ -174,7 +174,7 @@ class ContentPublicationsApi {
       content,
       interactionName,
       entityNameFor,
-      authorAccountName,
+      orgBlockchainId,
       extraMetaData,
       blockchainId,
     );
