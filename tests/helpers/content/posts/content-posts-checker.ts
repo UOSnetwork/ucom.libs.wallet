@@ -74,7 +74,7 @@ class ContentPostsChecker {
     const expectedData = {
       acc,
       action_json: `{\"interaction\":\"${interactionName}\",\"data\":{\"account_from\":\"${accountNameFrom}\",\"content_id\":\"${blockchainId}\",\"organization_id_from\":\"${orgBlockchainId}\"}}`,
-      action_data: `{\"title\":\"${samplePost.title}\",\"description\":\"${samplePost.description}\",\"leading_text\":\"${samplePost.leading_text}\",\"entity_images\":{},\"entity_tags\":[\"winter\",\"summer\"],\"created_at\":\"${createdAt}\",\"organization_blockchain_id\":\"${orgBlockchainId}\",\"blockchain_id\":\"${blockchainId}\",\"entity_name_for\":\"org       \",\"entity_blockchain_id_for\":\"${accountNameFrom}\",\"author_account_name\":\"${accountNameFrom}\"}`,
+      action_data: `{\"title\":\"${samplePost.title}\",\"description\":\"${samplePost.description}\",\"leading_text\":\"${samplePost.leading_text}\",\"entity_images\":{},\"entity_tags\":[\"winter\",\"summer\"],\"created_at\":\"${createdAt}\",\"organization_blockchain_id\":\"${orgBlockchainId}\",\"blockchain_id\":\"${blockchainId}\",\"entity_name_for\":\"org       \",\"entity_blockchain_id_for\":\"${orgBlockchainId}\",\"author_account_name\":\"${accountNameFrom}\"}`,
     };
 
     const expectedActName = SmartContractsActionsDictionary.historicalSocialAction();

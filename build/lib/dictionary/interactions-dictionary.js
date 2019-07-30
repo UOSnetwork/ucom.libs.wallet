@@ -6,7 +6,15 @@ const CREATE_MEDIA_POST_FROM_ACCOUNT = 'create_media_post_from_account';
 const CREATE_MEDIA_POST_FROM_ORGANIZATION = 'create_media_post_from_organization';
 const UPDATE_MEDIA_POST_FROM_ACCOUNT = 'update_media_post_from_account';
 const UPDATE_MEDIA_POST_FROM_ORGANIZATION = 'update_media_post_from_organization';
+const UPVOTE = 'upvote';
+const DOWNVOTE = 'downvote';
 class InteractionsDictionary {
+    static upvote() {
+        return UPVOTE;
+    }
+    static downvote() {
+        return DOWNVOTE;
+    }
     static referral() {
         return REFERRAL;
     }

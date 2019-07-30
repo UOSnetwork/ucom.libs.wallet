@@ -5,14 +5,10 @@ const SocialTransactionsUserToUserFactory = require("../services/social-transact
 const InteractionsDictionary = require("../../dictionary/interactions-dictionary");
 const PERMISSION_ACTIVE = PermissionsDictionary.active();
 class SocialApi {
-    /**
-     *
-     * @param {string} accountNameFrom
-     * @param {string} privateKey
-     * @param {string} accountNameTo
-     * @param {string} permission
-     * @returns {Promise<Object>}
-     */
+    static async getUpvoteContentSignedTransaction(accountNameFrom, privateKey, accountNameTo, permission = PERMISSION_ACTIVE) {
+        const interactionName = InteractionsDictionary.upvote();
+        return SocialTransactionsUserToUserFactory.getUserToUserSignedTransaction(accountNameFrom, privateKey, accountNameTo, interactionName, permission);
+    }
     static async getTrustUserSignedTransaction(accountNameFrom, privateKey, accountNameTo, permission = PERMISSION_ACTIVE) {
         const interactionName = InteractionsDictionary.trust();
         return SocialTransactionsUserToUserFactory.getUserToUserSignedTransaction(accountNameFrom, privateKey, accountNameTo, interactionName, permission);

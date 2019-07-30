@@ -6,14 +6,23 @@ import InteractionsDictionary = require('../../dictionary/interactions-dictionar
 const PERMISSION_ACTIVE = PermissionsDictionary.active();
 
 class SocialApi {
-  /**
-   *
-   * @param {string} accountNameFrom
-   * @param {string} privateKey
-   * @param {string} accountNameTo
-   * @param {string} permission
-   * @returns {Promise<Object>}
-   */
+  public static async getUpvoteContentSignedTransaction(
+    accountNameFrom: string,
+    privateKey: string,
+    accountNameTo: string,
+    permission: string = PERMISSION_ACTIVE,
+  ): Promise<any> {
+    const interactionName = InteractionsDictionary.upvote();
+
+    return SocialTransactionsUserToUserFactory.getUserToUserSignedTransaction(
+      accountNameFrom,
+      privateKey,
+      accountNameTo,
+      interactionName,
+      permission,
+    );
+  }
+
   public static async getTrustUserSignedTransaction(
     accountNameFrom: string,
     privateKey: string,
