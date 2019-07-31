@@ -2,7 +2,6 @@
 module.exports = {
   WalletApi: require('./build/lib/wallet/api/wallet-api'),
   SocialApi: require('./build/lib/social-transactions/api/social-api'),
-  ContentIntegrationsApi: require('./build/lib/social-transactions/api/content-interactions-api'),
 
   BackendApi: require('./build/lib/backend-api'),
   ContentApi: require('./build/lib/content/api/content-api'),
@@ -10,6 +9,8 @@ module.exports = {
   Content: {
     ProfileApi: require('./build/lib/content/api/content-api'),
     PublicationsApi: require('./build/lib/content/api/content-publications-api'),
+
+    ContentInteractionsApi: require('./build/lib/social-transactions/api/content-interactions-api'),
   },
 
   TransactionSender: require('./build/lib/transaction-sender'),
