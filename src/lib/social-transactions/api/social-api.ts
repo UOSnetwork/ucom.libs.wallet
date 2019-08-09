@@ -57,6 +57,74 @@ class SocialApi {
     );
   }
 
+  public static async getFollowAccountSignedTransaction(
+    accountNameFrom: string,
+    privateKey: string,
+    accountNameTo: string,
+    permission: string = PERMISSION_ACTIVE,
+  ): Promise<any> {
+    const interactionName = InteractionsDictionary.followToAccount();
+
+    return SocialTransactionsUserToUserFactory.getUserToUserSignedTransaction(
+      accountNameFrom,
+      privateKey,
+      accountNameTo,
+      interactionName,
+      permission,
+    );
+  }
+
+  public static async getUnfollowAccountSignedTransaction(
+    accountNameFrom: string,
+    privateKey: string,
+    accountNameTo: string,
+    permission: string = PERMISSION_ACTIVE,
+  ): Promise<any> {
+    const interactionName = InteractionsDictionary.unfollowToAccount();
+
+    return SocialTransactionsUserToUserFactory.getUserToUserSignedTransaction(
+      accountNameFrom,
+      privateKey,
+      accountNameTo,
+      interactionName,
+      permission,
+    );
+  }
+
+  public static async getFollowOrganizationSignedTransaction(
+    accountNameFrom: string,
+    privateKey: string,
+    organizationId: string,
+    permission: string = PERMISSION_ACTIVE,
+  ): Promise<any> {
+    const interactionName = InteractionsDictionary.followToOrganization();
+
+    return SocialTransactionsUserToUserFactory.getUserToOrganizationSignedTransaction(
+      accountNameFrom,
+      privateKey,
+      organizationId,
+      interactionName,
+      permission,
+    );
+  }
+
+  public static async getUnfollowOrganizationSignedTransaction(
+    accountNameFrom: string,
+    privateKey: string,
+    organizationId: string,
+    permission: string = PERMISSION_ACTIVE,
+  ): Promise<any> {
+    const interactionName = InteractionsDictionary.unfollowToOrganization();
+
+    return SocialTransactionsUserToUserFactory.getUserToOrganizationSignedTransaction(
+      accountNameFrom,
+      privateKey,
+      organizationId,
+      interactionName,
+      permission,
+    );
+  }
+
   public static async getReferralFromUserSignedTransaction(
     accountNameReferrer: string,
     privateKey: string,

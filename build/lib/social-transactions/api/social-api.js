@@ -17,6 +17,22 @@ class SocialApi {
         const interactionName = InteractionsDictionary.untrust();
         return SocialTransactionsUserToUserFactory.getUserToUserSignedTransaction(accountNameFrom, privateKey, accountNameTo, interactionName, permission);
     }
+    static async getFollowAccountSignedTransaction(accountNameFrom, privateKey, accountNameTo, permission = PERMISSION_ACTIVE) {
+        const interactionName = InteractionsDictionary.followToAccount();
+        return SocialTransactionsUserToUserFactory.getUserToUserSignedTransaction(accountNameFrom, privateKey, accountNameTo, interactionName, permission);
+    }
+    static async getUnfollowAccountSignedTransaction(accountNameFrom, privateKey, accountNameTo, permission = PERMISSION_ACTIVE) {
+        const interactionName = InteractionsDictionary.unfollowToAccount();
+        return SocialTransactionsUserToUserFactory.getUserToUserSignedTransaction(accountNameFrom, privateKey, accountNameTo, interactionName, permission);
+    }
+    static async getFollowOrganizationSignedTransaction(accountNameFrom, privateKey, organizationId, permission = PERMISSION_ACTIVE) {
+        const interactionName = InteractionsDictionary.followToOrganization();
+        return SocialTransactionsUserToUserFactory.getUserToOrganizationSignedTransaction(accountNameFrom, privateKey, organizationId, interactionName, permission);
+    }
+    static async getUnfollowOrganizationSignedTransaction(accountNameFrom, privateKey, organizationId, permission = PERMISSION_ACTIVE) {
+        const interactionName = InteractionsDictionary.unfollowToOrganization();
+        return SocialTransactionsUserToUserFactory.getUserToOrganizationSignedTransaction(accountNameFrom, privateKey, organizationId, interactionName, permission);
+    }
     static async getReferralFromUserSignedTransaction(accountNameReferrer, privateKey, accountNameSource, permission = PERMISSION_ACTIVE) {
         const interactionName = InteractionsDictionary.referral();
         return SocialTransactionsUserToUserFactory.getUserToUserSignedTransaction(accountNameReferrer, privateKey, accountNameSource, interactionName, permission);

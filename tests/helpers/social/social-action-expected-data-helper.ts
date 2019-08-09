@@ -40,14 +40,15 @@ class SocialActionExpectedDataHelper {
     expect(act.name).toBe(SmartContractsActionsDictionary.socialAction());
   }
 
-  static getOneUserToOtherPushResponse(
+  public static getOneUserToOtherPushResponse(
     accountNameFrom: string,
-    accountNameTo: string,
+    blockchainIdTo: string,
     interaction: string,
+    blockchainIdKey: string = 'account_to',
   ) {
     const data = {
       acc: accountNameFrom,
-      action_json: `{\"interaction\":\"${interaction}\",\"data\":{\"account_from\":\"${accountNameFrom}\",\"account_to\":\"${accountNameTo}\"}}`,
+      action_json: `{\"interaction\":\"${interaction}\",\"data\":{\"account_from\":\"${accountNameFrom}\",\"${blockchainIdKey}\":\"${blockchainIdTo}\"}}`,
       action_data: '',
     };
 

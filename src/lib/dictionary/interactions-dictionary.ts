@@ -1,6 +1,12 @@
 const TRUST = 'trust';
 const UNTRUST = 'untrust';
 
+const FOLLOW_TO_ACCOUNT   = 'follow_to_account';
+const UNFOLLOW_TO_ACCOUNT = 'unfollow_to_account';
+
+const FOLLOW_TO_ORGANIZATION    = 'follow_to_organization';
+const UNFOLLOW_TO_ORGANIZATION  = 'unfollow_to_organization';
+
 const REFERRAL = 'referral';
 
 const CREATE_MEDIA_POST_FROM_ACCOUNT      = 'create_media_post_from_account';
@@ -31,6 +37,22 @@ class InteractionsDictionary {
 
   public static untrust(): string {
     return UNTRUST;
+  }
+
+  public static followToAccount(): string {
+    return FOLLOW_TO_ACCOUNT;
+  }
+
+  public static unfollowToAccount(): string {
+    return UNFOLLOW_TO_ACCOUNT;
+  }
+
+  public static followToOrganization(): string {
+    return FOLLOW_TO_ORGANIZATION;
+  }
+
+  public static unfollowToOrganization(): string {
+    return UNFOLLOW_TO_ORGANIZATION;
   }
 
   public static createMediaPostFromAccount(): string {

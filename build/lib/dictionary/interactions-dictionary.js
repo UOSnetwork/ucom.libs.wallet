@@ -1,6 +1,10 @@
 "use strict";
 const TRUST = 'trust';
 const UNTRUST = 'untrust';
+const FOLLOW_TO_ACCOUNT = 'follow_to_account';
+const UNFOLLOW_TO_ACCOUNT = 'unfollow_to_account';
+const FOLLOW_TO_ORGANIZATION = 'follow_to_organization';
+const UNFOLLOW_TO_ORGANIZATION = 'unfollow_to_organization';
 const REFERRAL = 'referral';
 const CREATE_MEDIA_POST_FROM_ACCOUNT = 'create_media_post_from_account';
 const CREATE_MEDIA_POST_FROM_ORGANIZATION = 'create_media_post_from_organization';
@@ -23,6 +27,18 @@ class InteractionsDictionary {
     }
     static untrust() {
         return UNTRUST;
+    }
+    static followToAccount() {
+        return FOLLOW_TO_ACCOUNT;
+    }
+    static unfollowToAccount() {
+        return UNFOLLOW_TO_ACCOUNT;
+    }
+    static followToOrganization() {
+        return FOLLOW_TO_ORGANIZATION;
+    }
+    static unfollowToOrganization() {
+        return UNFOLLOW_TO_ORGANIZATION;
     }
     static createMediaPostFromAccount() {
         return CREATE_MEDIA_POST_FROM_ACCOUNT;
