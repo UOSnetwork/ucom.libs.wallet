@@ -38,8 +38,8 @@
     "uniqid": "^5.0.3"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.16",
-    "@types/node": "^12.6.8",
+    "@types/jest": "^24.0.17",
+    "@types/node": "^12.7.1",
     "@typescript-eslint/eslint-plugin": "^1.13.0",
     "@typescript-eslint/parser": "^1.13.0",
     "acorn": "^6.2.1",
@@ -47,7 +47,7 @@
     "eslint": "^6.1.0",
     "eslint-config-airbnb-base": "^13.2.0",
     "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jest": "^22.14.1",
+    "eslint-plugin-jest": "^22.15.0",
     "eslint-plugin-node": "^9.1.0",
     "eslint-plugin-optimize-regex": "^1.1.6",
     "eslint-plugin-promise": "^4.2.1",
@@ -55,11 +55,11 @@
     "eslint-plugin-sonarjs": "^0.4.0",
     "eslint-plugin-typescript": "^0.14.0",
     "eslint-plugin-unicorn": "^10.0.0",
-    "eslint-plugin-you-dont-need-lodash-underscore": "^6.5.0",
+    "eslint-plugin-you-dont-need-lodash-underscore": "^6.6.0",
     "jest": "^24.8.0",
     "jest-expect-message": "^1.0.2",
     "ts-jest": "^24.0.2",
-    "tsutils": "^3.14.1",
+    "tsutils": "^3.17.1",
     "typescript": "^3.5.3"
   }
 }

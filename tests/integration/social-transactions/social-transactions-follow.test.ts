@@ -3,7 +3,7 @@ import InteractionsDictionary = require('../../../src/lib/dictionary/interaction
 import SocialTransactionsGenerator = require('../../generators/social-transactions-generator');
 import ContentOrganizationsGenerator = require('../../helpers/content/posts/content-organizations-generator');
 
-const JEST_TIMEOUT = 10000;
+const JEST_TIMEOUT = 40000;
 
 Helper.initForEnvByProcessVariable();
 

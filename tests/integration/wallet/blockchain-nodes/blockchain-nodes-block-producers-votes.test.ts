@@ -15,7 +15,7 @@ const noSuchBlockProducersErrorRegex = new RegExp('There is no such block produc
 const firstBp = Helper.getFirstBlockProducer();
 const secondBp = Helper.getSecondBlockProducer();
 
-const JEST_TIMEOUT = 20000;
+const JEST_TIMEOUT = 40000;
 
 describe('Block producers voting', () => {
   describe('Positive', () => {

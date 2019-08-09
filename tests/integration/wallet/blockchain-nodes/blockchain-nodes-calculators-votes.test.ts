@@ -9,7 +9,7 @@ Helper.initForEnvByProcessVariable();
 const accountName = Helper.getTesterAccountName();
 const privateKey = Helper.getTesterAccountPrivateKey();
 
-const JEST_TIMEOUT = 5000;
+const JEST_TIMEOUT = 40000;
 
 describe('Send transactions to blockchain', () => {
   describe('nodes-calculators voting', () => {

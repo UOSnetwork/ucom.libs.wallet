@@ -16,7 +16,7 @@ import NumbersHelper = require('../../../../src/lib/helpers/numbers-helper');
 
 Helper.initForEnvByProcessVariable();
 
-const JEST_TIMEOUT = 20000;
+const JEST_TIMEOUT = 40000;
 
 const accountName = Helper.getTesterAccountName();
 const privateKey = Helper.getTesterAccountPrivateKey();

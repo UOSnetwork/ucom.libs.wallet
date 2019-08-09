@@ -16,6 +16,8 @@ const notEnoughTokensErrorRegex = new RegExp('Not enough tokens. Please correct 
 
 Helper.mockTransactionSending();
 
+const JEST_TIMEOUT = 20000;
+
 describe('Get blockchain info and validation checks', () => {
   describe('GET requests', () => {
     describe('Get info from blockchain', () => {
@@ -86,7 +88,7 @@ describe('Get blockchain info and validation checks', () => {
       const response = await WalletApi.sellRam(accountName, 'sample_key', freeRam - 100);
 
       expect(response.success).toBeTruthy();
-    });
+    }, JEST_TIMEOUT);
 
     it('buyRam validation', async () => {
       await expect(WalletApi.buyRam(accountName, 'sample_key', 0)).rejects.toThrow(positiveIntErrorRegex);
@@ -103,7 +105,7 @@ describe('Get blockchain info and validation checks', () => {
       const response = await WalletApi.buyRam(accountName, 'sample_key', 1000000);
 
       expect(response.success).toBeTruthy();
-    });
+    }, JEST_TIMEOUT);
 
     it('claim emission validation', async () => {
       const nonExistedAccount = Helper.getNonExistedAccountName();
@@ -155,7 +157,7 @@ describe('Get blockchain info and validation checks', () => {
 
       const response4 = await WalletApi.stakeOrUnstakeTokens(accountName, 'sample', netTokens - 1, cpuTokens + 1);
       expect(response4.success).toBeTruthy();
-    }, 10000);
+    }, JEST_TIMEOUT);
 
     it('getCurrentNetAndCpuStakedTokens', async () => {
       const nonExistedAccount = Helper.getNonExistedAccountName();

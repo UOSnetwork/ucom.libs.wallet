@@ -5,7 +5,7 @@ import SocialApi = require('../../../src/lib/social-transactions/api/social-api'
 import EosClient = require('../../../src/lib/common/client/eos-client');
 import InteractionsDictionary = require('../../../src/lib/dictionary/interactions-dictionary');
 
-const JEST_TIMEOUT = 10000;
+const JEST_TIMEOUT = 40000;
 
 Helper.initForEnvByProcessVariable();
 

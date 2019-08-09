@@ -7,7 +7,7 @@ import EosClient = require('../../../src/lib/common/client/eos-client');
 
 const alreadyReceiptErrorPattern = new RegExp('assertion failure with message: Already have the receipt with the same');
 
-const JEST_TIMEOUT = 10000;
+const JEST_TIMEOUT = 40000;
 
 describe('Backend API airdrop', () => {
   Helper.initForStagingEnv();

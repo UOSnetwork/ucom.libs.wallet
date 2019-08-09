@@ -7,7 +7,7 @@ import WalletApi = require('../../../src/lib/wallet/api/wallet-api');
 import ContentProfileHelper = require('../../helpers/content/content-profile-helper');
 import moment = require('moment');
 
-const JEST_TIMEOUT = 15000;
+const JEST_TIMEOUT = 40000;
 
 describe('Send profile and get profile status', () => {
   Helper.initForEnvByProcessVariable();

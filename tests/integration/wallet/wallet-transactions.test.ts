@@ -13,7 +13,7 @@ const privateKey = Helper.getTesterAccountPrivateKey();
 const accountNameTo = Helper.getAccountNameTo();
 const accountNameToPrivateKey = Helper.getAccountNameToPrivateKey();
 
-const JEST_TIMEOUT = 20000;
+const JEST_TIMEOUT = 30000;
 
 describe('Send transactions to blockchain', () => {
   describe('Positive', () => {
