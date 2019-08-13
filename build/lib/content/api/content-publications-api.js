@@ -13,11 +13,49 @@ class ContentPublicationsApi {
         const content = Object.assign({}, givenContent, this.getDateTimeFields(true, true));
         return this.signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, entityNameFor, accountNameFrom);
     }
+    static async signCreateDirectPostForAccount(accountNameFrom, privateKey, accountNameTo, givenContent, permission = PermissionsDictionary.active()) {
+        const interactionName = InteractionsDictionary.createDirectPostForAccount();
+        const entityNameFor = EntityNames.USERS;
+        const extraMetadata = {
+            account_to: accountNameTo,
+        };
+        const content = Object.assign({}, givenContent, this.getDateTimeFields(true, true));
+        return this.signSendDirectPostToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, entityNameFor, accountNameTo, extraMetadata);
+    }
+    static async signCreateDirectPostForOrganization(accountNameFrom, organizationBlockchainIdTo, privateKey, givenContent, permission = PermissionsDictionary.active()) {
+        const interactionName = InteractionsDictionary.createDirectPostForOrganization();
+        const entityNameFor = EntityNames.ORGANIZATIONS;
+        const extraMetadata = {
+            organization_id_to: organizationBlockchainIdTo,
+        };
+        const content = Object.assign({}, givenContent, this.getDateTimeFields(true, true));
+        return this.signSendDirectPostToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, entityNameFor, organizationBlockchainIdTo, extraMetadata);
+    }
     static async signUpdatePublicationFromUser(accountNameFrom, privateKey, givenContent, blockchainId, permission = PermissionsDictionary.active()) {
         const interactionName = InteractionsDictionary.updateMediaPostFromAccount();
         const entityNameFor = EntityNames.USERS;
         const content = Object.assign({}, givenContent, { updated_at: moment().utc().format() });
         const { signed_transaction } = await this.signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, entityNameFor, accountNameFrom, {}, blockchainId);
+        return signed_transaction;
+    }
+    static async signUpdateDirectPostForAccount(accountNameFrom, privateKey, accountNameTo, givenContent, blockchainId, permission = PermissionsDictionary.active()) {
+        const interactionName = InteractionsDictionary.updateDirectPostForAccount();
+        const entityNameFor = EntityNames.USERS;
+        const content = Object.assign({}, givenContent, { updated_at: moment().utc().format() });
+        const extraMetadata = {
+            account_to: accountNameTo,
+        };
+        const { signed_transaction } = await this.signSendDirectPostToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, entityNameFor, accountNameTo, extraMetadata, blockchainId);
+        return signed_transaction;
+    }
+    static async signUpdateDirectPostForOrganization(accountNameFrom, privateKey, organizationBlockchainIdTo, givenContent, blockchainId, permission = PermissionsDictionary.active()) {
+        const interactionName = InteractionsDictionary.updateDirectPostForOrganization();
+        const entityNameFor = EntityNames.ORGANIZATIONS;
+        const content = Object.assign({}, givenContent, { updated_at: moment().utc().format() });
+        const extraMetadata = {
+            organization_id_to: organizationBlockchainIdTo,
+        };
+        const { signed_transaction } = await this.signSendDirectPostToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, entityNameFor, organizationBlockchainIdTo, extraMetadata, blockchainId);
         return signed_transaction;
     }
     static async signCreatePublicationFromOrganization(accountNameFrom, privateKey, orgBlockchainId, givenContent, permission = PermissionsDictionary.active()) {
@@ -44,6 +82,22 @@ class ContentPublicationsApi {
         const entityNameFor = EntityNames.USERS;
         return this.signResendPublicationToBlockchain(authorAccountName, historicalSenderPrivateKey, givenContent, interactionName, entityNameFor, authorAccountName, {}, blockchainId);
     }
+    static async signResendDirectPostsToAccount(authorAccountName, historicalSenderPrivateKey, accountNameTo, givenContent, blockchainId) {
+        const interactionName = InteractionsDictionary.createDirectPostForAccount();
+        const entityNameFor = EntityNames.USERS;
+        const extraMetadata = {
+            account_to: accountNameTo,
+        };
+        return this.signResendPublicationToBlockchain(authorAccountName, historicalSenderPrivateKey, givenContent, interactionName, entityNameFor, accountNameTo, extraMetadata, blockchainId);
+    }
+    static async signResendDirectPostsToOrganization(authorAccountName, historicalSenderPrivateKey, organizationBlockchainId, givenContent, blockchainId) {
+        const interactionName = InteractionsDictionary.createDirectPostForOrganization();
+        const entityNameFor = EntityNames.ORGANIZATIONS;
+        const extraMetadata = {
+            organization_id_to: organizationBlockchainId,
+        };
+        return this.signResendPublicationToBlockchain(authorAccountName, historicalSenderPrivateKey, givenContent, interactionName, entityNameFor, organizationBlockchainId, extraMetadata, blockchainId);
+    }
     static async signResendPublicationFromOrganization(authorAccountName, historicalSenderPrivateKey, orgBlockchainId, givenContent, blockchainId) {
         const interactionName = InteractionsDictionary.createMediaPostFromOrganization();
         const entityNameFor = EntityNames.ORGANIZATIONS;
@@ -60,6 +114,17 @@ class ContentPublicationsApi {
         if (error !== null) {
             throw new TypeError(JSON.stringify(error));
         }
+        const metaData = this.getMetadata(accountNameFrom, contentId, extraMetaData);
+        const signed_transaction = await SocialTransactionsCommonFactory.getSignedTransaction(accountNameFrom, privateKey, interactionName, metaData, content, permission);
+        return {
+            signed_transaction,
+            blockchain_id: metaData.content_id,
+        };
+    }
+    static async signSendDirectPostToBlockchain(accountNameFrom, privateKey, permission, givenContent, interactionName, entityNameFor, entityBlockchainIdFor, extraMetaData = {}, givenContentId = null) {
+        const contentId = givenContentId || ContentIdGenerator.getForDirectPost();
+        const content = this.getContentWithExtraFields(givenContent, contentId, entityNameFor, entityBlockchainIdFor, accountNameFrom);
+        // #task - add validator like for publication (media post)
         const metaData = this.getMetadata(accountNameFrom, contentId, extraMetaData);
         const signed_transaction = await SocialTransactionsCommonFactory.getSignedTransaction(accountNameFrom, privateKey, interactionName, metaData, content, permission);
         return {

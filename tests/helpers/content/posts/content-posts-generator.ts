@@ -9,6 +9,14 @@ class ContentPostsGenerator {
     };
   }
 
+  public static getDirectPostInputFields(): any {
+    return {
+      description:    'Cool sample post description #winter #summer',
+      entity_images:  {},
+      entity_tags:    ['winter', 'summer'],
+    };
+  }
+
   public static getSamplePostInputCreatedAt(): string {
     return '2019-07-24T06:41:28Z';
   }

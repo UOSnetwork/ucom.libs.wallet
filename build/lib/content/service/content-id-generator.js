@@ -8,5 +8,9 @@ class ContentIdGenerator {
         const uniqIdPrefix = 'pstms';
         return uniqid_1.default(`${uniqIdPrefix}-`);
     }
+    static getForDirectPost() {
+        const uniqIdPrefix = 'pstdr';
+        return uniqid_1.default(`${uniqIdPrefix}-`);
+    }
 }
 module.exports = ContentIdGenerator;

@@ -15,6 +15,12 @@ const CREATE_MEDIA_POST_FROM_ORGANIZATION = 'create_media_post_from_organization
 const UPDATE_MEDIA_POST_FROM_ACCOUNT      = 'update_media_post_from_account';
 const UPDATE_MEDIA_POST_FROM_ORGANIZATION = 'update_media_post_from_organization';
 
+const CREATE_DIRECT_POST_FOR_ACCOUNT      = 'create_direct_post_from_account_to_account';
+const CREATE_DIRECT_POST_FOR_ORGANIZATION = 'create_direct_post_from_account_to_organization';
+
+const UPDATE_DIRECT_POST_FOR_ACCOUNT      = 'update_direct_post_from_account_to_account';
+const UPDATE_DIRECT_POST_FOR_ORGANIZATION = 'update_direct_post_from_account_to_organization';
+
 const UPVOTE    = 'upvote';
 const DOWNVOTE  = 'downvote';
 
@@ -69,6 +75,22 @@ class InteractionsDictionary {
 
   public static updateMediaPostFromOrganization(): string {
     return UPDATE_MEDIA_POST_FROM_ORGANIZATION;
+  }
+
+  public static createDirectPostForAccount(): string {
+    return CREATE_DIRECT_POST_FOR_ACCOUNT;
+  }
+
+  public static updateDirectPostForAccount(): string {
+    return UPDATE_DIRECT_POST_FOR_ACCOUNT;
+  }
+
+  public static createDirectPostForOrganization(): string {
+    return CREATE_DIRECT_POST_FOR_ORGANIZATION;
+  }
+
+  public static updateDirectPostForOrganization(): string {
+    return UPDATE_DIRECT_POST_FOR_ORGANIZATION;
   }
 }
 

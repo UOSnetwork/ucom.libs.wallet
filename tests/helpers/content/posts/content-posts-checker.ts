@@ -2,6 +2,8 @@
 import ContentPostsGenerator = require('./content-posts-generator');
 import SmartContractsActionsDictionary = require('../../../../src/lib/dictionary/smart-contracts-actions-dictionary');
 
+const { EntityNames } = require('ucom.libs.common').Common.Dictionary;
+
 class ContentPostsChecker {
   public static checkPostPushingFromUserResponse(
     response: any,
@@ -20,6 +22,48 @@ class ContentPostsChecker {
 
     const expectedActName = SmartContractsActionsDictionary.socialAction();
     this.checkProcessedResponsePart(response, expectedData, expectedActName);
+  }
+
+  public static checkDirectPostPushingResponse(
+    response: any,
+    interaction: string,
+    accountFrom: string,
+    contentId: string,
+    entityNameFor: string,
+    entityBlockchainIdFor: string,
+    createdAt: string | null = null,
+    expectedActName: string = SmartContractsActionsDictionary.socialAction(),
+    acc: string | null = null,
+  ): void {
+    const samplePost = ContentPostsGenerator.getDirectPostInputFields();
+
+    const entityToKey = entityNameFor === EntityNames.USERS ? 'account_to' : 'organization_id_to';
+
+    const expectedData = {
+      acc: acc || accountFrom,
+      actionJson: {
+        interaction,
+        data: {
+          account_from: accountFrom,
+          content_id: contentId,
+          [entityToKey]: entityBlockchainIdFor,
+        },
+      },
+      actionData: {
+        description: samplePost.description,
+        entity_images: {},
+        entity_tags: [
+          'winter',
+          'summer',
+        ],
+        blockchain_id: contentId,
+        entity_name_for: entityNameFor,
+        entity_blockchain_id_for: entityBlockchainIdFor,
+        author_account_name: accountFrom,
+      },
+    };
+
+    this.checkProcessedResponsePartAsObject(response, expectedData, expectedActName, createdAt);
   }
 
   public static checkPostPushingFromOrganizationResponse(
@@ -99,6 +143,32 @@ class ContentPostsChecker {
     expect(data.acc).toBe(expectedData.acc);
     expect(data.action_json).toBe(expectedData.action_json);
     expect(data.action_data).toMatch(expectedData.action_data);
+
+    if (createdAt !== null) {
+      expect(data.timestamp).toBe(createdAt);
+    }
+  }
+
+  private static checkProcessedResponsePartAsObject(
+    response,
+    expectedData,
+    expectedActName: string,
+    createdAt: string | null = null,
+  ): void {
+    const { action_traces } = response.processed;
+    expect(action_traces.length).toBe(1);
+
+    const { act } = action_traces[0];
+    expect(act.name).toBe(expectedActName);
+
+    const { data } = act;
+
+    const actionJson = JSON.parse(data.action_json);
+    const actionData = JSON.parse(data.action_data);
+
+    expect(data.acc).toBe(expectedData.acc);
+    expect(actionJson).toMatchObject(expectedData.actionJson);
+    expect(actionData).toMatchObject(expectedData.actionData);
 
     if (createdAt !== null) {
       expect(data.timestamp).toBe(createdAt);

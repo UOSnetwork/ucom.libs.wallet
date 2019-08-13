@@ -6,6 +6,12 @@ class ContentIdGenerator {
 
     return uniqid(`${uniqIdPrefix}-`);
   }
+
+  public static getForDirectPost(): string {
+    const uniqIdPrefix = 'pstdr';
+
+    return uniqid(`${uniqIdPrefix}-`);
+  }
 }
 
 export = ContentIdGenerator;
