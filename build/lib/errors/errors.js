@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable max-classes-per-file */
 class AppError extends Error {
     constructor(message, status) {
         // noinspection JSCheckFunctionSignatures

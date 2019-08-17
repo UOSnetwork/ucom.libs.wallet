@@ -22,6 +22,23 @@ class ContentPublicationsApi {
         const content = Object.assign({}, givenContent, this.getDateTimeFields(true, true));
         return this.signSendDirectPostToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, entityNameFor, accountNameTo, extraMetadata);
     }
+    static async signCreateRepostPostForAccount(accountNameFrom, privateKey, parentContentId, givenContent, permission = PermissionsDictionary.active()) {
+        const interactionName = InteractionsDictionary.createRepostFromAccount();
+        const entityNameFor = EntityNames.USERS;
+        const extraMetaData = {
+            parent_content_id: parentContentId,
+        };
+        const contentId = ContentIdGenerator.getForRepost();
+        const givenContentWithExtraFields = this.getContentWithExtraFields(givenContent, contentId, entityNameFor, accountNameFrom, accountNameFrom);
+        const content = Object.assign({}, givenContentWithExtraFields, this.getDateTimeFields(true, true));
+        // #task - add validator like for publication (media post)
+        const metaData = this.getMetadata(accountNameFrom, contentId, extraMetaData);
+        const signed_transaction = await SocialTransactionsCommonFactory.getSignedTransaction(accountNameFrom, privateKey, interactionName, metaData, content, permission);
+        return {
+            signed_transaction,
+            blockchain_id: metaData.content_id,
+        };
+    }
     static async signCreateDirectPostForOrganization(accountNameFrom, organizationBlockchainIdTo, privateKey, givenContent, permission = PermissionsDictionary.active()) {
         const interactionName = InteractionsDictionary.createDirectPostForOrganization();
         const entityNameFor = EntityNames.ORGANIZATIONS;
@@ -89,6 +106,14 @@ class ContentPublicationsApi {
             account_to: accountNameTo,
         };
         return this.signResendPublicationToBlockchain(authorAccountName, historicalSenderPrivateKey, givenContent, interactionName, entityNameFor, accountNameTo, extraMetadata, blockchainId);
+    }
+    static async signResendReposts(authorAccountName, historicalSenderPrivateKey, parentBlockchainId, givenContent, blockchainId) {
+        const interactionName = InteractionsDictionary.createRepostFromAccount();
+        const entityNameFor = EntityNames.USERS;
+        const extraMetadata = {
+            parent_content_id: parentBlockchainId,
+        };
+        return this.signResendPublicationToBlockchain(authorAccountName, historicalSenderPrivateKey, givenContent, interactionName, entityNameFor, authorAccountName, extraMetadata, blockchainId);
     }
     static async signResendDirectPostsToOrganization(authorAccountName, historicalSenderPrivateKey, organizationBlockchainId, givenContent, blockchainId) {
         const interactionName = InteractionsDictionary.createDirectPostForOrganization();

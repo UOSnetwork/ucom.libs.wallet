@@ -1,6 +1,7 @@
 /* eslint-disable no-useless-escape */
 import ContentPostsGenerator = require('./content-posts-generator');
 import SmartContractsActionsDictionary = require('../../../../src/lib/dictionary/smart-contracts-actions-dictionary');
+import InteractionsDictionary = require('../../../../src/lib/dictionary/interactions-dictionary');
 
 const { EntityNames } = require('ucom.libs.common').Common.Dictionary;
 
@@ -35,7 +36,7 @@ class ContentPostsChecker {
     expectedActName: string = SmartContractsActionsDictionary.socialAction(),
     acc: string | null = null,
   ): void {
-    const samplePost = ContentPostsGenerator.getDirectPostInputFields();
+    const samplePost = ContentPostsGenerator.getDirectPostOrRepostInputFields();
 
     const entityToKey = entityNameFor === EntityNames.USERS ? 'account_to' : 'organization_id_to';
 
@@ -59,6 +60,45 @@ class ContentPostsChecker {
         blockchain_id: contentId,
         entity_name_for: entityNameFor,
         entity_blockchain_id_for: entityBlockchainIdFor,
+        author_account_name: accountFrom,
+      },
+    };
+
+    this.checkProcessedResponsePartAsObject(response, expectedData, expectedActName, createdAt);
+  }
+
+  public static checkRepostPushingResponse(
+    response: any,
+    accountFrom: string,
+    contentId: string,
+    parentContentId: string,
+    createdAt: string | null = null,
+    expectedActName: string = SmartContractsActionsDictionary.socialAction(),
+    acc: string | null = null,
+  ): void {
+    const samplePost = ContentPostsGenerator.getDirectPostOrRepostInputFields();
+    const interaction = InteractionsDictionary.createRepostFromAccount();
+
+    const expectedData = {
+      acc: acc || accountFrom,
+      actionJson: {
+        interaction,
+        data: {
+          account_from:       accountFrom,
+          content_id:         contentId,
+          parent_content_id:  parentContentId,
+        },
+      },
+      actionData: {
+        description: samplePost.description,
+        entity_images: {},
+        entity_tags: [
+          'winter',
+          'summer',
+        ],
+        blockchain_id: contentId,
+        entity_name_for: EntityNames.USERS,
+        entity_blockchain_id_for: accountFrom,
         author_account_name: accountFrom,
       },
     };

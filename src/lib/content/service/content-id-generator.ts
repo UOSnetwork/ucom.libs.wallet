@@ -2,14 +2,18 @@ import uniqid from 'uniqid';
 
 class ContentIdGenerator {
   public static getForMediaPost(): string {
-    const uniqIdPrefix = 'pstms';
-
-    return uniqid(`${uniqIdPrefix}-`);
+    return this.getUniqId('pstms');
   }
 
   public static getForDirectPost(): string {
-    const uniqIdPrefix = 'pstdr';
+    return this.getUniqId('pstdr');
+  }
 
+  public static getForRepost(): string {
+    return this.getUniqId('pstrp');
+  }
+
+  private static getUniqId(uniqIdPrefix): string {
     return uniqid(`${uniqIdPrefix}-`);
   }
 }

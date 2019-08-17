@@ -9,7 +9,7 @@ class ContentPostsGenerator {
     };
   }
 
-  public static getDirectPostInputFields(): any {
+  public static getDirectPostOrRepostInputFields(): any {
     return {
       description:    'Cool sample post description #winter #summer',
       entity_images:  {},

@@ -5,11 +5,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 const uniqid_1 = __importDefault(require("uniqid"));
 class ContentIdGenerator {
     static getForMediaPost() {
-        const uniqIdPrefix = 'pstms';
-        return uniqid_1.default(`${uniqIdPrefix}-`);
+        return this.getUniqId('pstms');
     }
     static getForDirectPost() {
-        const uniqIdPrefix = 'pstdr';
+        return this.getUniqId('pstdr');
+    }
+    static getForRepost() {
+        return this.getUniqId('pstrp');
+    }
+    static getUniqId(uniqIdPrefix) {
         return uniqid_1.default(`${uniqIdPrefix}-`);
     }
 }

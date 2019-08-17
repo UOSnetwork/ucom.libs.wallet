@@ -21,7 +21,7 @@ const permission      = PermissionsDictionary.active();
 
 describe('Create direct post', () => {
   it('Create a direct post from account to account', async () => {
-    const content = ContentPostsGenerator.getDirectPostInputFields();
+    const content = ContentPostsGenerator.getDirectPostOrRepostInputFields();
     const interactionName = InteractionsDictionary.createDirectPostForAccount();
 
     const { signed_transaction, blockchain_id } = await ContentPublicationsApi.signCreateDirectPostForAccount(
@@ -44,7 +44,7 @@ describe('Create direct post', () => {
   }, JEST_TIMEOUT);
 
   it('Create a direct post from user to organization', async () => {
-    const content = ContentPostsGenerator.getDirectPostInputFields();
+    const content = ContentPostsGenerator.getDirectPostOrRepostInputFields();
     const interactionName = InteractionsDictionary.createDirectPostForOrganization();
 
     const organizationBlockchainId: string = ContentOrganizationsGenerator.getSampleOrganizationBlockchainId();
@@ -71,7 +71,7 @@ describe('Create direct post', () => {
 
 describe('Update direct posts', () => {
   it('Update direct post from account to account', async () => {
-    const content       = ContentPostsGenerator.getDirectPostInputFields();
+    const content       = ContentPostsGenerator.getDirectPostOrRepostInputFields();
     content.created_at  = ContentPostsGenerator.getSamplePostInputCreatedAt();
     const blockchainId  = ContentPostsGenerator.getSamplePostBlockchainId();
 
@@ -99,7 +99,7 @@ describe('Update direct posts', () => {
   }, JEST_TIMEOUT);
 
   it('Update direct post from account to organization', async () => {
-    const content       = ContentPostsGenerator.getDirectPostInputFields();
+    const content       = ContentPostsGenerator.getDirectPostOrRepostInputFields();
     content.created_at  = ContentPostsGenerator.getSamplePostInputCreatedAt();
     const blockchainId  = ContentPostsGenerator.getSamplePostBlockchainId();
 

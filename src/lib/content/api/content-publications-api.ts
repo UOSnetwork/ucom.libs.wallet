@@ -64,6 +64,54 @@ class ContentPublicationsApi {
     );
   }
 
+  public static async signCreateRepostPostForAccount(
+    accountNameFrom: string,
+    privateKey: string,
+    parentContentId: string,
+    givenContent: any,
+    permission: string = PermissionsDictionary.active(),
+  ): Promise<{ signed_transaction: any, blockchain_id: string }> {
+    const interactionName: string = InteractionsDictionary.createRepostFromAccount();
+    const entityNameFor: string   = EntityNames.USERS;
+
+    const extraMetaData = {
+      parent_content_id: parentContentId,
+    };
+
+    const contentId: string = ContentIdGenerator.getForRepost();
+
+    const givenContentWithExtraFields = this.getContentWithExtraFields(
+      givenContent,
+      contentId,
+      entityNameFor,
+      accountNameFrom,
+      accountNameFrom,
+    );
+
+    const content = {
+      ...givenContentWithExtraFields,
+      ...this.getDateTimeFields(true, true),
+    };
+
+    // #task - add validator like for publication (media post)
+
+    const metaData = this.getMetadata(accountNameFrom, contentId, extraMetaData);
+
+    const signed_transaction = await SocialTransactionsCommonFactory.getSignedTransaction(
+      accountNameFrom,
+      privateKey,
+      interactionName,
+      metaData,
+      content,
+      permission,
+    );
+
+    return {
+      signed_transaction,
+      blockchain_id: metaData.content_id,
+    };
+  }
+
   public static async signCreateDirectPostForOrganization(
     accountNameFrom: string,
     organizationBlockchainIdTo: string,
@@ -303,6 +351,32 @@ class ContentPublicationsApi {
       interactionName,
       entityNameFor,
       accountNameTo,
+      extraMetadata,
+      blockchainId,
+    );
+  }
+
+  public static async signResendReposts(
+    authorAccountName: string,
+    historicalSenderPrivateKey: string,
+    parentBlockchainId,
+    givenContent: any,
+    blockchainId: string,
+  ): Promise<any> {
+    const interactionName = InteractionsDictionary.createRepostFromAccount();
+    const entityNameFor: string = EntityNames.USERS;
+
+    const extraMetadata = {
+      parent_content_id: parentBlockchainId,
+    };
+
+    return this.signResendPublicationToBlockchain(
+      authorAccountName,
+      historicalSenderPrivateKey,
+      givenContent,
+      interactionName,
+      entityNameFor,
+      authorAccountName,
       extraMetadata,
       blockchainId,
     );

@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 class AppError extends Error {
   public status;
 

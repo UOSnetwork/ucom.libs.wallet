@@ -18,7 +18,7 @@ const accountNameFrom = Helper.getTesterAccountName();
 const accountNameTo = Helper.getAccountNameTo();
 
 it('Resend direct post from account to account to the blockchain', async () => {
-  const content = ContentPostsGenerator.getDirectPostInputFields();
+  const content = ContentPostsGenerator.getDirectPostOrRepostInputFields();
 
   content.created_at = ContentPostsGenerator.getSamplePostInputCreatedAt();
   const interactionName = InteractionsDictionary.createDirectPostForAccount();
@@ -51,7 +51,7 @@ it('Resend direct post from account to account to the blockchain', async () => {
 }, JEST_TIMEOUT);
 
 it('Resend direct post from account to the organization to the blockchain', async () => {
-  const content = ContentPostsGenerator.getDirectPostInputFields();
+  const content = ContentPostsGenerator.getDirectPostOrRepostInputFields();
 
   content.created_at = ContentPostsGenerator.getSamplePostInputCreatedAt();
   const interactionName = InteractionsDictionary.createDirectPostForOrganization();

@@ -21,6 +21,8 @@ const CREATE_DIRECT_POST_FOR_ORGANIZATION = 'create_direct_post_from_account_to_
 const UPDATE_DIRECT_POST_FOR_ACCOUNT      = 'update_direct_post_from_account_to_account';
 const UPDATE_DIRECT_POST_FOR_ORGANIZATION = 'update_direct_post_from_account_to_organization';
 
+const CREATE_REPOST_FROM_ACCOUNT          = 'create_repost_from_account';
+
 const UPVOTE    = 'upvote';
 const DOWNVOTE  = 'downvote';
 
@@ -91,6 +93,10 @@ class InteractionsDictionary {
 
   public static updateDirectPostForOrganization(): string {
     return UPDATE_DIRECT_POST_FOR_ORGANIZATION;
+  }
+
+  public static createRepostFromAccount(): string {
+    return CREATE_REPOST_FROM_ACCOUNT;
   }
 }
 
