@@ -3,7 +3,7 @@ import Helper = require('../../helpers/helper');
 import ContentPublicationsApi = require('../../../src/lib/content/api/content-publications-api');
 import EosClient = require('../../../src/lib/common/client/eos-client');
 import ContentPostsGenerator = require('../../helpers/content/posts/content-posts-generator');
-import ContentPostsChecker = require('../../helpers/content/posts/content-posts-checker');
+import ContentPostsChecker = require('../../helpers/content/posts/content-checker');
 import SmartContractsActionsDictionary = require('../../../src/lib/dictionary/smart-contracts-actions-dictionary');
 import SmartContractsDictionary = require('../../../src/lib/dictionary/smart-contracts-dictionary');
 

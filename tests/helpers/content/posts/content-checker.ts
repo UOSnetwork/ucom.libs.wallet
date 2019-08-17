@@ -2,10 +2,11 @@
 import ContentPostsGenerator = require('./content-posts-generator');
 import SmartContractsActionsDictionary = require('../../../../src/lib/dictionary/smart-contracts-actions-dictionary');
 import InteractionsDictionary = require('../../../../src/lib/dictionary/interactions-dictionary');
+import ContentCommentsGenerator = require('./content-comments-generator');
 
 const { EntityNames } = require('ucom.libs.common').Common.Dictionary;
 
-class ContentPostsChecker {
+class ContentChecker {
   public static checkPostPushingFromUserResponse(
     response: any,
     accountNameFrom: string,
@@ -62,6 +63,53 @@ class ContentPostsChecker {
         entity_blockchain_id_for: entityBlockchainIdFor,
         author_account_name: accountFrom,
       },
+    };
+
+    this.checkProcessedResponsePartAsObject(response, expectedData, expectedActName, createdAt);
+  }
+
+  public static checkCommentPushingResponse(
+    response: any,
+    interaction: string,
+    accountFrom: string,
+    contentId: string,
+    parentContentId: string,
+    entityNameFor: string,
+    entityBlockchainIdFor: string,
+    organizationBlockchainId: string | null = null,
+    createdAt: string | null = null,
+    expectedActName: string = SmartContractsActionsDictionary.socialAction(),
+    acc: string | null = null,
+  ): void {
+    const content = ContentCommentsGenerator.getCommentInputFields();
+
+    const data: any = {
+      account_from: accountFrom,
+      parent_content_id: parentContentId,
+      content_id: contentId,
+    };
+
+    const actionData: any = {
+      description: content.description,
+      entity_images: content.entity_images,
+      blockchain_id: contentId,
+      entity_name_for: entityNameFor,
+      entity_blockchain_id_for: entityBlockchainIdFor,
+      author_account_name: accountFrom,
+    };
+
+    if (organizationBlockchainId) {
+      data.organization_id_from = organizationBlockchainId;
+      actionData.organization_blockchain_id = organizationBlockchainId;
+    }
+
+    const expectedData = {
+      acc: acc || accountFrom,
+      actionJson: {
+        interaction,
+        data,
+      },
+      actionData,
     };
 
     this.checkProcessedResponsePartAsObject(response, expectedData, expectedActName, createdAt);
@@ -216,4 +264,4 @@ class ContentPostsChecker {
   }
 }
 
-export = ContentPostsChecker;
+export = ContentChecker;

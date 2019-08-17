@@ -5,7 +5,7 @@ import ContentPublicationsApi = require('../../../src/lib/content/api/content-pu
 import EosClient = require('../../../src/lib/common/client/eos-client');
 import ContentPostsGenerator = require('../../helpers/content/posts/content-posts-generator');
 import ContentOrganizationsGenerator = require('../../helpers/content/posts/content-organizations-generator');
-import ContentPostsChecker = require('../../helpers/content/posts/content-posts-checker');
+import ContentPostsChecker = require('../../helpers/content/posts/content-checker');
 import InteractionsDictionary = require('../../../src/lib/dictionary/interactions-dictionary');
 
 const { EntityNames } = require('ucom.libs.common').Common.Dictionary;

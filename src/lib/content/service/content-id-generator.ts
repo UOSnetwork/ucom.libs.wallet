@@ -13,6 +13,10 @@ class ContentIdGenerator {
     return this.getUniqId('pstrp');
   }
 
+  public static getForComment(): string {
+    return this.getUniqId('cmmnt');
+  }
+
   private static getUniqId(uniqIdPrefix): string {
     return uniqid(`${uniqIdPrefix}-`);
   }

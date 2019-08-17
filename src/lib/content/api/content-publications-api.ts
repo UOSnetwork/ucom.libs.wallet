@@ -33,6 +33,120 @@ class ContentPublicationsApi {
     );
   }
 
+  public static async signCreateCommentFromUser(
+    accountNameFrom: string,
+    privateKey: string,
+    parentContentBlockchainId: string,
+    givenContent: any,
+    permission: string = PermissionsDictionary.active(),
+  ): Promise<{ signed_transaction: any, blockchain_id: string }> {
+    const parentEntityName = this.getCommentParentEntityName(givenContent);
+
+    const interactionName = InteractionsDictionary.createCommentFromAccount();
+
+    const content = {
+      ...givenContent,
+      ...this.getDateTimeFields(true, true),
+    };
+
+    return this.signSendCommentToBlockchain(
+      accountNameFrom,
+      privateKey,
+      permission,
+      content,
+      interactionName,
+      parentEntityName,
+      parentContentBlockchainId,
+    );
+  }
+
+  public static async signResendCommentFromAccount(
+    authorAccountName: string,
+    historicalSenderPrivateKey: string,
+    givenContent: any,
+    blockchainId: string,
+    parentContentBlockchainId: string,
+  ): Promise<any> {
+    const interactionName = InteractionsDictionary.createCommentFromAccount();
+    const parentEntityName = this.getCommentParentEntityName(givenContent);
+
+    const extraMetadata = {
+      parent_content_id: parentContentBlockchainId,
+    };
+
+    return this.signResendPublicationToBlockchain(
+      authorAccountName,
+      historicalSenderPrivateKey,
+      givenContent,
+      interactionName,
+      parentEntityName,
+      parentContentBlockchainId,
+      extraMetadata,
+      blockchainId,
+    );
+  }
+
+  public static async signCreateCommentFromOrganization(
+    accountNameFrom: string,
+    privateKey: string,
+    parentContentBlockchainId: string,
+    organizationBlockchainId: string,
+    givenContent: any,
+    permission: string = PermissionsDictionary.active(),
+  ): Promise<{ signed_transaction: any, blockchain_id: string }> {
+    const parentEntityName = this.getCommentParentEntityName(givenContent);
+
+    const interactionName = InteractionsDictionary.createCommentFromOrganization();
+
+    const content = {
+      ...givenContent,
+      ...this.getDateTimeFields(true, true),
+    };
+
+    const extraMetaData = {
+      organization_id_from: organizationBlockchainId,
+    };
+
+    return this.signSendCommentToBlockchain(
+      accountNameFrom,
+      privateKey,
+      permission,
+      content,
+      interactionName,
+      parentEntityName,
+      parentContentBlockchainId,
+      extraMetaData,
+    );
+  }
+
+  public static async signResendCommentFromOrganization(
+    authorAccountName: string,
+    historicalSenderPrivateKey: string,
+    givenContent: any,
+    blockchainId: string,
+    parentContentBlockchainId: string,
+    organizationBlockchainId: string,
+  ): Promise<any> {
+    const interactionName = InteractionsDictionary.createCommentFromOrganization();
+    const parentEntityName = this.getCommentParentEntityName(givenContent);
+
+    const extraMetadata = {
+      parent_content_id:    parentContentBlockchainId,
+      organization_id_from: organizationBlockchainId,
+    };
+
+    return this.signResendPublicationToBlockchain(
+      authorAccountName,
+      historicalSenderPrivateKey,
+      givenContent,
+      interactionName,
+      parentEntityName,
+      parentContentBlockchainId,
+      extraMetadata,
+      blockchainId,
+    );
+  }
+
   public static async signCreateDirectPostForAccount(
     accountNameFrom: string,
     privateKey: string,
@@ -481,6 +595,48 @@ class ContentPublicationsApi {
     };
   }
 
+  private static async signSendCommentToBlockchain(
+    accountNameFrom: string,
+    privateKey: string,
+    permission: string,
+    givenContent: any,
+    interactionName: string,
+    parentEntityName: string,
+    parentBlockchainId: string,
+    givenExtraMetaData: any = {},
+  ): Promise<{ signed_transaction: any, blockchain_id: string }> {
+    const contentId: string = ContentIdGenerator.getForComment();
+
+    const content = this.getContentWithExtraFields(
+      givenContent,
+      contentId,
+      parentEntityName,
+      parentBlockchainId,
+      accountNameFrom,
+    );
+
+    const extraMetaData = {
+      ...givenExtraMetaData,
+      parent_content_id: parentBlockchainId,
+    };
+
+    const metaData = this.getMetadata(accountNameFrom, contentId, extraMetaData);
+
+    const signed_transaction = await SocialTransactionsCommonFactory.getSignedTransaction(
+      accountNameFrom,
+      privateKey,
+      interactionName,
+      metaData,
+      content,
+      permission,
+    );
+
+    return {
+      signed_transaction,
+      blockchain_id: metaData.content_id,
+    };
+  }
+
   private static async signSendDirectPostToBlockchain(
     accountNameFrom: string,
     privateKey: string,
@@ -607,6 +763,14 @@ class ContentPublicationsApi {
       content_id: contentId,
       ...extraMetaData,
     };
+  }
+
+  private static getCommentParentEntityName(givenContent: any) {
+    if (!givenContent.path || Array.isArray(givenContent) || givenContent.path.length === 0) {
+      throw new TypeError(`Malformed comment path: ${givenContent.path}`);
+    }
+
+    return givenContent.path.length === 1 ? EntityNames.POSTS : EntityNames.COMMENTS;
   }
 }
 
