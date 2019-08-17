@@ -38,9 +38,10 @@ class ContentPublicationsApi {
     privateKey: string,
     parentContentBlockchainId: string,
     givenContent: any,
+    isReply: boolean,
     permission: string = PermissionsDictionary.active(),
   ): Promise<{ signed_transaction: any, blockchain_id: string }> {
-    const parentEntityName = this.getCommentParentEntityName(givenContent);
+    const parentEntityName = this.getCommentParentEntityName(isReply);
 
     const interactionName = InteractionsDictionary.createCommentFromAccount();
 
@@ -66,9 +67,10 @@ class ContentPublicationsApi {
     givenContent: any,
     blockchainId: string,
     parentContentBlockchainId: string,
+    isReply: boolean,
   ): Promise<any> {
     const interactionName = InteractionsDictionary.createCommentFromAccount();
-    const parentEntityName = this.getCommentParentEntityName(givenContent);
+    const parentEntityName = this.getCommentParentEntityName(isReply);
 
     const extraMetadata = {
       parent_content_id: parentContentBlockchainId,
@@ -92,9 +94,10 @@ class ContentPublicationsApi {
     parentContentBlockchainId: string,
     organizationBlockchainId: string,
     givenContent: any,
+    isReply: boolean,
     permission: string = PermissionsDictionary.active(),
   ): Promise<{ signed_transaction: any, blockchain_id: string }> {
-    const parentEntityName = this.getCommentParentEntityName(givenContent);
+    const parentEntityName = this.getCommentParentEntityName(isReply);
 
     const interactionName = InteractionsDictionary.createCommentFromOrganization();
 
@@ -126,9 +129,10 @@ class ContentPublicationsApi {
     blockchainId: string,
     parentContentBlockchainId: string,
     organizationBlockchainId: string,
+    isReply: boolean,
   ): Promise<any> {
     const interactionName = InteractionsDictionary.createCommentFromOrganization();
-    const parentEntityName = this.getCommentParentEntityName(givenContent);
+    const parentEntityName = this.getCommentParentEntityName(isReply);
 
     const extraMetadata = {
       parent_content_id:    parentContentBlockchainId,
@@ -765,12 +769,8 @@ class ContentPublicationsApi {
     };
   }
 
-  private static getCommentParentEntityName(givenContent: any) {
-    if (!givenContent.path || Array.isArray(givenContent) || givenContent.path.length === 0) {
-      throw new TypeError(`Malformed comment path: ${givenContent.path}`);
-    }
-
-    return givenContent.path.length === 1 ? EntityNames.POSTS : EntityNames.COMMENTS;
+  private static getCommentParentEntityName(isReply: boolean): string {
+    return isReply ? EntityNames.COMMENTS : EntityNames.POSTS;
   }
 }
 

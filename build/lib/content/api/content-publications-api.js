@@ -13,22 +13,22 @@ class ContentPublicationsApi {
         const content = Object.assign({}, givenContent, this.getDateTimeFields(true, true));
         return this.signSendPublicationToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, entityNameFor, accountNameFrom);
     }
-    static async signCreateCommentFromUser(accountNameFrom, privateKey, parentContentBlockchainId, givenContent, permission = PermissionsDictionary.active()) {
-        const parentEntityName = this.getCommentParentEntityName(givenContent);
+    static async signCreateCommentFromUser(accountNameFrom, privateKey, parentContentBlockchainId, givenContent, isReply, permission = PermissionsDictionary.active()) {
+        const parentEntityName = this.getCommentParentEntityName(isReply);
         const interactionName = InteractionsDictionary.createCommentFromAccount();
         const content = Object.assign({}, givenContent, this.getDateTimeFields(true, true));
         return this.signSendCommentToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, parentEntityName, parentContentBlockchainId);
     }
-    static async signResendCommentFromAccount(authorAccountName, historicalSenderPrivateKey, givenContent, blockchainId, parentContentBlockchainId) {
+    static async signResendCommentFromAccount(authorAccountName, historicalSenderPrivateKey, givenContent, blockchainId, parentContentBlockchainId, isReply) {
         const interactionName = InteractionsDictionary.createCommentFromAccount();
-        const parentEntityName = this.getCommentParentEntityName(givenContent);
+        const parentEntityName = this.getCommentParentEntityName(isReply);
         const extraMetadata = {
             parent_content_id: parentContentBlockchainId,
         };
         return this.signResendPublicationToBlockchain(authorAccountName, historicalSenderPrivateKey, givenContent, interactionName, parentEntityName, parentContentBlockchainId, extraMetadata, blockchainId);
     }
-    static async signCreateCommentFromOrganization(accountNameFrom, privateKey, parentContentBlockchainId, organizationBlockchainId, givenContent, permission = PermissionsDictionary.active()) {
-        const parentEntityName = this.getCommentParentEntityName(givenContent);
+    static async signCreateCommentFromOrganization(accountNameFrom, privateKey, parentContentBlockchainId, organizationBlockchainId, givenContent, isReply, permission = PermissionsDictionary.active()) {
+        const parentEntityName = this.getCommentParentEntityName(isReply);
         const interactionName = InteractionsDictionary.createCommentFromOrganization();
         const content = Object.assign({}, givenContent, this.getDateTimeFields(true, true));
         const extraMetaData = {
@@ -36,9 +36,9 @@ class ContentPublicationsApi {
         };
         return this.signSendCommentToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, parentEntityName, parentContentBlockchainId, extraMetaData);
     }
-    static async signResendCommentFromOrganization(authorAccountName, historicalSenderPrivateKey, givenContent, blockchainId, parentContentBlockchainId, organizationBlockchainId) {
+    static async signResendCommentFromOrganization(authorAccountName, historicalSenderPrivateKey, givenContent, blockchainId, parentContentBlockchainId, organizationBlockchainId, isReply) {
         const interactionName = InteractionsDictionary.createCommentFromOrganization();
-        const parentEntityName = this.getCommentParentEntityName(givenContent);
+        const parentEntityName = this.getCommentParentEntityName(isReply);
         const extraMetadata = {
             parent_content_id: parentContentBlockchainId,
             organization_id_from: organizationBlockchainId,
@@ -237,11 +237,8 @@ class ContentPublicationsApi {
     static getMetadata(accountNameFrom, contentId, extraMetaData) {
         return Object.assign({ account_from: accountNameFrom, content_id: contentId }, extraMetaData);
     }
-    static getCommentParentEntityName(givenContent) {
-        if (!givenContent.path || Array.isArray(givenContent) || givenContent.path.length === 0) {
-            throw new TypeError(`Malformed comment path: ${givenContent.path}`);
-        }
-        return givenContent.path.length === 1 ? EntityNames.POSTS : EntityNames.COMMENTS;
+    static getCommentParentEntityName(isReply) {
+        return isReply ? EntityNames.COMMENTS : EntityNames.POSTS;
     }
 }
 module.exports = ContentPublicationsApi;

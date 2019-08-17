@@ -8,7 +8,7 @@ import ContentCommentsGenerator = require('../../../helpers/content/posts/conten
 import ContentOrganizationsGenerator = require('../../../helpers/content/posts/content-organizations-generator');
 import SmartContractsActionsDictionary = require('../../../../src/lib/dictionary/smart-contracts-actions-dictionary');
 
-const JEST_TIMEOUT = 15000;
+const JEST_TIMEOUT = 25000;
 
 Helper.initForEnvByProcessVariable();
 
@@ -38,6 +38,7 @@ it('Resend comment or reply from account', async () => {
     content,
     commentBlockchainId,
     postBlockchainId,
+    false,
   );
 
   const response = await EosClient.pushTransaction(signedTransaction);
@@ -83,6 +84,7 @@ it('Resend comment or reply from organization', async () => {
     commentBlockchainId,
     postBlockchainId,
     organizationBlockchainId,
+    false,
   );
 
   const response = await EosClient.pushTransaction(signedTransaction);

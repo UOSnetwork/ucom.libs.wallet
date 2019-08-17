@@ -38,6 +38,7 @@ it('Create comment or reply from account', async () => {
     privateKey,
     postBlockchainId,
     content,
+    false,
     permission,
   );
 
@@ -75,6 +76,7 @@ it('Create comment or reply from organization', async () => {
     postBlockchainId,
     organizationBlockchainId,
     content,
+    false,
     permission,
   );
 
