@@ -63,7 +63,7 @@ it('Resend comment or reply from account', async () => {
 it('Resend comment or reply from organization', async () => {
   const postBlockchainId          = ContentPostsGenerator.getSamplePostBlockchainId();
   const commentBlockchainId       = ContentCommentsGenerator.getSampleCommentBlockchainId();
-  const organizationBlockchainId  = ContentOrganizationsGenerator.getSampleOrganizationBlockchainId();
+  const organizationBlockchainId  = ContentOrganizationsGenerator.getBlockchainId();
 
   const content = {
     ...ContentCommentsGenerator.getCommentInputFields(),

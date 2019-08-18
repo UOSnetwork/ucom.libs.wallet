@@ -57,7 +57,7 @@ it('Create comment or reply from account', async () => {
 
 it('Create comment or reply from organization', async () => {
   const postBlockchainId = ContentPostsGenerator.getSamplePostBlockchainId();
-  const organizationBlockchainId = ContentOrganizationsGenerator.getSampleOrganizationBlockchainId();
+  const organizationBlockchainId = ContentOrganizationsGenerator.getBlockchainId();
 
   const content = {
     ...ContentCommentsGenerator.getCommentInputFields(),

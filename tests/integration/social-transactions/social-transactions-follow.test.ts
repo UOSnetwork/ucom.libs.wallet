@@ -23,14 +23,14 @@ it('Unfollow account', async () => {
 
 it('Follow organization', async () => {
   const interaction = InteractionsDictionary.followToOrganization();
-  const targetBlockchainId = ContentOrganizationsGenerator.getSampleOrganizationBlockchainId();
+  const targetBlockchainId = ContentOrganizationsGenerator.getBlockchainId();
 
   await SocialTransactionsGenerator.signSendAndCheckUserToAccount(interaction, targetBlockchainId);
 }, JEST_TIMEOUT);
 
 it('Unfollow organization', async () => {
   const interaction = InteractionsDictionary.unfollowToOrganization();
-  const targetBlockchainId = ContentOrganizationsGenerator.getSampleOrganizationBlockchainId();
+  const targetBlockchainId = ContentOrganizationsGenerator.getBlockchainId();
 
   await SocialTransactionsGenerator.signSendAndCheckUserToAccount(interaction, targetBlockchainId);
 }, JEST_TIMEOUT);
