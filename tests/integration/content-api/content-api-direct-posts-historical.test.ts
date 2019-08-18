@@ -57,7 +57,7 @@ it('Resend direct post from account to the organization to the blockchain', asyn
   const interactionName = InteractionsDictionary.createDirectPostForOrganization();
 
   const blockchainId = ContentPostsGenerator.getSamplePostBlockchainId();
-  const organizationBlockchainId = ContentOrganizationsGenerator.getSampleOrganizationBlockchainId();
+  const organizationBlockchainId = ContentOrganizationsGenerator.getBlockchainId();
 
   const signedTransaction = await ContentPublicationsApi.signResendDirectPostsToOrganization(
     accountNameFrom,

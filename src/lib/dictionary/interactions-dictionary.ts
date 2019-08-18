@@ -26,6 +26,9 @@ const CREATE_REPOST_FROM_ACCOUNT          = 'create_repost_from_account';
 const CREATE_COMMENT_FROM_ACCOUNT         = 'create_comment_from_account';
 const CREATE_COMMENT_FROM_ORGANIZATION    = 'create_comment_from_organization';
 
+const CREATE_ORGANIZATION = 'create_organization';
+const UPDATE_ORGANIZATION = 'update_organization';
+
 const UPVOTE    = 'upvote';
 const DOWNVOTE  = 'downvote';
 
@@ -108,6 +111,14 @@ class InteractionsDictionary {
 
   public static createCommentFromOrganization(): string {
     return CREATE_COMMENT_FROM_ORGANIZATION;
+  }
+
+  public static createOrganization(): string {
+    return CREATE_ORGANIZATION;
+  }
+
+  public static updateOrganization(): string {
+    return UPDATE_ORGANIZATION;
   }
 }
 

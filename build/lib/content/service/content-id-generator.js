@@ -16,6 +16,9 @@ class ContentIdGenerator {
     static getForComment() {
         return this.getUniqId('cmmnt');
     }
+    static getForOrganization() {
+        return this.getUniqId('org');
+    }
     static getUniqId(uniqIdPrefix) {
         return uniqid_1.default(`${uniqIdPrefix}-`);
     }

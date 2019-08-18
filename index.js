@@ -7,8 +7,9 @@ module.exports = {
   ContentApi: require('./build/lib/content/api/content-api'),
 
   Content: {
-    ProfileApi: require('./build/lib/content/api/content-api'),
-    PublicationsApi: require('./build/lib/content/api/content-publications-api'),
+    ProfileApi:       require('./build/lib/content/api/content-api'),
+    PublicationsApi:  require('./build/lib/content/api/content-publications-api'),
+    OrganizationsApi: require('./build/lib/content/api/content-organizations-api'),
 
     ContentInteractionsApi: require('./build/lib/social-transactions/api/content-interactions-api'),
   },

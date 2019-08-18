@@ -46,7 +46,7 @@ describe('Resend media-posts (publications) to the blockchain', () => {
     it('Resend a publication from organization to the blockchain', async () => {
       const content         = ContentPostsGenerator.getSamplePostInputFields();
       const interactionName = InteractionsDictionary.createMediaPostFromOrganization();
-      const orgBlockchainId = ContentOrganizationsGenerator.getSampleOrganizationBlockchainId();
+      const orgBlockchainId = ContentOrganizationsGenerator.getBlockchainId();
       const postBlockchainId = ContentPostsGenerator.getSamplePostBlockchainId();
 
       content.created_at = ContentPostsGenerator.getSamplePostInputCreatedAt();

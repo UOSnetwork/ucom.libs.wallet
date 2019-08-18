@@ -3,6 +3,7 @@ import SocialTransactionsCommonFactory = require('../../social-transactions/serv
 import moment = require('moment');
 import ContentIdGenerator = require('../service/content-id-generator');
 import InteractionsDictionary = require('../../dictionary/interactions-dictionary');
+import ContentHelper = require('../service/content-helper');
 
 const { PostFieldsValidator } = require('ucom.libs.common').Posts.Validator;
 const { EntityNames } = require('ucom.libs.common').Common.Dictionary;
@@ -19,7 +20,7 @@ class ContentPublicationsApi {
 
     const content = {
       ...givenContent,
-      ...this.getDateTimeFields(true, true),
+      ...ContentHelper.getDateTimeFields(true, true),
     };
 
     return this.signSendPublicationToBlockchain(
@@ -47,7 +48,7 @@ class ContentPublicationsApi {
 
     const content = {
       ...givenContent,
-      ...this.getDateTimeFields(true, true),
+      ...ContentHelper.getDateTimeFields(true, true),
     };
 
     return this.signSendCommentToBlockchain(
@@ -103,7 +104,7 @@ class ContentPublicationsApi {
 
     const content = {
       ...givenContent,
-      ...this.getDateTimeFields(true, true),
+      ...ContentHelper.getDateTimeFields(true, true),
     };
 
     const extraMetaData = {
@@ -167,7 +168,7 @@ class ContentPublicationsApi {
 
     const content = {
       ...givenContent,
-      ...this.getDateTimeFields(true, true),
+      ...ContentHelper.getDateTimeFields(true, true),
     };
 
     return this.signSendDirectPostToBlockchain(
@@ -208,12 +209,12 @@ class ContentPublicationsApi {
 
     const content = {
       ...givenContentWithExtraFields,
-      ...this.getDateTimeFields(true, true),
+      ...ContentHelper.getDateTimeFields(true, true),
     };
 
     // #task - add validator like for publication (media post)
 
-    const metaData = this.getMetadata(accountNameFrom, contentId, extraMetaData);
+    const metaData = ContentHelper.getMetadata(accountNameFrom, contentId, extraMetaData);
 
     const signed_transaction = await SocialTransactionsCommonFactory.getSignedTransaction(
       accountNameFrom,
@@ -246,7 +247,7 @@ class ContentPublicationsApi {
 
     const content = {
       ...givenContent,
-      ...this.getDateTimeFields(true, true),
+      ...ContentHelper.getDateTimeFields(true, true),
     };
 
     return this.signSendDirectPostToBlockchain(
@@ -376,7 +377,7 @@ class ContentPublicationsApi {
 
     const content = {
       ...givenContent,
-      ...this.getDateTimeFields(true, true),
+      ...ContentHelper.getDateTimeFields(true, true),
       organization_blockchain_id: orgBlockchainId,
     };
 
@@ -582,7 +583,7 @@ class ContentPublicationsApi {
       throw new TypeError(JSON.stringify(error));
     }
 
-    const metaData = this.getMetadata(accountNameFrom, contentId, extraMetaData);
+    const metaData = ContentHelper.getMetadata(accountNameFrom, contentId, extraMetaData);
 
     const signed_transaction = await SocialTransactionsCommonFactory.getSignedTransaction(
       accountNameFrom,
@@ -624,7 +625,7 @@ class ContentPublicationsApi {
       parent_content_id: parentBlockchainId,
     };
 
-    const metaData = this.getMetadata(accountNameFrom, contentId, extraMetaData);
+    const metaData = ContentHelper.getMetadata(accountNameFrom, contentId, extraMetaData);
 
     const signed_transaction = await SocialTransactionsCommonFactory.getSignedTransaction(
       accountNameFrom,
@@ -664,7 +665,7 @@ class ContentPublicationsApi {
 
     // #task - add validator like for publication (media post)
 
-    const metaData = this.getMetadata(accountNameFrom, contentId, extraMetaData);
+    const metaData = ContentHelper.getMetadata(accountNameFrom, contentId, extraMetaData);
 
     const signed_transaction = await SocialTransactionsCommonFactory.getSignedTransaction(
       accountNameFrom,
@@ -712,7 +713,7 @@ class ContentPublicationsApi {
       throw new TypeError(`Provided created_at value is not a valid datetime string: ${content.created_at}`);
     }
 
-    const metaData = this.getMetadata(contentAuthorAccountName, contentId, extraMetaData);
+    const metaData = ContentHelper.getMetadata(contentAuthorAccountName, contentId, extraMetaData);
 
     return SocialTransactionsCommonFactory.getSignedResendTransaction(
       privateKey,
@@ -743,31 +744,6 @@ class ContentPublicationsApi {
     };
   }
 
-  private static getDateTimeFields(createdAt: boolean, updatedAt: boolean) {
-    const data: any = {};
-
-    if (createdAt) {
-      data.created_at = moment().utc().format();
-    }
-
-    if (updatedAt) {
-      data.updated_at = moment().utc().format();
-    }
-
-    return data;
-  }
-
-  private static getMetadata(
-    accountNameFrom: string,
-    contentId: string,
-    extraMetaData: any,
-  ) {
-    return {
-      account_from: accountNameFrom,
-      content_id: contentId,
-      ...extraMetaData,
-    };
-  }
 
   private static getCommentParentEntityName(isReply: boolean): string {
     return isReply ? EntityNames.COMMENTS : EntityNames.POSTS;

@@ -17,6 +17,10 @@ class ContentIdGenerator {
     return this.getUniqId('cmmnt');
   }
 
+  public static getForOrganization(): string {
+    return this.getUniqId('org');
+  }
+
   private static getUniqId(uniqIdPrefix): string {
     return uniqid(`${uniqIdPrefix}-`);
   }

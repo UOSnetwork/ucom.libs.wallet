@@ -3,6 +3,7 @@ import ContentPostsGenerator = require('./content-posts-generator');
 import SmartContractsActionsDictionary = require('../../../../src/lib/dictionary/smart-contracts-actions-dictionary');
 import InteractionsDictionary = require('../../../../src/lib/dictionary/interactions-dictionary');
 import ContentCommentsGenerator = require('./content-comments-generator');
+import ContentOrganizationsGenerator = require('./content-organizations-generator');
 
 const { EntityNames } = require('ucom.libs.common').Common.Dictionary;
 
@@ -61,6 +62,37 @@ class ContentChecker {
         blockchain_id: contentId,
         entity_name_for: entityNameFor,
         entity_blockchain_id_for: entityBlockchainIdFor,
+        author_account_name: accountFrom,
+      },
+    };
+
+    this.checkProcessedResponsePartAsObject(response, expectedData, expectedActName, createdAt);
+  }
+
+  public static checkOrganizationPushingResponse(
+    response: any,
+    interaction: string,
+    accountFrom: string,
+    organizationBlockchainId: string,
+    createdAt: string | null = null,
+    expectedActName: string = SmartContractsActionsDictionary.socialAction(),
+    acc: string | null = null,
+  ): void {
+    const sampleOrganization = ContentOrganizationsGenerator.getFormFields();
+
+    const expectedData = {
+      acc: acc || accountFrom,
+      actionJson: {
+        interaction,
+        data: {
+          account_from:     accountFrom,
+          organization_id:  organizationBlockchainId,
+        },
+      },
+      actionData: {
+        about: sampleOrganization.about,
+        entity_images: {},
+        blockchain_id: organizationBlockchainId,
         author_account_name: accountFrom,
       },
     };

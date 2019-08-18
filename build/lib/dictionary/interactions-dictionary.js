@@ -17,6 +17,8 @@ const UPDATE_DIRECT_POST_FOR_ORGANIZATION = 'update_direct_post_from_account_to_
 const CREATE_REPOST_FROM_ACCOUNT = 'create_repost_from_account';
 const CREATE_COMMENT_FROM_ACCOUNT = 'create_comment_from_account';
 const CREATE_COMMENT_FROM_ORGANIZATION = 'create_comment_from_organization';
+const CREATE_ORGANIZATION = 'create_organization';
+const UPDATE_ORGANIZATION = 'update_organization';
 const UPVOTE = 'upvote';
 const DOWNVOTE = 'downvote';
 class InteractionsDictionary {
@@ -79,6 +81,12 @@ class InteractionsDictionary {
     }
     static createCommentFromOrganization() {
         return CREATE_COMMENT_FROM_ORGANIZATION;
+    }
+    static createOrganization() {
+        return CREATE_ORGANIZATION;
+    }
+    static updateOrganization() {
+        return UPDATE_ORGANIZATION;
     }
 }
 module.exports = InteractionsDictionary;

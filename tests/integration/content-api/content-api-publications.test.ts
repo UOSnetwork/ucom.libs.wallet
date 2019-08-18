@@ -38,7 +38,7 @@ describe('Send media-posts (publications) to the blockchain', () => {
       it('Send a new publication from organization to the blockchain', async () => {
         const content         = ContentPostsGenerator.getSamplePostInputFields();
         const interactionName = InteractionsDictionary.createMediaPostFromOrganization();
-        const orgBlockchainId = ContentOrganizationsGenerator.getSampleOrganizationBlockchainId();
+        const orgBlockchainId = ContentOrganizationsGenerator.getBlockchainId();
 
         const { signed_transaction, blockchain_id } = await ContentPublicationsApi.signCreatePublicationFromOrganization(
           accountNameFrom,
@@ -86,7 +86,7 @@ describe('Send media-posts (publications) to the blockchain', () => {
         const content         = ContentPostsGenerator.getSamplePostInputFields();
         content.created_at    = ContentPostsGenerator.getSamplePostInputCreatedAt();
         const interactionName = InteractionsDictionary.updateMediaPostFromOrganization();
-        const orgBlockchainId = ContentOrganizationsGenerator.getSampleOrganizationBlockchainId();
+        const orgBlockchainId = ContentOrganizationsGenerator.getBlockchainId();
 
         const blockchainId = ContentPostsGenerator.getSamplePostBlockchainId();
 

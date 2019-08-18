@@ -47,7 +47,7 @@ describe('Create direct post', () => {
     const content = ContentPostsGenerator.getDirectPostOrRepostInputFields();
     const interactionName = InteractionsDictionary.createDirectPostForOrganization();
 
-    const organizationBlockchainId: string = ContentOrganizationsGenerator.getSampleOrganizationBlockchainId();
+    const organizationBlockchainId: string = ContentOrganizationsGenerator.getBlockchainId();
 
     const { signed_transaction, blockchain_id } = await ContentPublicationsApi.signCreateDirectPostForOrganization(
       accountNameFrom,
@@ -104,7 +104,7 @@ describe('Update direct posts', () => {
     const blockchainId  = ContentPostsGenerator.getSamplePostBlockchainId();
 
     const interactionName = InteractionsDictionary.updateDirectPostForOrganization();
-    const organizationBlockchainId = ContentOrganizationsGenerator.getSampleOrganizationBlockchainId();
+    const organizationBlockchainId = ContentOrganizationsGenerator.getBlockchainId();
 
     const signed_transaction = await ContentPublicationsApi.signUpdateDirectPostForOrganization(
       accountNameFrom,
