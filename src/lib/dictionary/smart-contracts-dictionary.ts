@@ -11,6 +11,14 @@ class SmartContractsDictionary {
     return 'voters';
   }
 
+  public static uosCalcs(): string {
+    return 'uos.calcs';
+  }
+
+  public static eosIoToken(): string {
+    return 'eosio.token';
+  }
+
   public static calculatorsVotersTableName(): string {
     return 'calcvoters';
   }

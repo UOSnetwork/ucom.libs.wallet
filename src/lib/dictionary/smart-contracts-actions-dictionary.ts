@@ -3,6 +3,38 @@ class SmartContractsActionsDictionary {
     return 'updateauth';
   }
 
+  public static newAccount(): string {
+    return 'newaccount';
+  }
+
+  public static buyRamBytes(): string {
+    return 'buyrambytes';
+  }
+
+  public static sellRam(): string {
+    return 'sellram';
+  }
+
+  public static transfer(): string {
+    return 'transfer';
+  }
+
+  public static voteProducer(): string {
+    return 'voteproducer';
+  }
+
+  public static withdrawal(): string {
+    return 'withdrawal';
+  }
+
+  public static delegateBw(): string {
+    return 'delegatebw';
+  }
+
+  public static unDelegateBw(): string {
+    return 'undelegatebw';
+  }
+
   public static linkAuth(): string {
     return 'linkauth';
   }

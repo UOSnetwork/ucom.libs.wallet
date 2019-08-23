@@ -3,19 +3,8 @@ const EosClient = require("./common/client/eos-client");
 const BlockchainRegistry = require("./blockchain-registry");
 const TransactionsBuilder = require("./service/transactions-builder");
 const SmartContractsDictionary = require("./dictionary/smart-contracts-dictionary");
-const SMART_CONTRACT__EMISSION = 'uos.calcs';
-const SMART_CONTRACT__EOSIO_TOKEN = 'eosio.token';
-const ACTION__BUY_RAM_BYTES = 'buyrambytes';
-const ACTION__SELL_RAM_BYTES = 'sellram';
-const ACTION__TRANSFER = 'transfer';
-const ACTION__VOTE_PRODUCER = 'voteproducer';
-const ACTION__WITHDRAWAL = 'withdrawal';
-const ACTION__DELEGATE_BANDWIDTH = 'delegatebw';
-const ACTION__UNDELEGATE_BANDWIDTH = 'undelegatebw';
-const CORE_TOKEN_NAME = 'UOS';
-const BASIC_RESOURCE__RAM = 8192;
-const BASIC_RESOURCE__CPU_TOKENS = `1.0000 ${CORE_TOKEN_NAME}`;
-const BASIC_RESOURCE__NET_TOKENS = `1.0000 ${CORE_TOKEN_NAME}`;
+const SmartContractsActionsDictionary = require("./dictionary/smart-contracts-actions-dictionary");
+const ActionResourcesDictionary = require("./dictionary/action-resources-dictionary");
 const _ = require('lodash');
 class TransactionSender {
     /**
@@ -126,8 +115,8 @@ class TransactionSender {
      */
     static async delegateBasicResourcesToUser(accountNameFrom, actorPrivateKey, accountNameTo) {
         const actions = [];
-        actions.push(this.getBuyRamAction(accountNameFrom, BASIC_RESOURCE__RAM, accountNameTo));
-        actions.push(this.getDelegateBandwidthAction(accountNameFrom, BASIC_RESOURCE__NET_TOKENS, BASIC_RESOURCE__CPU_TOKENS, accountNameTo, false));
+        actions.push(this.getBuyRamAction(accountNameFrom, ActionResourcesDictionary.basicResourceRam(), accountNameTo));
+        actions.push(this.getDelegateBandwidthAction(accountNameFrom, ActionResourcesDictionary.basicResourceNetTokens(), ActionResourcesDictionary.basicResourceCpuTokens(), accountNameTo, false));
         return EosClient.sendTransaction(actorPrivateKey, actions);
     }
     // noinspection JSUnusedGlobalSymbols
@@ -155,7 +144,7 @@ class TransactionSender {
      * @param {string} symbol
      * @return {Promise<Object>}
      */
-    static async sendTokens(accountNameFrom, privateKey, accountNameTo, amount, memo = '', symbol = CORE_TOKEN_NAME) {
+    static async sendTokens(accountNameFrom, privateKey, accountNameTo, amount, memo = '', symbol = ActionResourcesDictionary.UOS()) {
         const stringAmount = this.getUosAmountAsString(amount, symbol);
         const action = this.getSendTokensAction(accountNameFrom, accountNameTo, stringAmount, memo);
         return EosClient.sendTransaction(privateKey, [action]);
@@ -169,7 +158,7 @@ class TransactionSender {
      */
     static getVoteForBlockProducersAction(accountNameFrom, producers) {
         const smartContract = SmartContractsDictionary.eosIo();
-        const actionName = ACTION__VOTE_PRODUCER;
+        const actionName = SmartContractsActionsDictionary.voteProducer();
         const data = {
             voter: accountNameFrom,
             proxy: '',
@@ -187,7 +176,7 @@ class TransactionSender {
      */
     static getBuyRamAction(accountNameFrom, amount, accountNameTo) {
         const smartContract = SmartContractsDictionary.eosIo();
-        const actionName = ACTION__BUY_RAM_BYTES;
+        const actionName = SmartContractsActionsDictionary.buyRamBytes();
         const data = {
             payer: accountNameFrom,
             receiver: accountNameTo,
@@ -204,7 +193,7 @@ class TransactionSender {
      */
     static getSellRamAction(accountName, amount) {
         const smartContract = SmartContractsDictionary.eosIo();
-        const actionName = ACTION__SELL_RAM_BYTES;
+        const actionName = SmartContractsActionsDictionary.sellRam();
         const data = {
             account: accountName,
             bytes: amount,
@@ -221,8 +210,8 @@ class TransactionSender {
      * @private
      */
     static getSendTokensAction(accountNameFrom, accountNameTo, amount, memo) {
-        const smartContract = SMART_CONTRACT__EOSIO_TOKEN;
-        const actionName = ACTION__TRANSFER;
+        const smartContract = SmartContractsDictionary.eosIoToken();
+        const actionName = SmartContractsActionsDictionary.transfer();
         const data = {
             from: accountNameFrom,
             to: accountNameTo,
@@ -238,8 +227,8 @@ class TransactionSender {
      * @private
      */
     static getClaimEmissionAction(accountNameFrom) {
-        const smartContract = SMART_CONTRACT__EMISSION;
-        const actionName = ACTION__WITHDRAWAL;
+        const smartContract = SmartContractsDictionary.uosCalcs();
+        const actionName = SmartContractsActionsDictionary.withdrawal();
         const data = {
             owner: accountNameFrom,
         };
@@ -258,7 +247,7 @@ class TransactionSender {
     static getDelegateBandwidthAction(accountNameFrom, stakeNetAmount, stakeCpuAmount, accountNameTo, transfer) {
         accountNameTo = accountNameTo || accountNameFrom;
         const smartContract = SmartContractsDictionary.eosIo();
-        const actionName = ACTION__DELEGATE_BANDWIDTH;
+        const actionName = SmartContractsActionsDictionary.delegateBw();
         const data = {
             from: accountNameFrom,
             receiver: accountNameTo,
@@ -280,7 +269,7 @@ class TransactionSender {
      */
     static getUnstakeTokensAction(accountNameFrom, netAmount, cpuAmount, accountNameTo, transfer) {
         const smartContract = SmartContractsDictionary.eosIo();
-        const actionName = ACTION__UNDELEGATE_BANDWIDTH;
+        const actionName = SmartContractsActionsDictionary.unDelegateBw();
         const data = {
             from: accountNameFrom,
             receiver: accountNameTo,
@@ -297,7 +286,7 @@ class TransactionSender {
      * @return {string}
      * @private
      */
-    static getUosAmountAsString(amount, symbol = CORE_TOKEN_NAME) {
+    static getUosAmountAsString(amount, symbol = ActionResourcesDictionary.UOS()) {
         return `${Math.floor(amount)}.0000 ${symbol}`;
     }
 }

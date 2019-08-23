@@ -9,6 +9,12 @@ class SmartContractsDictionary {
     static votersTableName() {
         return 'voters';
     }
+    static uosCalcs() {
+        return 'uos.calcs';
+    }
+    static eosIoToken() {
+        return 'eosio.token';
+    }
     static calculatorsVotersTableName() {
         return 'calcvoters';
     }

@@ -47,6 +47,14 @@ class Helper {
     return airdropHolderAccountName;
   }
 
+  public static getCreatorAccountName(): string {
+    return accountsData.account_creator.account_name;
+  }
+
+  public static getCreatorPrivateKey(): string {
+    return accountsData.account_creator.activePk;
+  }
+
   /**
    *
    * @returns {string}

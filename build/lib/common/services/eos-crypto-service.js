@@ -9,5 +9,9 @@ class EosCryptoService {
             publicKey,
         };
     }
+    static signValue(value, privateKey) {
+        // noinspection TypeScriptValidateJSTypes
+        return ecc.sign(value, privateKey);
+    }
 }
 module.exports = EosCryptoService;

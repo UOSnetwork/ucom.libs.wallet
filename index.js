@@ -15,6 +15,7 @@ module.exports = {
   },
 
   SocialKeyApi: require('./build/lib/social-key/api/social-key-api'),
+  RegistrationApi: require('./build/lib/registration/api/registration-api'),
 
   TransactionSender: require('./build/lib/transaction-sender'),
   UosAccountsPropertiesApi: require('./build/lib/uos-accounts-properties/uos-accounts-properties-api'),
