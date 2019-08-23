@@ -1,10 +1,10 @@
 import EosClient = require('./common/client/eos-client');
 import BlockchainRegistry = require('./blockchain-registry');
 import TransactionsBuilder = require('./service/transactions-builder');
+import SmartContractsDictionary = require('./dictionary/smart-contracts-dictionary');
 
-const SMART_CONTRACT__EISIO         = 'eosio';
 const SMART_CONTRACT__EMISSION      = 'uos.calcs';
-const SMART_CONTRACT__EOSIO_TOKEN      = 'eosio.token';
+const SMART_CONTRACT__EOSIO_TOKEN   = 'eosio.token';
 
 const ACTION__BUY_RAM_BYTES         = 'buyrambytes';
 const ACTION__SELL_RAM_BYTES        = 'sellram';
@@ -239,7 +239,7 @@ class TransactionSender {
    * @private
    */
   static getVoteForBlockProducersAction(accountNameFrom, producers) {
-    const smartContract = SMART_CONTRACT__EISIO;
+    const smartContract = SmartContractsDictionary.eosIo();
     const actionName    = ACTION__VOTE_PRODUCER;
 
     const data = {
@@ -260,7 +260,7 @@ class TransactionSender {
    * @private
    */
   static getBuyRamAction(accountNameFrom, amount, accountNameTo) {
-    const smartContract = SMART_CONTRACT__EISIO;
+    const smartContract = SmartContractsDictionary.eosIo();
     const actionName    = ACTION__BUY_RAM_BYTES;
 
     const data = {
@@ -280,7 +280,7 @@ class TransactionSender {
    * @private
    */
   static getSellRamAction(accountName, amount) {
-    const smartContract = SMART_CONTRACT__EISIO;
+    const smartContract = SmartContractsDictionary.eosIo();
     const actionName    = ACTION__SELL_RAM_BYTES;
 
     const data = {
@@ -350,7 +350,7 @@ class TransactionSender {
   ) {
     accountNameTo = accountNameTo || accountNameFrom;
 
-    const smartContract = SMART_CONTRACT__EISIO;
+    const smartContract = SmartContractsDictionary.eosIo();
     const actionName    = ACTION__DELEGATE_BANDWIDTH;
 
     const data = {
@@ -381,7 +381,7 @@ class TransactionSender {
     accountNameTo,
     transfer,
   ) {
-    const smartContract = SMART_CONTRACT__EISIO;
+    const smartContract = SmartContractsDictionary.eosIo();
     const actionName    = ACTION__UNDELEGATE_BANDWIDTH;
 
     const data = {

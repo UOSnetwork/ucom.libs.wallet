@@ -1,20 +1,22 @@
 "use strict";
-const SOCIAL_ACTION = 'socialactndt';
-const HISTORICAL_SOCIAL_ACTION = 'histactndt';
-const VOTE_FOR_CALCULATORS = 'votecalc';
-const SET_PROFILE = 'setprofile';
 class SmartContractsActionsDictionary {
+    static updateAuth() {
+        return 'updateauth';
+    }
+    static linkAuth() {
+        return 'linkauth';
+    }
     static setProfile() {
-        return SET_PROFILE;
+        return 'setprofile';
     }
     static socialAction() {
-        return SOCIAL_ACTION;
+        return 'socialactndt';
     }
     static historicalSocialAction() {
-        return HISTORICAL_SOCIAL_ACTION;
+        return 'histactndt';
     }
     static voteForCalculators() {
-        return VOTE_FOR_CALCULATORS;
+        return 'votecalc';
     }
 }
 module.exports = SmartContractsActionsDictionary;

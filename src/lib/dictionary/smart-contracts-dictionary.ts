@@ -1,50 +1,38 @@
-const UOS_ACTIVITY          = 'uos.activity';
-const TST_ACTIVITY          = 'tst.activity';
-const UOS_ACCOUNT_INFO      = 'uaccountinfo';
-
-const EOS_IO = 'eosio';
-const TABLE_NAME__VOTERS                = 'voters';
-const TABLE_NAME__CALCULATORS_VOTERS    = 'calcvoters';
-const TABLE_NAME__CALCULATORS           = 'calculators';
-const TABLE_NAME__ACCOUNT_PROFILE       = 'accprofile';
-
-const HISTORICAL_SENDER_ACCOUNT_NAME = 'uoshistorian';
-
 class SmartContractsDictionary {
   public static historicalSenderAccountName(): string {
-    return HISTORICAL_SENDER_ACCOUNT_NAME;
+    return 'uoshistorian';
   }
 
   public static accountProfileTableName(): string {
-    return TABLE_NAME__ACCOUNT_PROFILE;
+    return 'accprofile';
   }
 
   public static votersTableName(): string {
-    return TABLE_NAME__VOTERS;
+    return 'voters';
   }
 
   public static calculatorsVotersTableName(): string {
-    return TABLE_NAME__CALCULATORS_VOTERS;
+    return 'calcvoters';
   }
 
   public static calculatorsTableName(): string {
-    return TABLE_NAME__CALCULATORS;
+    return 'calculators';
   }
 
   public static uosActivity(): string {
-    return UOS_ACTIVITY;
+    return 'uos.activity';
   }
 
   public static uosAccountInfo(): string {
-    return UOS_ACCOUNT_INFO;
+    return 'uaccountinfo';
   }
 
   public static eosIo(): string {
-    return EOS_IO;
+    return 'eosio';
   }
 
   public static tstActivity(): string {
-    return TST_ACTIVITY;
+    return 'tst.activity';
   }
 }
 

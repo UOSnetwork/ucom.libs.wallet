@@ -223,6 +223,10 @@ class BlockchainRegistry {
             return 0;
         }
     }
+    static async getRawAccountData(accountName) {
+        const rpc = EosClient.getRpcClient();
+        return rpc.get_account(accountName);
+    }
     /**
      *
      * @param {string} accountName

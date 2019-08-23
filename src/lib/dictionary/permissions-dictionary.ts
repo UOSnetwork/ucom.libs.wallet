@@ -1,8 +1,10 @@
-const ACTIVE = 'active';
-
 class PermissionsDictionary {
-  static active() {
-    return ACTIVE;
+  public static active(): string {
+    return 'active';
+  }
+
+  public static social(): string {
+    return 'social';
   }
 }
 

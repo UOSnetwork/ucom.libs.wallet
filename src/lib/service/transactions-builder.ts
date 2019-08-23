@@ -23,14 +23,7 @@ class TransactionsBuilder {
     };
   }
 
-  /**
-   *
-   * @param {string} actorAccountName
-   * @param {string} permission
-   * @return {{actor: *, permission: string}[]}
-   * @private
-   */
-  static getSingleUserAuthorization(actorAccountName, permission) {
+  public static getSingleUserAuthorization(actorAccountName: string, permission: string) {
     return [{
       permission,
       actor: actorAccountName,

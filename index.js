@@ -14,6 +14,8 @@ module.exports = {
     ContentInteractionsApi: require('./build/lib/social-transactions/api/content-interactions-api'),
   },
 
+  SocialKeyApi: require('./build/lib/social-key/api/social-key-api'),
+
   TransactionSender: require('./build/lib/transaction-sender'),
   UosAccountsPropertiesApi: require('./build/lib/uos-accounts-properties/uos-accounts-properties-api'),
   EosClient: require('./build/lib/common/client/eos-client'),

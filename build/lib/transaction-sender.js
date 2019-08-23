@@ -2,7 +2,7 @@
 const EosClient = require("./common/client/eos-client");
 const BlockchainRegistry = require("./blockchain-registry");
 const TransactionsBuilder = require("./service/transactions-builder");
-const SMART_CONTRACT__EISIO = 'eosio';
+const SmartContractsDictionary = require("./dictionary/smart-contracts-dictionary");
 const SMART_CONTRACT__EMISSION = 'uos.calcs';
 const SMART_CONTRACT__EOSIO_TOKEN = 'eosio.token';
 const ACTION__BUY_RAM_BYTES = 'buyrambytes';
@@ -168,7 +168,7 @@ class TransactionSender {
      * @private
      */
     static getVoteForBlockProducersAction(accountNameFrom, producers) {
-        const smartContract = SMART_CONTRACT__EISIO;
+        const smartContract = SmartContractsDictionary.eosIo();
         const actionName = ACTION__VOTE_PRODUCER;
         const data = {
             voter: accountNameFrom,
@@ -186,7 +186,7 @@ class TransactionSender {
      * @private
      */
     static getBuyRamAction(accountNameFrom, amount, accountNameTo) {
-        const smartContract = SMART_CONTRACT__EISIO;
+        const smartContract = SmartContractsDictionary.eosIo();
         const actionName = ACTION__BUY_RAM_BYTES;
         const data = {
             payer: accountNameFrom,
@@ -203,7 +203,7 @@ class TransactionSender {
      * @private
      */
     static getSellRamAction(accountName, amount) {
-        const smartContract = SMART_CONTRACT__EISIO;
+        const smartContract = SmartContractsDictionary.eosIo();
         const actionName = ACTION__SELL_RAM_BYTES;
         const data = {
             account: accountName,
@@ -257,7 +257,7 @@ class TransactionSender {
      */
     static getDelegateBandwidthAction(accountNameFrom, stakeNetAmount, stakeCpuAmount, accountNameTo, transfer) {
         accountNameTo = accountNameTo || accountNameFrom;
-        const smartContract = SMART_CONTRACT__EISIO;
+        const smartContract = SmartContractsDictionary.eosIo();
         const actionName = ACTION__DELEGATE_BANDWIDTH;
         const data = {
             from: accountNameFrom,
@@ -279,7 +279,7 @@ class TransactionSender {
      * @private
      */
     static getUnstakeTokensAction(accountNameFrom, netAmount, cpuAmount, accountNameTo, transfer) {
-        const smartContract = SMART_CONTRACT__EISIO;
+        const smartContract = SmartContractsDictionary.eosIo();
         const actionName = ACTION__UNDELEGATE_BANDWIDTH;
         const data = {
             from: accountNameFrom,

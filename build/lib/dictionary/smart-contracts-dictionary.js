@@ -1,40 +1,31 @@
 "use strict";
-const UOS_ACTIVITY = 'uos.activity';
-const TST_ACTIVITY = 'tst.activity';
-const UOS_ACCOUNT_INFO = 'uaccountinfo';
-const EOS_IO = 'eosio';
-const TABLE_NAME__VOTERS = 'voters';
-const TABLE_NAME__CALCULATORS_VOTERS = 'calcvoters';
-const TABLE_NAME__CALCULATORS = 'calculators';
-const TABLE_NAME__ACCOUNT_PROFILE = 'accprofile';
-const HISTORICAL_SENDER_ACCOUNT_NAME = 'uoshistorian';
 class SmartContractsDictionary {
     static historicalSenderAccountName() {
-        return HISTORICAL_SENDER_ACCOUNT_NAME;
+        return 'uoshistorian';
     }
     static accountProfileTableName() {
-        return TABLE_NAME__ACCOUNT_PROFILE;
+        return 'accprofile';
     }
     static votersTableName() {
-        return TABLE_NAME__VOTERS;
+        return 'voters';
     }
     static calculatorsVotersTableName() {
-        return TABLE_NAME__CALCULATORS_VOTERS;
+        return 'calcvoters';
     }
     static calculatorsTableName() {
-        return TABLE_NAME__CALCULATORS;
+        return 'calculators';
     }
     static uosActivity() {
-        return UOS_ACTIVITY;
+        return 'uos.activity';
     }
     static uosAccountInfo() {
-        return UOS_ACCOUNT_INFO;
+        return 'uaccountinfo';
     }
     static eosIo() {
-        return EOS_IO;
+        return 'eosio';
     }
     static tstActivity() {
-        return TST_ACTIVITY;
+        return 'tst.activity';
     }
 }
 module.exports = SmartContractsDictionary;

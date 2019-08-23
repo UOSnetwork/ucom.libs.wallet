@@ -1,8 +1,10 @@
 "use strict";
-const ACTIVE = 'active';
 class PermissionsDictionary {
     static active() {
-        return ACTIVE;
+        return 'active';
+    }
+    static social() {
+        return 'social';
     }
 }
 module.exports = PermissionsDictionary;

@@ -55,6 +55,16 @@ class Helper {
     return accountsData[airdropAccountName].activePk;
   }
 
+  public static getTesterAccountBrainkey(): string {
+    const { brainkey } = accountsData[accountName];
+
+    if (!brainkey) {
+      throw new TypeError(`There is no brainkey inside accounts-data for the account: ${accountName}`);
+    }
+
+    return brainkey;
+  }
+
   // noinspection JSUnusedGlobalSymbols
   /**
    *
