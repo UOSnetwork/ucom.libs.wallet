@@ -8,13 +8,19 @@ const AccountNameService = require("../../common/services/account-name-service")
 const SmartContractsDictionary = require("../../dictionary/smart-contracts-dictionary");
 const SmartContractsActionsDictionary = require("../../dictionary/smart-contracts-actions-dictionary");
 const ActionResourcesDictionary = require("../../dictionary/action-resources-dictionary");
+const SocialKeyApi = require("../../social-key/api/social-key-api");
 class RegistrationApi {
-    static generateRandomDataForRegistration() {
+    static generateRandomDataForRegistration(options = null) {
         const brainKey = Brainkey.generateSimple();
         const { privateKey: ownerPrivateKey, publicKey: ownerPublicKey } = EosCryptoService.getKeyPartsFromParentPrivateKey(brainKey);
         const { privateKey: activePrivateKey, publicKey: activePublicKey } = EosCryptoService.getKeyPartsFromParentPrivateKey(ownerPrivateKey);
+        const { privateKey: socialPrivateKey, publicKey: socialPublicKey } = SocialKeyApi.generateSocialKeyFromActivePrivateKey(activePrivateKey);
         const accountName = AccountNameService.createRandomAccountName();
-        const sign = EosCryptoService.signValue(accountName, activePrivateKey);
+        let keyToSign = activePrivateKey;
+        if (options && options.signBySocial) {
+            keyToSign = socialPrivateKey;
+        }
+        const sign = EosCryptoService.signValue(accountName, keyToSign);
         return {
             accountName,
             brainKey,
@@ -22,6 +28,8 @@ class RegistrationApi {
             ownerPublicKey,
             activePrivateKey,
             activePublicKey,
+            socialPrivateKey,
+            socialPublicKey,
             sign,
         };
     }
