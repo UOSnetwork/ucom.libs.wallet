@@ -32,7 +32,7 @@ class UosAccountsPropertiesApi {
         for (const item of result) {
             let processed;
             if (flatten) {
-                processed = Object.assign({}, item.values, { account_name: item.name });
+                processed = Object.assign(Object.assign({}, item.values), { account_name: item.name });
             }
             else {
                 processed = item;

@@ -7,12 +7,12 @@ const ContentIdGenerator = require("../service/content-id-generator");
 class ContentOrganizationsApi {
     static async signCreateOrganization(accountNameFrom, privateKey, givenContent, permission = PermissionsDictionary.active()) {
         const interactionName = InteractionsDictionary.createOrganization();
-        const content = Object.assign({}, givenContent, ContentHelper.getDateTimeFields(true, true));
+        const content = Object.assign(Object.assign({}, givenContent), ContentHelper.getDateTimeFields(true, true));
         return this.signSendOrganizationToBlockchain(accountNameFrom, privateKey, permission, content, interactionName);
     }
     static async signUpdateOrganization(accountNameFrom, privateKey, givenContent, organizationBlockchainId, permission = PermissionsDictionary.active()) {
         const interactionName = InteractionsDictionary.updateOrganization();
-        const content = Object.assign({}, givenContent, ContentHelper.getUpdatedAtInsideObject());
+        const content = Object.assign(Object.assign({}, givenContent), ContentHelper.getUpdatedAtInsideObject());
         const { signed_transaction } = await this.signSendOrganizationToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, organizationBlockchainId);
         return signed_transaction;
     }
@@ -36,7 +36,7 @@ class ContentOrganizationsApi {
             blockchain_id: contentId,
             author_account_name: authorAccountName,
         };
-        return Object.assign({}, givenContent, data);
+        return Object.assign(Object.assign({}, givenContent), data);
     }
     static getMetadata(authorAccountName, organizationBlockchainId) {
         return {
