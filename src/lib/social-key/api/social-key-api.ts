@@ -55,7 +55,7 @@ class SocialKeyApi {
     return EosClient.sendTransaction(activePrivateKey, actions);
   }
 
-  private static async socialKeyNotExistOrError(accountName: string): Promise<void> {
+  public static async socialKeyNotExistOrError(accountName: string): Promise<void> {
     const currentSocialKey = await this.getAccountCurrentSocialKey(accountName);
 
     if (currentSocialKey) {

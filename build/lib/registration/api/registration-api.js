@@ -10,14 +10,14 @@ const SmartContractsActionsDictionary = require("../../dictionary/smart-contract
 const ActionResourcesDictionary = require("../../dictionary/action-resources-dictionary");
 const SocialKeyApi = require("../../social-key/api/social-key-api");
 class RegistrationApi {
-    static generateRandomDataForRegistration(options = null) {
+    static generateRandomDataForRegistration(options = {}) {
         const brainKey = Brainkey.generateSimple();
         const { privateKey: ownerPrivateKey, publicKey: ownerPublicKey } = EosCryptoService.getKeyPartsFromParentPrivateKey(brainKey);
         const { privateKey: activePrivateKey, publicKey: activePublicKey } = EosCryptoService.getKeyPartsFromParentPrivateKey(ownerPrivateKey);
         const { privateKey: socialPrivateKey, publicKey: socialPublicKey } = SocialKeyApi.generateSocialKeyFromActivePrivateKey(activePrivateKey);
         const accountName = AccountNameService.createRandomAccountName();
         let keyToSign = activePrivateKey;
-        if (options && options.signBySocial) {
+        if (options.signBySocial) {
             keyToSign = socialPrivateKey;
         }
         const sign = EosCryptoService.signValue(accountName, keyToSign);

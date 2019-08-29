@@ -10,7 +10,7 @@ import ActionResourcesDictionary = require('../../dictionary/action-resources-di
 import SocialKeyApi = require('../../social-key/api/social-key-api');
 
 class RegistrationApi {
-  public static generateRandomDataForRegistration(options: any = null) {
+  public static generateRandomDataForRegistration(options: any = {}) {
     const brainKey = Brainkey.generateSimple();
 
     const { privateKey: ownerPrivateKey, publicKey: ownerPublicKey } =
@@ -20,12 +20,12 @@ class RegistrationApi {
       EosCryptoService.getKeyPartsFromParentPrivateKey(ownerPrivateKey);
 
     const { privateKey: socialPrivateKey, publicKey: socialPublicKey } =
-      SocialKeyApi.generateSocialKeyFromActivePrivateKey(activePrivateKey);
+        SocialKeyApi.generateSocialKeyFromActivePrivateKey(activePrivateKey);
 
     const accountName = AccountNameService.createRandomAccountName();
 
     let keyToSign = activePrivateKey;
-    if (options && options.signBySocial) {
+    if (options.signBySocial) {
       keyToSign = socialPrivateKey;
     }
 

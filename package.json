@@ -60,6 +60,6 @@
     "jest-expect-message": "^1.0.2",
     "ts-jest": "^24.0.2",
     "tsutils": "^3.17.1",
-    "typescript": "^3.5.3"
+    "typescript": "^3.6.2"
   }
 }
