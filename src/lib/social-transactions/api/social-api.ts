@@ -3,14 +3,12 @@ import PermissionsDictionary = require('../../dictionary/permissions-dictionary'
 import SocialTransactionsUserToUserFactory = require('../services/social-transactions-user-to-user-factory');
 import InteractionsDictionary = require('../../dictionary/interactions-dictionary');
 
-const PERMISSION_ACTIVE = PermissionsDictionary.active();
-
 class SocialApi {
   public static async getUpvoteContentSignedTransaction(
     accountNameFrom: string,
     privateKey: string,
     accountNameTo: string,
-    permission: string = PERMISSION_ACTIVE,
+    permission: string = PermissionsDictionary.active(),
   ): Promise<any> {
     const interactionName = InteractionsDictionary.upvote();
 
@@ -27,7 +25,7 @@ class SocialApi {
     accountNameFrom: string,
     privateKey: string,
     accountNameTo: string,
-    permission: string = PERMISSION_ACTIVE,
+    permission: string = PermissionsDictionary.active(),
   ): Promise<any> {
     const interactionName = InteractionsDictionary.trust();
 
@@ -44,7 +42,7 @@ class SocialApi {
     accountNameFrom: string,
     privateKey: string,
     accountNameTo: string,
-    permission: string = PERMISSION_ACTIVE,
+    permission: string = PermissionsDictionary.active(),
   ): Promise<any> {
     const interactionName = InteractionsDictionary.untrust();
 
@@ -61,7 +59,7 @@ class SocialApi {
     accountNameFrom: string,
     privateKey: string,
     accountNameTo: string,
-    permission: string = PERMISSION_ACTIVE,
+    permission: string = PermissionsDictionary.active(),
   ): Promise<any> {
     const interactionName = InteractionsDictionary.followToAccount();
 
@@ -78,7 +76,7 @@ class SocialApi {
     accountNameFrom: string,
     privateKey: string,
     accountNameTo: string,
-    permission: string = PERMISSION_ACTIVE,
+    permission: string = PermissionsDictionary.active(),
   ): Promise<any> {
     const interactionName = InteractionsDictionary.unfollowToAccount();
 
@@ -95,7 +93,7 @@ class SocialApi {
     accountNameFrom: string,
     privateKey: string,
     organizationId: string,
-    permission: string = PERMISSION_ACTIVE,
+    permission: string = PermissionsDictionary.active(),
   ): Promise<any> {
     const interactionName = InteractionsDictionary.followToOrganization();
 
@@ -112,7 +110,7 @@ class SocialApi {
     accountNameFrom: string,
     privateKey: string,
     organizationId: string,
-    permission: string = PERMISSION_ACTIVE,
+    permission: string = PermissionsDictionary.active(),
   ): Promise<any> {
     const interactionName = InteractionsDictionary.unfollowToOrganization();
 
@@ -129,7 +127,7 @@ class SocialApi {
     accountNameReferrer: string,
     privateKey: string,
     accountNameSource: string,
-    permission: string = PERMISSION_ACTIVE,
+    permission: string = PermissionsDictionary.active(),
   ): Promise<any> {
     const interactionName = InteractionsDictionary.referral();
 
@@ -146,7 +144,7 @@ class SocialApi {
     accountNameReferrer: string,
     privateKey: string,
     accountNameSource: string,
-    permission: string = PERMISSION_ACTIVE,
+    permission: string = PermissionsDictionary.active(),
   ): Promise<string> {
     const signed =  await SocialApi.getReferralFromUserSignedTransaction(
       accountNameReferrer,
@@ -158,18 +156,17 @@ class SocialApi {
     return SocialApi.signedTransactionToString(signed);
   }
 
-  /**
-   *
-   * @param {string} accountNameFrom
-   * @param {string} privateKey
-   * @param {string} accountNameTo
-   * @returns {Promise<string>}
-   */
-  public static async getTrustUserSignedTransactionsAsJson(accountNameFrom, privateKey, accountNameTo) {
+  public static async getTrustUserSignedTransactionsAsJson(
+    accountNameFrom: string,
+    privateKey: string,
+    accountNameTo: string,
+    permission = PermissionsDictionary.active(),
+  ) {
     const signed = await SocialApi.getTrustUserSignedTransaction(
       accountNameFrom,
       privateKey,
       accountNameTo,
+      permission,
     );
 
     return SocialApi.signedTransactionToString(signed);
@@ -179,11 +176,13 @@ class SocialApi {
     accountNameFrom: string,
     privateKey: string,
     accountNameTo: string,
+    permission: string = PermissionsDictionary.active(),
   ): Promise<string> {
     const signed = await SocialApi.getUntrustUserSignedTransaction(
       accountNameFrom,
       privateKey,
       accountNameTo,
+      permission,
     );
 
     return SocialApi.signedTransactionToString(signed);

@@ -254,12 +254,12 @@ class Helper {
     });
   }
 
-  /**
-   *
-   * @return {string}
-   */
-  static getTesterAccountPrivateKey() {
+  public static getTesterAccountPrivateKey(): string {
     return accountsData[accountName].activePk;
+  }
+
+  public static getTesterAccountSocialPrivateKey(): string {
+    return accountsData[accountName].socialPrivateKey;
   }
 
   /**

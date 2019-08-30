@@ -4,18 +4,20 @@ import TransactionsPushResponseChecker = require('../../helpers/common/transacti
 import SocialApi = require('../../../src/lib/social-transactions/api/social-api');
 import EosClient = require('../../../src/lib/common/client/eos-client');
 import InteractionsDictionary = require('../../../src/lib/dictionary/interactions-dictionary');
+import PermissionsDictionary = require('../../../src/lib/dictionary/permissions-dictionary');
 
 const JEST_TIMEOUT = 40000;
 
 Helper.initForEnvByProcessVariable();
 
+const accountName = Helper.getTesterAccountName();
+const privateKey = Helper.getTesterAccountSocialPrivateKey();
+const permission = PermissionsDictionary.social();
+
+const accountNameTo = Helper.getAccountNameTo();
+
 async function signAndSendTransaction() {
-  const accountName = Helper.getTesterAccountName();
-  const privateKey = Helper.getTesterAccountPrivateKey();
-
-  const accountNameTo = Helper.getAccountNameTo();
-
-  const signed = await SocialApi.getTrustUserSignedTransaction(accountName, privateKey, accountNameTo);
+  const signed = await SocialApi.getTrustUserSignedTransaction(accountName, privateKey, accountNameTo, permission);
   const signedJson = SocialApi.signedTransactionToString(signed);
 
   const signedParsed = SocialApi.parseSignedTransactionJson(signedJson);
@@ -27,6 +29,8 @@ async function signAndSendTransaction() {
     accountName,
     accountNameTo,
     InteractionsDictionary.trust(),
+    'account_to',
+    permission,
   );
   TransactionsPushResponseChecker.checkOneTransaction(trustTrxResponse, expected);
 }
@@ -37,11 +41,8 @@ describe('Trust', () => {
   }, JEST_TIMEOUT);
 
   it('Send signed transaction to staging uos.activity - fetch json', async () => {
-    const accountName = Helper.getTesterAccountName();
-    const privateKey = Helper.getTesterAccountPrivateKey();
-    const accountNameTo = Helper.getAccountNameTo();
-
-    const signedJson = await SocialApi.getTrustUserSignedTransactionsAsJson(accountName, privateKey, accountNameTo);
+    const signedJson =
+      await SocialApi.getTrustUserSignedTransactionsAsJson(accountName, privateKey, accountNameTo, permission);
     const signedParsed = SocialApi.parseSignedTransactionJson(signedJson);
 
     const trustTrxResponse = await EosClient.pushTransaction(signedParsed);
@@ -50,6 +51,8 @@ describe('Trust', () => {
       accountName,
       accountNameTo,
       InteractionsDictionary.trust(),
+      'account_to',
+      permission,
     );
     TransactionsPushResponseChecker.checkOneTransaction(trustTrxResponse, expected);
   }, JEST_TIMEOUT);
@@ -57,11 +60,8 @@ describe('Trust', () => {
 
 describe('Untrust', () => {
   it('Send signed untrust transaction to staging uos.activity - fetch json', async () => {
-    const accountName = Helper.getTesterAccountName();
-    const privateKey = Helper.getTesterAccountPrivateKey();
-    const accountNameTo = Helper.getAccountNameTo();
-
-    const signedJson = await SocialApi.getUnTrustUserSignedTransactionsAsJson(accountName, privateKey, accountNameTo);
+    const signedJson =
+      await SocialApi.getUnTrustUserSignedTransactionsAsJson(accountName, privateKey, accountNameTo, permission);
     const signedParsed = SocialApi.parseSignedTransactionJson(signedJson);
 
     const trustTrxResponse = await EosClient.pushTransaction(signedParsed);
@@ -70,6 +70,8 @@ describe('Untrust', () => {
       accountName,
       accountNameTo,
       InteractionsDictionary.untrust(),
+      'account_to',
+      permission,
     );
     TransactionsPushResponseChecker.checkOneTransaction(trustTrxResponse, expected);
   }, JEST_TIMEOUT);

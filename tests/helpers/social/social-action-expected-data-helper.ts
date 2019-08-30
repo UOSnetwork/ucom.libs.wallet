@@ -3,6 +3,7 @@ import SmartContractsActionsDictionary = require('../../../src/lib/dictionary/sm
 import SmartContractsDictionary = require('../../../src/lib/dictionary/smart-contracts-dictionary');
 import TransactionsPushResponseChecker = require('../common/transactions-push-response-checker');
 import CommonChecker = require('../common/common-checker');
+import PermissionsDictionary = require('../../../src/lib/dictionary/permissions-dictionary');
 
 class SocialActionExpectedDataHelper {
   public static expectSocialActionDataWithoutContent(
@@ -45,6 +46,7 @@ class SocialActionExpectedDataHelper {
     blockchainIdTo: string,
     interaction: string,
     blockchainIdKey: string = 'account_to',
+    permission: string = PermissionsDictionary.active(),
   ) {
     const data = {
       acc: accountNameFrom,
@@ -69,7 +71,7 @@ class SocialActionExpectedDataHelper {
             authorization: [
               {
                 actor: accountNameFrom,
-                permission: 'active',
+                permission,
               },
             ],
             data,

@@ -4,20 +4,23 @@ import InteractionsDictionary = require('../../../src/lib/dictionary/interaction
 import ContentPostsGenerator = require('../../helpers/content/posts/content-posts-generator');
 import ContentInteractionsApi = require('../../../src/lib/social-transactions/api/content-interactions-api');
 import SocialActionExpectedDataHelper = require('../../helpers/social/social-action-expected-data-helper');
+import PermissionsDictionary = require('../../../src/lib/dictionary/permissions-dictionary');
 
 const JEST_TIMEOUT = 10000;
 
 Helper.initForEnvByProcessVariable();
 
 const accountName = Helper.getTesterAccountName();
-const privateKey = Helper.getTesterAccountPrivateKey();
+const privateKey = Helper.getTesterAccountSocialPrivateKey();
 const contentBlockchainId: string = ContentPostsGenerator.getSamplePostBlockchainId();
+const permission = PermissionsDictionary.social();
 
 it('Upvote content', async () => {
   const signedObject = await ContentInteractionsApi.getUpvoteContentSignedTransaction(
     accountName,
     privateKey,
     contentBlockchainId,
+    permission,
   );
 
   const response = await EosClient.pushTransaction(signedObject);
@@ -39,6 +42,7 @@ it('Downvote content', async () => {
     accountName,
     privateKey,
     contentBlockchainId,
+    permission,
   );
 
   const response = await EosClient.pushTransaction(signedObject);

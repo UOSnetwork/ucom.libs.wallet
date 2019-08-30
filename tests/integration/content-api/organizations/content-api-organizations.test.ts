@@ -11,8 +11,8 @@ const JEST_TIMEOUT = 15000;
 Helper.initForEnvByProcessVariable();
 
 const accountNameFrom = Helper.getTesterAccountName();
-const privateKey      = Helper.getTesterAccountPrivateKey();
-const permission      = PermissionsDictionary.active();
+const privateKey      = Helper.getTesterAccountSocialPrivateKey();
+const permission      = PermissionsDictionary.social();
 
 it('Create organization (community)', async () => {
   const content = ContentOrganizationsGenerator.getFormFields();

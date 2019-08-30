@@ -15,9 +15,9 @@ const JEST_TIMEOUT = 15000;
 Helper.initForEnvByProcessVariable();
 
 const accountNameFrom = Helper.getTesterAccountName();
-const accountNameTo = Helper.getAccountNameTo();
-const privateKey      = Helper.getTesterAccountPrivateKey();
-const permission      = PermissionsDictionary.active();
+const accountNameTo   = Helper.getAccountNameTo();
+const privateKey      = Helper.getTesterAccountSocialPrivateKey();
+const permission      = PermissionsDictionary.social();
 
 describe('Create direct post', () => {
   it('Create a direct post from account to account', async () => {

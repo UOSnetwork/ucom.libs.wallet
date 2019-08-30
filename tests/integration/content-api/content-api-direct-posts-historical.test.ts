@@ -15,7 +15,7 @@ Helper.initForEnvByProcessVariable();
 const { EntityNames } = require('ucom.libs.common').Common.Dictionary;
 
 const accountNameFrom = Helper.getTesterAccountName();
-const accountNameTo = Helper.getAccountNameTo();
+const accountNameTo   = Helper.getAccountNameTo();
 
 it('Resend direct post from account to account to the blockchain', async () => {
   const content = ContentPostsGenerator.getDirectPostOrRepostInputFields();

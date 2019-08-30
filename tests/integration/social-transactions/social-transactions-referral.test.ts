@@ -10,10 +10,10 @@ import InteractionsDictionary = require('../../../src/lib/dictionary/interaction
 const JEST_TIMEOUT = 10000;
 
 async function signAndSendTransaction() {
-  const permission = PermissionsDictionary.active();
+  const permission = PermissionsDictionary.social();
 
   const accountName = Helper.getTesterAccountName();
-  const privateKey = Helper.getTesterAccountPrivateKey();
+  const privateKey = Helper.getTesterAccountSocialPrivateKey();
 
   const accountNameTo = Helper.getAccountNameTo();
 
@@ -30,19 +30,16 @@ async function signAndSendTransaction() {
     accountName,
     accountNameTo,
     InteractionsDictionary.referral(),
+    'account_to',
+    permission,
   );
   TransactionsPushResponseChecker.checkOneTransaction(pushResponse, expected);
 }
 
-describe('Social common transactions', () => {
-  describe('Referrer', () => {
-    it('Send signed transaction to staging uos.activity', async () => {
-      Helper.initForEnvByProcessVariable();
+it('Send signed referral transaction', async () => {
+  Helper.initForEnvByProcessVariable();
 
-      await signAndSendTransaction();
-    }, JEST_TIMEOUT);
-  });
-});
-
+  await signAndSendTransaction();
+}, JEST_TIMEOUT);
 
 export {};
