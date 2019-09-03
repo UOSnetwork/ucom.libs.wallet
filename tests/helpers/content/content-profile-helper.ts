@@ -1,6 +1,5 @@
 import ContentApi = require('../../../src/lib/content/api/content-api');
 import EosClient = require('../../../src/lib/common/client/eos-client');
-import PermissionsDictionary = require('../../../src/lib/dictionary/permissions-dictionary');
 import TransactionsPushResponseChecker = require('../common/transactions-push-response-checker');
 
 class ContentProfileHelper {
@@ -10,16 +9,24 @@ class ContentProfileHelper {
     return EosClient.pushTransaction(signed);
   }
 
-  public static async updateProfileSetMinimum(accountName: string, privateKey: string): Promise<void> {
+  public static async updateProfileSetMinimum(
+    accountName: string,
+    privateKey: string,
+    permission: string,
+  ): Promise<void> {
     const profile = this.getMinimumProfile(accountName);
 
-    return this.pushSetProfileTransaction(accountName, privateKey, profile);
+    return this.pushSetProfileTransaction(accountName, privateKey, profile, permission);
   }
 
-  public static async updateProfileSetExtended(accountName: string, privateKey: string): Promise<void> {
+  public static async updateProfileSetExtended(
+    accountName: string,
+    privateKey: string,
+    permission: string,
+  ): Promise<void> {
     const profile = this.getExtendedProfile(accountName);
 
-    return this.pushSetProfileTransaction(accountName, privateKey, profile);
+    return this.pushSetProfileTransaction(accountName, privateKey, profile, permission);
   }
 
   public static getMinimumProfile(accountName: string) {
@@ -38,7 +45,12 @@ class ContentProfileHelper {
     };
   }
 
-  public static async checkPushResponse(accountNameFrom: string, profile: any, pushResponse: any) {
+  public static async checkPushResponse(
+    accountNameFrom: string,
+    profile: any,
+    pushResponse: any,
+    permission: string,
+  ) {
     const expected = {
       action_traces: [
         {
@@ -51,7 +63,7 @@ class ContentProfileHelper {
             authorization: [
               {
                 actor: accountNameFrom,
-                permission: 'active',
+                permission,
               },
             ],
             data: {
@@ -78,9 +90,12 @@ class ContentProfileHelper {
     expect(smartContractData).toMatchObject(expectedData);
   }
 
-  private static async pushSetProfileTransaction(accountName: string, privateKey: string, profile: any) {
-    const permission = PermissionsDictionary.active();
-
+  private static async pushSetProfileTransaction(
+    accountName: string,
+    privateKey: string,
+    profile: any,
+    permission: string,
+  ) {
     const signed = await ContentApi.updateProfile(accountName, privateKey, profile, permission);
     return EosClient.pushTransaction(signed);
   }

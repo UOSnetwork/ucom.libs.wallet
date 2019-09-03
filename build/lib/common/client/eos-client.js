@@ -100,14 +100,9 @@ class EosClient {
             throw error;
         }
     }
-    /**
-     *
-     * @param {string}    actorPrivateKey
-     * @param {Object[]}  actions
-     *
-     * @param {boolean} broadcast
-     * @return {Promise<Object>}
-     */
+    static async sendSingleActionTransaction(privateKey, action, broadcast = true) {
+        return this.sendTransaction(privateKey, [action], broadcast);
+    }
     static async sendTransaction(actorPrivateKey, actions, broadcast = true) {
         try {
             const api = this.getApiClient(actorPrivateKey);

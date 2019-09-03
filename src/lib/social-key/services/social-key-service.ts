@@ -41,6 +41,28 @@ class SocialKeyService {
       },
     };
   }
+
+  public static getSocialPermissionsForAction(
+    accountFrom: string,
+    smartContract: string,
+    actionName: string,
+  ) {
+    const parentPermission    = PermissionsDictionary.active();
+    const targetPermission    = PermissionsDictionary.social();
+    const authorization = TransactionsBuilder.getSingleUserAuthorization(accountFrom, parentPermission);
+
+    return {
+      account:  SmartContractsDictionary.eosIo(),
+      name:     SmartContractsActionsDictionary.linkAuth(),
+      authorization,
+      data: {
+        account:      accountFrom,
+        code:         smartContract,
+        type:         actionName,
+        requirement:  targetPermission,
+      },
+    };
+  }
 }
 
 export = SocialKeyService;

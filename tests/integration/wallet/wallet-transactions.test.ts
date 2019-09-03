@@ -2,6 +2,7 @@
 import Helper = require('../../helpers/helper');
 import BlockchainRegistry = require('../../../src/lib/blockchain-registry');
 import WalletApi = require('../../../src/lib/wallet/api/wallet-api');
+import PermissionsDictionary = require('../../../src/lib/dictionary/permissions-dictionary');
 
 const delay = require('delay');
 
@@ -365,7 +366,11 @@ describe('Send transactions to blockchain', () => {
     });
     it.skip('claim emission', async () => {
       // #task it is necessary to manually set emission before this test
-    });
+      const key = Helper.getTesterAccountSocialPrivateKey();
+      const permission = PermissionsDictionary.social();
+
+      await WalletApi.claimEmission(accountName, key, permission);
+    }, JEST_TIMEOUT * 3);
   });
 
   describe('Negative', () => {

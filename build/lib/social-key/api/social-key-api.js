@@ -4,6 +4,8 @@ const EosCryptoService = require("../../common/services/eos-crypto-service");
 const BlockchainRegistry = require("../../blockchain-registry");
 const PermissionsDictionary = require("../../dictionary/permissions-dictionary");
 const SocialKeyService = require("../services/social-key-service");
+const SmartContractsDictionary = require("../../dictionary/smart-contracts-dictionary");
+const SmartContractsActionsDictionary = require("../../dictionary/smart-contracts-actions-dictionary");
 class SocialKeyApi {
     static generateSocialKeyFromActivePrivateKey(activePrivateKey) {
         return EosCryptoService.getKeyPartsFromParentPrivateKey(activePrivateKey);
@@ -37,10 +39,44 @@ class SocialKeyApi {
         ];
         return EosClient.sendTransaction(activePrivateKey, actions);
     }
+    static async pushSocialPermissionForProducersVoting(accountFrom, activePrivateKey) {
+        await this.socialKeyExistOrError(accountFrom);
+        const smartContract = SmartContractsDictionary.eosIo();
+        const actionName = SmartContractsActionsDictionary.voteProducer();
+        const action = SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
+        return EosClient.sendSingleActionTransaction(activePrivateKey, action);
+    }
+    static async pushSocialPermissionForProfileUpdating(accountFrom, activePrivateKey) {
+        await this.socialKeyExistOrError(accountFrom);
+        const smartContract = SmartContractsDictionary.uosAccountInfo();
+        const actionName = SmartContractsActionsDictionary.setProfile();
+        const action = SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
+        return EosClient.sendSingleActionTransaction(activePrivateKey, action);
+    }
+    static async pushSocialPermissionForEmissionClaim(accountFrom, activePrivateKey) {
+        await this.socialKeyExistOrError(accountFrom);
+        const smartContract = SmartContractsDictionary.uosCalcs();
+        const actionName = SmartContractsActionsDictionary.withdrawal();
+        const action = SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
+        return EosClient.sendSingleActionTransaction(activePrivateKey, action);
+    }
+    static async pushSocialPermissionForCalculatorsVoting(accountFrom, activePrivateKey) {
+        await this.socialKeyExistOrError(accountFrom);
+        const smartContract = SmartContractsDictionary.eosIo();
+        const actionName = SmartContractsActionsDictionary.voteForCalculators();
+        const action = SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
+        return EosClient.sendSingleActionTransaction(activePrivateKey, action);
+    }
     static async socialKeyNotExistOrError(accountName) {
         const currentSocialKey = await this.getAccountCurrentSocialKey(accountName);
         if (currentSocialKey) {
             throw new TypeError(`A social key already exist: ${currentSocialKey}`);
+        }
+    }
+    static async socialKeyExistOrError(accountName) {
+        const currentSocialKey = await this.getAccountCurrentSocialKey(accountName);
+        if (!currentSocialKey) {
+            throw new TypeError('A social key must exist before social permission binding');
         }
     }
 }

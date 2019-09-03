@@ -1,3 +1,5 @@
+import { IStringToAny } from './common/interfaces/common-interfaces';
+
 import EosClient = require('./common/client/eos-client');
 import BlockchainRegistry = require('./blockchain-registry');
 import TransactionsBuilder = require('./service/transactions-builder');
@@ -5,23 +7,7 @@ import SmartContractsDictionary = require('./dictionary/smart-contracts-dictiona
 import SmartContractsActionsDictionary = require('./dictionary/smart-contracts-actions-dictionary');
 import ActionResourcesDictionary = require('./dictionary/action-resources-dictionary');
 
-const _ = require('lodash');
-
 class TransactionSender {
-  /**
-   *
-   * @param {string} accountName
-   * @param {string} privateKey
-   * @param {string[]} producers
-   * @return {Promise<Object>}
-   */
-  static async voteForBlockProducers(accountName, privateKey, producers) {
-    // eslint-disable-next-line you-dont-need-lodash-underscore/uniq
-    const action = this.getVoteForBlockProducersAction(accountName, _.uniq(producers));
-
-    return EosClient.sendTransaction(privateKey, [action]);
-  }
-
   /**
    *
    * @param {string} accountName
@@ -35,29 +21,20 @@ class TransactionSender {
     return EosClient.sendTransaction(privateKey, [action]);
   }
 
-  /**
-   *
-   * @param {string} accountName
-   * @param {string} privateKey
-   * @param {number} bytesAmount
-   * @return {Promise<any>}
-   */
-  static async buyRamBytes(accountName, privateKey, bytesAmount) {
+  public static async buyRamBytes(
+    accountName: string,
+    privateKey: string,
+    bytesAmount: number,
+  ): Promise<IStringToAny> {
     const action = this.getBuyRamAction(accountName, bytesAmount, accountName);
 
-    return EosClient.sendTransaction(privateKey, [action]);
+    return EosClient.sendSingleActionTransaction(privateKey, action);
   }
 
-  /**
-   *
-   * @param {string} accountName
-   * @param {string} actorPrivateKey
-   * @return {Promise<any>}
-   */
-  static async claimEmission(accountName, actorPrivateKey) {
-    const action = this.getClaimEmissionAction(accountName);
+  public static async claimEmission(accountName: string, privateKey: string, permission: string) {
+    const action = this.getClaimEmissionAction(accountName, permission);
 
-    return EosClient.sendTransaction(actorPrivateKey, [action]);
+    return EosClient.sendTransaction(privateKey, [action]);
   }
 
   /**
@@ -215,14 +192,11 @@ class TransactionSender {
     return EosClient.sendTransaction(privateKey, [action]);
   }
 
-  /**
-   *
-   * @param {string} accountNameFrom
-   * @param {string[]} producers
-   * @return {{account: *, name: *, authorization: *, data: *}}
-   * @private
-   */
-  static getVoteForBlockProducersAction(accountNameFrom, producers) {
+  public static getVoteForBlockProducersAction(
+    accountNameFrom: string,
+    producers: string[],
+    permission: string,
+  ) {
     const smartContract = SmartContractsDictionary.eosIo();
     const actionName    = SmartContractsActionsDictionary.voteProducer();
 
@@ -232,7 +206,13 @@ class TransactionSender {
       producers,
     };
 
-    return TransactionsBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
+    return TransactionsBuilder.getSingleUserAction(
+      accountNameFrom,
+      smartContract,
+      actionName,
+      data,
+      permission,
+    );
   }
 
   /**
@@ -293,23 +273,6 @@ class TransactionSender {
       to:       accountNameTo,
       quantity: amount,
       memo,
-    };
-
-    return TransactionsBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
-  }
-
-  /**
-   *
-   * @param {string} accountNameFrom
-   * @return {{account: *, name: *, authorization: *, data: *}}
-   * @private
-   */
-  static getClaimEmissionAction(accountNameFrom) {
-    const smartContract = SmartContractsDictionary.uosCalcs();
-    const actionName    = SmartContractsActionsDictionary.withdrawal();
-
-    const data = {
-      owner: accountNameFrom,
     };
 
     return TransactionsBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
@@ -388,6 +351,17 @@ class TransactionSender {
    */
   static getUosAmountAsString(amount, symbol = ActionResourcesDictionary.UOS()): string {
     return `${Math.floor(amount)}.0000 ${symbol}`;
+  }
+
+  private static getClaimEmissionAction(accountNameFrom: string, permission: string): IStringToAny {
+    const smartContract = SmartContractsDictionary.uosCalcs();
+    const actionName    = SmartContractsActionsDictionary.withdrawal();
+
+    const data = {
+      owner: accountNameFrom,
+    };
+
+    return TransactionsBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data, permission);
   }
 }
 

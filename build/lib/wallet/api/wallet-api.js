@@ -9,6 +9,7 @@ const InputValidator = require("../../validators/input-validator");
 const BlockchainRegistry = require("../../blockchain-registry");
 const TransactionSender = require("../../transaction-sender");
 const ConfigService = require("../../../config/config-service");
+const PermissionsDictionary = require("../../dictionary/permissions-dictionary");
 class WalletApi {
     /**
      * @deprecated
@@ -45,37 +46,25 @@ class WalletApi {
     static initForProductionEnv() {
         ConfigService.initForProductionEnv();
     }
-    /**
-     *
-     * @param {string} accountName
-     * @param {string} privateKey
-     * @param {string[]} producers
-     * @return {Promise<Object>}
-     */
-    static async voteForBlockProducers(accountName, privateKey, producers) {
+    static async voteForBlockProducers(accountName, privateKey, producers, permission = PermissionsDictionary.active()) {
         if (producers.length > 30) {
             throw new errors_1.BadRequestError('It is possible to vote up to 30 block producers');
         }
         await BlockchainRegistry.doBlockProducersExist(producers);
         await BlockchainRegistry.isSelfDelegatedStake(accountName);
-        producers.sort();
-        return TransactionSender.voteForBlockProducers(accountName, privateKey, producers);
+        const uniqueProducers = [...new Set(producers.sort())];
+        const action = TransactionSender.getVoteForBlockProducersAction(accountName, uniqueProducers, permission);
+        return EosClient.sendTransaction(privateKey, [action]);
     }
-    /**
-     * @param {string} accountName
-     * @param {string} privateKey
-     * @param {string[]} nodeTitles
-     * @return {Promise<Object>}
-     */
-    static async voteForCalculatorNodes(accountName, privateKey, nodeTitles) {
+    static async voteForCalculatorNodes(accountName, privateKey, nodeTitles, permission = PermissionsDictionary.active()) {
         if (!Array.isArray(nodeTitles)) {
             throw new errors_1.BadRequestError('Please provide nodeTitles as a valid javascript array');
         }
-        if (nodeTitles.length > 30) {
-            throw new errors_1.BadRequestError('It is possible to vote up to 30 block producers');
+        const uniqueNodes = [...new Set(nodeTitles.sort())];
+        if (uniqueNodes.length > 30) {
+            throw new errors_1.BadRequestError('It is possible to vote up to 30 calculating nodes');
         }
-        nodeTitles.sort();
-        const action = actions_service_1.default.getVoteForCalculators(accountName, nodeTitles);
+        const action = actions_service_1.default.getVoteForCalculators(accountName, uniqueNodes, '', permission);
         return EosClient.sendTransaction(privateKey, [action]);
     }
     /**
@@ -124,15 +113,9 @@ class WalletApi {
         await BlockchainRegistry.isEnoughBalanceOrException(accountName, price);
         return TransactionSender.buyRamBytes(accountName, privateKey, bytesAmount);
     }
-    /**
-     *
-     * @param {string} accountName
-     * @param {string} privateKey
-     * @return {Promise<any>}
-     */
-    static async claimEmission(accountName, privateKey) {
+    static async claimEmission(accountName, privateKey, permission = PermissionsDictionary.active()) {
         await BlockchainRegistry.doesAccountExist(accountName);
-        return TransactionSender.claimEmission(accountName, privateKey);
+        return TransactionSender.claimEmission(accountName, privateKey, permission);
     }
     /**
      *

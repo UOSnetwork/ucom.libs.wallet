@@ -3,7 +3,7 @@ const SmartContractsDictionary = require("../dictionary/smart-contracts-dictiona
 const SmartContractsActionsDictionary = require("../dictionary/smart-contracts-actions-dictionary");
 const TransactionBuilder = require("./transactions-builder");
 class ActionsService {
-    static getVoteForCalculators(accountNameFrom, nodeTitles, proxy = '') {
+    static getVoteForCalculators(accountNameFrom, nodeTitles, proxy = '', permission) {
         const smartContract = SmartContractsDictionary.eosIo();
         const actionName = SmartContractsActionsDictionary.voteForCalculators();
         const data = {
@@ -11,7 +11,7 @@ class ActionsService {
             voter: accountNameFrom,
             calculators: nodeTitles,
         };
-        return TransactionBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
+        return TransactionBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data, permission);
     }
 }
 module.exports = ActionsService;

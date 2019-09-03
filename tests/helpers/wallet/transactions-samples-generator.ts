@@ -1,5 +1,10 @@
+import PermissionsDictionary = require('../../../src/lib/dictionary/permissions-dictionary');
+
 class TransactionsSamplesGenerator {
-  public static getVoteForCalculatorsSample(accountNameFrom: string): any {
+  public static getVoteForCalculatorsSample(
+    accountNameFrom: string,
+    permission: string = PermissionsDictionary.active(),
+  ): any {
     return {
       action_traces: [
         {
@@ -12,7 +17,7 @@ class TransactionsSamplesGenerator {
             authorization: [
               {
                 actor: accountNameFrom,
-                permission: 'active',
+                permission,
               },
             ],
             data: {
@@ -33,7 +38,7 @@ class TransactionsSamplesGenerator {
     };
   }
 
-  public static getVoteForCalculatorsEmptySample(accountNameFrom: string): any {
+  public static getVoteForCalculatorsEmptySample(accountNameFrom: string, permission: string): any {
     return {
       action_traces: [
         {
@@ -46,7 +51,7 @@ class TransactionsSamplesGenerator {
             authorization: [
               {
                 actor: accountNameFrom,
-                permission: 'active',
+                permission,
               },
             ],
             data: {

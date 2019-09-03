@@ -7,6 +7,7 @@ class ActionsService {
     accountNameFrom: string,
     nodeTitles: string[],
     proxy: string = '',
+    permission: string,
   ): any {
     const smartContract = SmartContractsDictionary.eosIo();
     const actionName    = SmartContractsActionsDictionary.voteForCalculators();
@@ -17,7 +18,7 @@ class ActionsService {
       calculators: nodeTitles,
     };
 
-    return TransactionBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data);
+    return TransactionBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data, permission);
   }
 }
 

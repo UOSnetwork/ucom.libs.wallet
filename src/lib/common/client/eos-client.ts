@@ -1,4 +1,5 @@
 import { BadRequestError } from '../../errors/errors';
+import { IStringToAny } from '../interfaces/common-interfaces';
 
 import ConverterHelper = require('../../helpers/converter-helper');
 import ConfigService = require('../../../config/config-service');
@@ -120,15 +121,19 @@ class EosClient {
     }
   }
 
-  /**
-   *
-   * @param {string}    actorPrivateKey
-   * @param {Object[]}  actions
-   *
-   * @param {boolean} broadcast
-   * @return {Promise<Object>}
-   */
-  static async sendTransaction(actorPrivateKey, actions, broadcast = true) {
+  public static async sendSingleActionTransaction(
+    privateKey: string,
+    action: IStringToAny,
+    broadcast = true,
+  ) {
+    return this.sendTransaction(privateKey, [action], broadcast);
+  }
+
+  public static async sendTransaction(
+    actorPrivateKey: string,
+    actions: IStringToAny,
+    broadcast: boolean = true,
+  ) {
     try {
       const api = this.getApiClient(actorPrivateKey);
 
