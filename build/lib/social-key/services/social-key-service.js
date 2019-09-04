@@ -4,20 +4,22 @@ const TransactionsBuilder = require("../../service/transactions-builder");
 const SmartContractsActionsDictionary = require("../../dictionary/smart-contracts-actions-dictionary");
 const PermissionsDictionary = require("../../dictionary/permissions-dictionary");
 class SocialKeyService {
-    static addSocialKeyPermissionAction(accountFrom) {
-        return {
-            account: SmartContractsDictionary.eosIo(),
-            name: SmartContractsActionsDictionary.linkAuth(),
-            authorization: TransactionsBuilder.getSingleUserAuthorization(accountFrom, PermissionsDictionary.active()),
-            data: {
-                account: accountFrom,
-                code: SmartContractsDictionary.uosActivity(),
-                type: SmartContractsActionsDictionary.socialAction(),
-                requirement: PermissionsDictionary.social(),
-            },
-        };
+    static getSocialPermissionForSocialActions(accountFrom) {
+        const smartContract = SmartContractsDictionary.uosActivity();
+        const actionName = SmartContractsActionsDictionary.socialAction();
+        return this.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
     }
-    static bindSocialKeyAction(accountName, publicSocialKey) {
+    static getSocialPermissionForProfileUpdating(accountFrom) {
+        const smartContract = SmartContractsDictionary.uosAccountInfo();
+        const actionName = SmartContractsActionsDictionary.setProfile();
+        return this.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
+    }
+    static getSocialPermissionForEmissionClaim(accountFrom) {
+        const smartContract = SmartContractsDictionary.uosCalcs();
+        const actionName = SmartContractsActionsDictionary.withdrawal();
+        return SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
+    }
+    static getBindSocialKeyAction(accountName, publicSocialKey) {
         return {
             account: SmartContractsDictionary.eosIo(),
             name: SmartContractsActionsDictionary.updateAuth(),

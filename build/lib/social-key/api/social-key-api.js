@@ -4,8 +4,6 @@ const EosCryptoService = require("../../common/services/eos-crypto-service");
 const BlockchainRegistry = require("../../blockchain-registry");
 const PermissionsDictionary = require("../../dictionary/permissions-dictionary");
 const SocialKeyService = require("../services/social-key-service");
-const SmartContractsDictionary = require("../../dictionary/smart-contracts-dictionary");
-const SmartContractsActionsDictionary = require("../../dictionary/smart-contracts-actions-dictionary");
 class SocialKeyApi {
     static generateSocialKeyFromActivePrivateKey(activePrivateKey) {
         return EosCryptoService.getKeyPartsFromParentPrivateKey(activePrivateKey);
@@ -34,38 +32,45 @@ class SocialKeyApi {
         // #task - simplified check - check only first action of transaction - social key binding
         await this.socialKeyNotExistOrError(accountName);
         const actions = [
-            SocialKeyService.bindSocialKeyAction(accountName, socialPublicKey),
-            SocialKeyService.addSocialKeyPermissionAction(accountName),
+            SocialKeyService.getBindSocialKeyAction(accountName, socialPublicKey),
+            SocialKeyService.getSocialPermissionForSocialActions(accountName),
+            SocialKeyService.getSocialPermissionForProfileUpdating(accountName),
+            SocialKeyService.getSocialPermissionForEmissionClaim(accountName),
         ];
         return EosClient.sendTransaction(activePrivateKey, actions);
     }
-    static async pushSocialPermissionForProducersVoting(accountFrom, activePrivateKey) {
-        await this.socialKeyExistOrError(accountFrom);
-        const smartContract = SmartContractsDictionary.eosIo();
-        const actionName = SmartContractsActionsDictionary.voteProducer();
-        const action = SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
-        return EosClient.sendSingleActionTransaction(activePrivateKey, action);
+    /**
+     * @deprecated
+     * @see bindSocialKeyWithSocialPermissions
+     */
+    static async bindSocialKeyWithoutEmissionAndProfile(accountName, activePrivateKey, socialPublicKey) {
+        // #task - simplified check - check only first action of transaction - social key binding
+        await this.socialKeyNotExistOrError(accountName);
+        const actions = [
+            SocialKeyService.getBindSocialKeyAction(accountName, socialPublicKey),
+            SocialKeyService.getSocialPermissionForSocialActions(accountName),
+        ];
+        return EosClient.sendTransaction(activePrivateKey, actions);
     }
-    static async pushSocialPermissionForProfileUpdating(accountFrom, activePrivateKey) {
-        await this.socialKeyExistOrError(accountFrom);
-        const smartContract = SmartContractsDictionary.uosAccountInfo();
-        const actionName = SmartContractsActionsDictionary.setProfile();
-        const action = SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
-        return EosClient.sendSingleActionTransaction(activePrivateKey, action);
-    }
-    static async pushSocialPermissionForEmissionClaim(accountFrom, activePrivateKey) {
-        await this.socialKeyExistOrError(accountFrom);
-        const smartContract = SmartContractsDictionary.uosCalcs();
-        const actionName = SmartContractsActionsDictionary.withdrawal();
-        const action = SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
-        return EosClient.sendSingleActionTransaction(activePrivateKey, action);
-    }
-    static async pushSocialPermissionForCalculatorsVoting(accountFrom, activePrivateKey) {
-        await this.socialKeyExistOrError(accountFrom);
-        const smartContract = SmartContractsDictionary.eosIo();
-        const actionName = SmartContractsActionsDictionary.voteForCalculators();
-        const action = SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
-        return EosClient.sendSingleActionTransaction(activePrivateKey, action);
+    static async addSocialPermissionsToEmissionAndProfile(accountName, activePrivateKey) {
+        // #task - simplified check - check only first action of transaction - social key binding
+        await this.socialKeyExistOrError(accountName);
+        const actions = [
+            SocialKeyService.getSocialPermissionForProfileUpdating(accountName),
+            SocialKeyService.getSocialPermissionForEmissionClaim(accountName),
+        ];
+        let result;
+        try {
+            result = await EosClient.sendTransaction(activePrivateKey, actions);
+        }
+        catch (error) {
+            if (error.json && error.json.error && error.json.error.name === 'action_validate_exception') {
+                // suppress this type of error = permissions already exist
+                return null;
+            }
+            throw error;
+        }
+        return result;
     }
     static async socialKeyNotExistOrError(accountName) {
         const currentSocialKey = await this.getAccountCurrentSocialKey(accountName);

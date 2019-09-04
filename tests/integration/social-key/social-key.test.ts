@@ -6,6 +6,7 @@ import EosClient = require('../../../src/lib/common/client/eos-client');
 import CommonChecker = require('../../helpers/common/common-checker');
 import WalletApi = require('../../../src/lib/wallet/api/wallet-api');
 import RegistrationApi = require('../../../src/lib/registration/api/registration-api');
+import ContentProfileHelper = require('../../helpers/content/content-profile-helper');
 
 Helper.initForEnvByProcessVariable();
 
@@ -15,6 +16,24 @@ const activePrivateKey  = Helper.getTesterAccountPrivateKey();
 const accountNameTo     = Helper.getAccountNameTo();
 
 const JEST_TIMEOUT = 30000;
+
+async function checkTrustAndProfileUpdating(user): Promise<void> {
+  const signedTrust = await SocialApi.getTrustUserSignedTransaction(
+    user.accountName,
+    user.socialPrivateKey,
+    accountName,
+    PermissionsDictionary.social(),
+  );
+
+  await EosClient.pushTransaction(signedTrust);
+  await ContentProfileHelper.updateProfileSetMinimum(user.accountName, user.socialPrivateKey, PermissionsDictionary.social());
+}
+
+it('Suppress an error about permission already set', async () => {
+  const result = await SocialKeyApi.addSocialPermissionsToEmissionAndProfile(accountName, activePrivateKey);
+
+  expect(result).toBeNull();
+}, JEST_TIMEOUT * 3);
 
 it('Get current account permissions state and try to send transaction', async () => {
   const current = await SocialKeyApi.getAccountCurrentSocialKey(accountName);
@@ -64,26 +83,53 @@ it('Account RAM is decreased during the social key creation but not very much', 
   expect(bytesForSocialKey).toBeLessThan(1000);
 }, JEST_TIMEOUT);
 
-it('Bind a social key', async () => {
-  const data = RegistrationApi.generateRandomDataForRegistration();
+it('Bind emission and profile updating rules', async () => {
+  const user = RegistrationApi.generateRandomDataForRegistration();
 
   await RegistrationApi.createNewAccountInBlockchain(
     Helper.getCreatorAccountName(),
     Helper.getCreatorPrivateKey(),
-    data.accountName,
-    data.ownerPublicKey,
-    data.activePublicKey,
+    user.accountName,
+    user.ownerPublicKey,
+    user.activePublicKey,
+  );
+
+  await SocialKeyApi.bindSocialKeyWithoutEmissionAndProfile(
+    user.accountName,
+    user.activePrivateKey,
+    user.socialPublicKey,
+  );
+
+  await SocialKeyApi.addSocialPermissionsToEmissionAndProfile(
+    user.accountName,
+    user.activePrivateKey,
+  );
+
+  await checkTrustAndProfileUpdating(user);
+}, JEST_TIMEOUT * 3);
+
+it('Bind a social key', async () => {
+  const user = RegistrationApi.generateRandomDataForRegistration();
+
+  await RegistrationApi.createNewAccountInBlockchain(
+    Helper.getCreatorAccountName(),
+    Helper.getCreatorPrivateKey(),
+    user.accountName,
+    user.ownerPublicKey,
+    user.activePublicKey,
   );
 
   await SocialKeyApi.bindSocialKeyWithSocialPermissions(
-    data.accountName,
-    data.activePrivateKey,
-    data.socialPublicKey,
+    user.accountName,
+    user.activePrivateKey,
+    user.socialPublicKey,
   );
 
-  const socialKey = await SocialKeyApi.getAccountCurrentSocialKey(data.accountName);
+  const socialKey = await SocialKeyApi.getAccountCurrentSocialKey(user.accountName);
 
-  expect(socialKey).toBe(data.socialPublicKey);
-}, JEST_TIMEOUT);
+  expect(socialKey).toBe(user.socialPublicKey);
+
+  await checkTrustAndProfileUpdating(user);
+}, JEST_TIMEOUT * 3);
 
 export {};
