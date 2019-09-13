@@ -13,6 +13,10 @@ class ContentIdGenerator {
     return this.getUniqId('pstrp');
   }
 
+  public static getForAutoUpdatePost(): string {
+    return this.getUniqId('psttp');
+  }
+
   public static getForComment(): string {
     return this.getUniqId('cmmnt');
   }

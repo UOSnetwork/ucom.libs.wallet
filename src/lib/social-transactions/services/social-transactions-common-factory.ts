@@ -16,8 +16,8 @@ class SocialTransactionsCommonFactory {
     const smartContract = SmartContractsDictionary.uosActivity();
     const actionName    = SmartContractsActionsDictionary.socialAction();
 
-    const data = this.getData(accountName, interactionName, metaData, content);
-    return this.getSignedTransactionWithOneAction(accountName, privateKey, permission, smartContract, actionName, data);
+    const actionData = this.getActionData(accountName, interactionName, metaData, content);
+    return this.getSignedTransactionWithOneAction(accountName, privateKey, permission, smartContract, actionName, actionData);
   }
 
   public static async getSignedResendTransaction(
@@ -28,7 +28,7 @@ class SocialTransactionsCommonFactory {
     timestamp: string,
   ) {
     const historicalSender  = SmartContractsDictionary.historicalSenderAccountName();
-    const data = this.getData(historicalSender, interactionName, metaData, content, timestamp);
+    const data = this.getActionData(historicalSender, interactionName, metaData, content, timestamp);
 
     const smartContract     = SmartContractsDictionary.uosActivity();
     const actionName        = SmartContractsActionsDictionary.historicalSocialAction();
@@ -43,7 +43,18 @@ class SocialTransactionsCommonFactory {
     );
   }
 
-  private static getData(
+  public static getActionMetaData(
+    accountFrom: string,
+    targetBlockchainIdKey: string,
+    targetBlockchainId: string,
+  ) {
+    return {
+      account_from: accountFrom,
+      [targetBlockchainIdKey]: targetBlockchainId,
+    };
+  }
+
+  public static getActionData(
     accountName: string,
     interactionName: string,
     metaData: any,
@@ -72,17 +83,17 @@ class SocialTransactionsCommonFactory {
     permission,
     smartContract,
     actionName,
-    data,
+    actionData,
   ) {
-    const actions = TransactionsBuilder.getSingleUserAction(
+    const action = TransactionsBuilder.getSingleUserAction(
       accountName,
       smartContract,
       actionName,
-      data,
+      actionData,
       permission,
     );
 
-    return EosClient.getSignedTransaction(privateKey, [actions]);
+    return EosClient.getSignedTransaction(privateKey, [action]);
   }
 }
 

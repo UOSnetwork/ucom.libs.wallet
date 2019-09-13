@@ -2,6 +2,7 @@ import EosClient = require('../../common/client/eos-client');
 import PermissionsDictionary = require('../../dictionary/permissions-dictionary');
 import SocialTransactionsUserToUserFactory = require('../services/social-transactions-user-to-user-factory');
 import InteractionsDictionary = require('../../dictionary/interactions-dictionary');
+import AutoUpdatePostService = require('../../content/service/auto-update-post-service');
 
 class SocialApi {
   public static async getUpvoteContentSignedTransaction(
@@ -22,37 +23,64 @@ class SocialApi {
   }
 
   public static async getTrustUserSignedTransaction(
-    accountNameFrom: string,
+    accountFrom: string,
     privateKey: string,
-    accountNameTo: string,
+    accountTo: string,
     permission: string = PermissionsDictionary.active(),
   ): Promise<any> {
     const interactionName = InteractionsDictionary.trust();
 
-    return SocialTransactionsUserToUserFactory.getUserToUserSignedTransaction(
-      accountNameFrom,
-      privateKey,
-      accountNameTo,
+    const trustAction = SocialTransactionsUserToUserFactory.getSingleSocialAction(
+      accountFrom,
+      accountTo,
       interactionName,
       permission,
     );
+
+    return EosClient.getSignedTransaction(privateKey, [trustAction]);
+  }
+
+  public static async getTrustUserWithAutoUpdateSignedTransaction(
+    accountFrom: string,
+    privateKey: string,
+    accountTo: string,
+    permission: string = PermissionsDictionary.active(),
+  ): Promise<{ blockchain_id: string, signed_transaction: any }> {
+    const interactionName = InteractionsDictionary.trust();
+
+    const trustAction = SocialTransactionsUserToUserFactory.getSingleSocialAction(
+      accountFrom,
+      accountTo,
+      interactionName,
+      permission,
+    );
+
+    const autoUpdateProps = AutoUpdatePostService.getAutoUpdateAction(accountFrom, permission);
+
+    const signedTransaction = await EosClient.getSignedTransaction(privateKey, [trustAction, autoUpdateProps.action]);
+
+    return {
+      blockchain_id: autoUpdateProps.blockchain_id,
+      signed_transaction: signedTransaction,
+    };
   }
 
   public static async getUntrustUserSignedTransaction(
-    accountNameFrom: string,
+    accountFrom: string,
     privateKey: string,
-    accountNameTo: string,
+    accountTo: string,
     permission: string = PermissionsDictionary.active(),
   ): Promise<any> {
     const interactionName = InteractionsDictionary.untrust();
 
-    return SocialTransactionsUserToUserFactory.getUserToUserSignedTransaction(
-      accountNameFrom,
-      privateKey,
-      accountNameTo,
+    const trustAction = SocialTransactionsUserToUserFactory.getSingleSocialAction(
+      accountFrom,
+      accountTo,
       interactionName,
       permission,
     );
+
+    return EosClient.getSignedTransaction(privateKey, [trustAction]);
   }
 
   public static async getFollowAccountSignedTransaction(

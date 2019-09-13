@@ -5,6 +5,7 @@ import SocialApi = require('../../../src/lib/social-transactions/api/social-api'
 import EosClient = require('../../../src/lib/common/client/eos-client');
 import InteractionsDictionary = require('../../../src/lib/dictionary/interactions-dictionary');
 import PermissionsDictionary = require('../../../src/lib/dictionary/permissions-dictionary');
+import CommonChecker = require('../../helpers/common/common-checker');
 
 const JEST_TIMEOUT = 40000;
 
@@ -55,6 +56,37 @@ describe('Trust', () => {
       permission,
     );
     TransactionsPushResponseChecker.checkOneTransaction(trustTrxResponse, expected);
+  }, JEST_TIMEOUT);
+
+  it('should send signed transaction with auto update post', async () => {
+    const { blockchain_id, signed_transaction } = await SocialApi.getTrustUserWithAutoUpdateSignedTransaction(
+      accountName,
+      privateKey,
+      accountNameTo,
+      permission,
+    );
+
+    CommonChecker.expectNotEmpty(blockchain_id);
+
+    const pushResponse = await EosClient.pushTransaction(signed_transaction);
+
+    const { processed } = pushResponse;
+
+    expect(processed.action_traces.length).toBe(2);
+
+    const actionTrust = processed.action_traces.find((item) => item.act.data.action_json.includes(InteractionsDictionary.trust()));
+    const actionAutoUpdate = processed.action_traces.find((item) => item.act.data.action_json.includes(InteractionsDictionary.createAutoUpdatePostFromAccount()));
+
+    CommonChecker.expectNotEmpty(actionTrust);
+    CommonChecker.expectNotEmpty(actionAutoUpdate);
+    /*
+      TODO
+      check auto update structure
+      check trust act structure
+
+      same - for untrust
+
+     */
   }, JEST_TIMEOUT);
 });
 
