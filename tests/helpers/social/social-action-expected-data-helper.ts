@@ -1,11 +1,81 @@
 /* eslint-disable no-useless-escape */
+import { IStringToAny, ITransactionPushResponse } from '../../../src/lib/common/interfaces/common-interfaces';
+
 import SmartContractsActionsDictionary = require('../../../src/lib/dictionary/smart-contracts-actions-dictionary');
 import SmartContractsDictionary = require('../../../src/lib/dictionary/smart-contracts-dictionary');
 import TransactionsPushResponseChecker = require('../common/transactions-push-response-checker');
 import CommonChecker = require('../common/common-checker');
 import PermissionsDictionary = require('../../../src/lib/dictionary/permissions-dictionary');
+import TransactionsPushResponseHelper = require('../common/transactions-push-response-helper');
 
 class SocialActionExpectedDataHelper {
+  public static expectTrustActionInsidePushResponse(
+    pushResponse: ITransactionPushResponse,
+    interaction: string,
+    accountFrom: string,
+    accountTo: string,
+  ): void {
+    const actionTrust = TransactionsPushResponseHelper.getActionByInteractionOrError(pushResponse, interaction);
+
+    this.expectTrustActionJson(actionTrust, interaction, accountFrom, accountTo);
+  }
+
+  public static expectAutoUpdateActionInsidePushResponse(
+    pushResponse: ITransactionPushResponse,
+    interaction: string,
+    accountFrom: string,
+    blockchainId: string,
+  ): void {
+    CommonChecker.expectNotEmpty(blockchainId);
+
+    const action = TransactionsPushResponseHelper.getActionByInteractionOrError(
+      pushResponse,
+      interaction,
+    );
+
+    this.expectAutoUpdateActionJson(action, interaction, accountFrom, blockchainId);
+  }
+
+  public static expectTrustActionJson(
+    action: IStringToAny,
+    interaction: string,
+    accountFrom: string,
+    accountTo: string,
+  ): void {
+    CommonChecker.expectNotEmpty(action);
+
+    const trustActionJson = {
+      interaction,
+      data: {
+        account_from: accountFrom,
+        account_to: accountTo,
+      },
+    };
+
+    const actualActionJson = JSON.parse(action.act.data.action_json);
+
+    expect(actualActionJson).toEqual(trustActionJson);
+  }
+
+  private static expectAutoUpdateActionJson(
+    action: IStringToAny,
+    interaction: string,
+    accountFrom: string,
+    contentId: string,
+  ): void {
+    CommonChecker.expectNotEmpty(action);
+
+    const trustActionJson = {
+      interaction,
+      data: {
+        account_from: accountFrom,
+        content_id:   contentId,
+      },
+    };
+
+    expect(JSON.parse(action.act.data.action_json)).toEqual(trustActionJson);
+  }
+
   public static expectSocialActionDataWithoutContent(
     response: any,
     accountName: string,

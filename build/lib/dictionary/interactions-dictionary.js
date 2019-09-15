@@ -15,6 +15,7 @@ const CREATE_DIRECT_POST_FOR_ORGANIZATION = 'create_direct_post_from_account_to_
 const UPDATE_DIRECT_POST_FOR_ACCOUNT = 'update_direct_post_from_account_to_account';
 const UPDATE_DIRECT_POST_FOR_ORGANIZATION = 'update_direct_post_from_account_to_organization';
 const CREATE_REPOST_FROM_ACCOUNT = 'create_repost_from_account';
+const CREATE_AUTO_UPDATE_POST_FROM_ACCOUNT = 'create_auto_update_post_from_account';
 const CREATE_COMMENT_FROM_ACCOUNT = 'create_comment_from_account';
 const CREATE_COMMENT_FROM_ORGANIZATION = 'create_comment_from_organization';
 const CREATE_ORGANIZATION = 'create_organization';
@@ -75,6 +76,9 @@ class InteractionsDictionary {
     }
     static createRepostFromAccount() {
         return CREATE_REPOST_FROM_ACCOUNT;
+    }
+    static createAutoUpdatePostFromAccount() {
+        return CREATE_AUTO_UPDATE_POST_FROM_ACCOUNT;
     }
     static createCommentFromAccount() {
         return CREATE_COMMENT_FROM_ACCOUNT;

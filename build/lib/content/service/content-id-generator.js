@@ -13,6 +13,9 @@ class ContentIdGenerator {
     static getForRepost() {
         return this.getUniqId('pstrp');
     }
+    static getForAutoUpdatePost() {
+        return this.getUniqId('psttp');
+    }
     static getForComment() {
         return this.getUniqId('cmmnt');
     }

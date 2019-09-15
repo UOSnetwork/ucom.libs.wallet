@@ -2,7 +2,6 @@ import EosClient = require('../../common/client/eos-client');
 import PermissionsDictionary = require('../../dictionary/permissions-dictionary');
 import SocialTransactionsUserToUserFactory = require('../services/social-transactions-user-to-user-factory');
 import InteractionsDictionary = require('../../dictionary/interactions-dictionary');
-import AutoUpdatePostService = require('../../content/service/auto-update-post-service');
 
 class SocialApi {
   public static async getUpvoteContentSignedTransaction(
@@ -44,25 +43,34 @@ class SocialApi {
     accountFrom: string,
     privateKey: string,
     accountTo: string,
-    permission: string = PermissionsDictionary.active(),
+    permission: string,
   ): Promise<{ blockchain_id: string, signed_transaction: any }> {
-    const interactionName = InteractionsDictionary.trust();
+    const interaction = InteractionsDictionary.trust();
 
-    const trustAction = SocialTransactionsUserToUserFactory.getSingleSocialAction(
+    return SocialTransactionsUserToUserFactory.getTrustUntrustUserWithAutoUpdateSignedTransaction(
       accountFrom,
+      privateKey,
       accountTo,
-      interactionName,
+      interaction,
       permission,
     );
+  }
 
-    const autoUpdateProps = AutoUpdatePostService.getAutoUpdateAction(accountFrom, permission);
+  public static async getUntrustUserWithAutoUpdateSignedTransaction(
+    accountFrom: string,
+    privateKey: string,
+    accountTo: string,
+    permission: string,
+  ): Promise<{ blockchain_id: string, signed_transaction: any }> {
+    const interaction = InteractionsDictionary.untrust();
 
-    const signedTransaction = await EosClient.getSignedTransaction(privateKey, [trustAction, autoUpdateProps.action]);
-
-    return {
-      blockchain_id: autoUpdateProps.blockchain_id,
-      signed_transaction: signedTransaction,
-    };
+    return SocialTransactionsUserToUserFactory.getTrustUntrustUserWithAutoUpdateSignedTransaction(
+      accountFrom,
+      privateKey,
+      accountTo,
+      interaction,
+      permission,
+    );
   }
 
   public static async getUntrustUserSignedTransaction(

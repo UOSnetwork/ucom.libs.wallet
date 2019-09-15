@@ -8,13 +8,23 @@ class SocialApi {
         const interactionName = InteractionsDictionary.upvote();
         return SocialTransactionsUserToUserFactory.getUserToUserSignedTransaction(accountNameFrom, privateKey, accountNameTo, interactionName, permission);
     }
-    static async getTrustUserSignedTransaction(accountNameFrom, privateKey, accountNameTo, permission = PermissionsDictionary.active()) {
+    static async getTrustUserSignedTransaction(accountFrom, privateKey, accountTo, permission = PermissionsDictionary.active()) {
         const interactionName = InteractionsDictionary.trust();
-        return SocialTransactionsUserToUserFactory.getUserToUserSignedTransaction(accountNameFrom, privateKey, accountNameTo, interactionName, permission);
+        const trustAction = SocialTransactionsUserToUserFactory.getSingleSocialAction(accountFrom, accountTo, interactionName, permission);
+        return EosClient.getSignedTransaction(privateKey, [trustAction]);
     }
-    static async getUntrustUserSignedTransaction(accountNameFrom, privateKey, accountNameTo, permission = PermissionsDictionary.active()) {
+    static async getTrustUserWithAutoUpdateSignedTransaction(accountFrom, privateKey, accountTo, permission) {
+        const interaction = InteractionsDictionary.trust();
+        return SocialTransactionsUserToUserFactory.getTrustUntrustUserWithAutoUpdateSignedTransaction(accountFrom, privateKey, accountTo, interaction, permission);
+    }
+    static async getUntrustUserWithAutoUpdateSignedTransaction(accountFrom, privateKey, accountTo, permission) {
+        const interaction = InteractionsDictionary.untrust();
+        return SocialTransactionsUserToUserFactory.getTrustUntrustUserWithAutoUpdateSignedTransaction(accountFrom, privateKey, accountTo, interaction, permission);
+    }
+    static async getUntrustUserSignedTransaction(accountFrom, privateKey, accountTo, permission = PermissionsDictionary.active()) {
         const interactionName = InteractionsDictionary.untrust();
-        return SocialTransactionsUserToUserFactory.getUserToUserSignedTransaction(accountNameFrom, privateKey, accountNameTo, interactionName, permission);
+        const trustAction = SocialTransactionsUserToUserFactory.getSingleSocialAction(accountFrom, accountTo, interactionName, permission);
+        return EosClient.getSignedTransaction(privateKey, [trustAction]);
     }
     static async getFollowAccountSignedTransaction(accountNameFrom, privateKey, accountNameTo, permission = PermissionsDictionary.active()) {
         const interactionName = InteractionsDictionary.followToAccount();

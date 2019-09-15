@@ -56,6 +56,7 @@ module.exports = {
         "no-continue": "off",
         "max-len": "off",
         "unicorn/prevent-abbreviations": "off",
+        "no-use-before-define": "off",
       }
     }
   ]

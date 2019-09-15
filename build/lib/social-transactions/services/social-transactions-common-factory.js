@@ -8,17 +8,23 @@ class SocialTransactionsCommonFactory {
     static async getSignedTransaction(accountName, privateKey, interactionName, metaData, content, permission) {
         const smartContract = SmartContractsDictionary.uosActivity();
         const actionName = SmartContractsActionsDictionary.socialAction();
-        const data = this.getData(accountName, interactionName, metaData, content);
-        return this.getSignedTransactionWithOneAction(accountName, privateKey, permission, smartContract, actionName, data);
+        const actionData = this.getActionData(accountName, interactionName, metaData, content);
+        return this.getSignedTransactionWithOneAction(accountName, privateKey, permission, smartContract, actionName, actionData);
     }
     static async getSignedResendTransaction(historicalSenderPrivateKey, interactionName, metaData, content, timestamp) {
         const historicalSender = SmartContractsDictionary.historicalSenderAccountName();
-        const data = this.getData(historicalSender, interactionName, metaData, content, timestamp);
+        const data = this.getActionData(historicalSender, interactionName, metaData, content, timestamp);
         const smartContract = SmartContractsDictionary.uosActivity();
         const actionName = SmartContractsActionsDictionary.historicalSocialAction();
         return this.getSignedTransactionWithOneAction(historicalSender, historicalSenderPrivateKey, PermissionsDictionary.active(), smartContract, actionName, data);
     }
-    static getData(accountName, interactionName, metaData, content, timestamp = null) {
+    static getActionMetaData(accountFrom, targetBlockchainIdKey, targetBlockchainId) {
+        return {
+            account_from: accountFrom,
+            [targetBlockchainIdKey]: targetBlockchainId,
+        };
+    }
+    static getActionData(accountName, interactionName, metaData, content, timestamp = null) {
         const data = {
             acc: accountName,
             action_json: JSON.stringify({
@@ -32,9 +38,9 @@ class SocialTransactionsCommonFactory {
         }
         return data;
     }
-    static getSignedTransactionWithOneAction(accountName, privateKey, permission, smartContract, actionName, data) {
-        const actions = TransactionsBuilder.getSingleUserAction(accountName, smartContract, actionName, data, permission);
-        return EosClient.getSignedTransaction(privateKey, [actions]);
+    static getSignedTransactionWithOneAction(accountName, privateKey, permission, smartContract, actionName, actionData) {
+        const action = TransactionsBuilder.getSingleUserAction(accountName, smartContract, actionName, actionData, permission);
+        return EosClient.getSignedTransaction(privateKey, [action]);
     }
 }
 module.exports = SocialTransactionsCommonFactory;

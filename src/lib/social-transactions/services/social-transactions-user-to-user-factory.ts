@@ -1,7 +1,33 @@
 import SocialTransactionsCommonFactory = require('./social-transactions-common-factory');
 import TransactionsBuilder = require('../../service/transactions-builder');
+import AutoUpdatePostService = require('../../content/service/auto-update-post-service');
+import EosClient = require('../../common/client/eos-client');
 
 class SocialTransactionsUserToUserFactory {
+  public static async getTrustUntrustUserWithAutoUpdateSignedTransaction(
+    accountFrom: string,
+    privateKey: string,
+    accountTo: string,
+    interaction: string,
+    permission: string,
+  ): Promise<{ blockchain_id: string, signed_transaction: any }> {
+    const trustAction = SocialTransactionsUserToUserFactory.getSingleSocialAction(
+      accountFrom,
+      accountTo,
+      interaction,
+      permission,
+    );
+
+    const autoUpdateProps = AutoUpdatePostService.getAutoUpdateAction(accountFrom, permission);
+
+    const signedTransaction = await EosClient.getSignedTransaction(privateKey, [trustAction, autoUpdateProps.action]);
+
+    return {
+      blockchain_id: autoUpdateProps.blockchain_id,
+      signed_transaction: signedTransaction,
+    };
+  }
+
   public static async getUserToUserSignedTransaction(
     accountNameFrom: string,
     privateKey: string,

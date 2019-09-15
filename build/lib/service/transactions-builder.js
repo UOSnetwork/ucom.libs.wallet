@@ -1,6 +1,13 @@
 "use strict";
 const PermissionsDictionary = require("../dictionary/permissions-dictionary");
+const SmartContractsDictionary = require("../dictionary/smart-contracts-dictionary");
+const SmartContractsActionsDictionary = require("../dictionary/smart-contracts-actions-dictionary");
 class TransactionsBuilder {
+    static getSingleSocialUserAction(actorAccountName, data, permission) {
+        const smartContract = SmartContractsDictionary.uosActivity();
+        const actionName = SmartContractsActionsDictionary.socialAction();
+        return this.getSingleUserAction(actorAccountName, smartContract, actionName, data, permission);
+    }
     static getSingleUserAction(actorAccountName, smartContractName, actionName, data, permission = PermissionsDictionary.active()) {
         const authorization = this.getSingleUserAuthorization(actorAccountName, permission);
         return {
