@@ -20,6 +20,13 @@ class ContentPublicationsApi {
         const content = Object.assign(Object.assign({}, givenContent), ContentHelper.getDateTimeFields(true, true));
         return this.signSendCommentToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, parentEntityName, parentContentBlockchainId);
     }
+    static async signUpdateCommentFromAccount(accountFrom, privateKey, parentContentBlockchainId, givenContent, blockchainId, isReply, permission = PermissionsDictionary.active()) {
+        const parentEntityName = this.getCommentParentEntityName(isReply);
+        const interactionName = InteractionsDictionary.updateCommentFromAccount();
+        const content = Object.assign(Object.assign({}, givenContent), ContentHelper.getDateTimeFields(false, true));
+        const result = await this.signSendCommentToBlockchain(accountFrom, privateKey, permission, content, interactionName, parentEntityName, parentContentBlockchainId, {}, blockchainId);
+        return result.signed_transaction;
+    }
     static async signResendCommentFromAccount(authorAccountName, historicalSenderPrivateKey, givenContent, blockchainId, parentContentBlockchainId, isReply) {
         const interactionName = InteractionsDictionary.createCommentFromAccount();
         const parentEntityName = this.getCommentParentEntityName(isReply);
@@ -36,6 +43,16 @@ class ContentPublicationsApi {
             organization_id_from: organizationBlockchainId,
         };
         return this.signSendCommentToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, parentEntityName, parentContentBlockchainId, extraMetaData);
+    }
+    static async signUpdateCommentFromOrganization(accountFrom, privateKey, parentContentBlockchainId, organizationBlockchainId, givenContent, blockchainId, isReply, permission = PermissionsDictionary.active()) {
+        const parentEntityName = this.getCommentParentEntityName(isReply);
+        const interactionName = InteractionsDictionary.updateCommentFromOrganization();
+        const content = Object.assign(Object.assign({}, givenContent), ContentHelper.getDateTimeFields(false, true));
+        const extraMetaData = {
+            organization_id_from: organizationBlockchainId,
+        };
+        const result = await this.signSendCommentToBlockchain(accountFrom, privateKey, permission, content, interactionName, parentEntityName, parentContentBlockchainId, extraMetaData, blockchainId);
+        return result.signed_transaction;
     }
     static async signResendCommentFromOrganization(authorAccountName, historicalSenderPrivateKey, givenContent, blockchainId, parentContentBlockchainId, organizationBlockchainId, isReply) {
         const interactionName = InteractionsDictionary.createCommentFromOrganization();
@@ -179,8 +196,8 @@ class ContentPublicationsApi {
             blockchain_id: metaData.content_id,
         };
     }
-    static async signSendCommentToBlockchain(accountNameFrom, privateKey, permission, givenContent, interactionName, parentEntityName, parentBlockchainId, givenExtraMetaData = {}) {
-        const contentId = ContentIdGenerator.getForComment();
+    static async signSendCommentToBlockchain(accountNameFrom, privateKey, permission, givenContent, interactionName, parentEntityName, parentBlockchainId, givenExtraMetaData = {}, givenContentId = null) {
+        const contentId = givenContentId || ContentIdGenerator.getForComment();
         const content = this.getContentWithExtraFields(givenContent, contentId, parentEntityName, parentBlockchainId, accountNameFrom);
         const extraMetaData = Object.assign(Object.assign({}, givenExtraMetaData), { parent_content_id: parentBlockchainId });
         const metaData = ContentHelper.getMetadata(accountNameFrom, contentId, extraMetaData);
