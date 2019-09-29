@@ -1,3 +1,4 @@
+import { Action, SerializedAction } from 'eosjs/dist/eosjs-serialize';
 import { BadRequestError } from '../../errors/errors';
 import { IStringToAny } from '../interfaces/common-interfaces';
 
@@ -156,6 +157,19 @@ class EosClient {
       }
       throw error;
     }
+  }
+
+  public static async serializeActionsByApi(privateKey: string, actions: Action[]): Promise<SerializedAction[]> {
+    const api = EosClient.getApiClient(privateKey);
+
+    return api.serializeActions(actions);
+  }
+
+  public static async deserializeActionsByApi(privateKey: string, transactionParts: any): Promise<any> {
+    // #opt - private key is not required here
+    const api = EosClient.getApiClient(privateKey);
+
+    return api.deserializeTransaction(transactionParts.serializedTransaction);
   }
 
   private static getApiClient(privateKey: string) {

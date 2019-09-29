@@ -1,4 +1,4 @@
-import { IBlockchainAction } from '../interfaces/common-interfaces';
+import { Action } from 'eosjs/dist/eosjs-serialize';
 
 import SmartContractsDictionary = require('../../dictionary/smart-contracts-dictionary');
 import SmartContractsActionsDictionary = require('../../dictionary/smart-contracts-actions-dictionary');
@@ -13,7 +13,7 @@ class ActionsFactory {
     parentPermission: string,
     threshold: number = 1,
     weight: number = 1,
-  ): IBlockchainAction {
+  ): Action {
     const authorization = TransactionsBuilder.getSingleUserAuthorization(actor, permissionToAct);
     const accounts = [this.getOneAccountPermission(actor, assignToAccount, weight)];
 

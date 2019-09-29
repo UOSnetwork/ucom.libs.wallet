@@ -33,11 +33,16 @@ class SocialKeyApi {
         await this.socialKeyNotExistOrError(accountName);
         const actions = [
             SocialKeyService.getBindSocialKeyAction(accountName, socialPublicKey),
-            SocialKeyService.getSocialPermissionForSocialActions(accountName),
-            SocialKeyService.getSocialPermissionForProfileUpdating(accountName),
-            SocialKeyService.getSocialPermissionForEmissionClaim(accountName),
+            ...this.getAssignSocialPermissionsActions(accountName),
         ];
         return EosClient.sendTransaction(activePrivateKey, actions);
+    }
+    static getAssignSocialPermissionsActions(accountName, actorPermission = PermissionsDictionary.active()) {
+        return [
+            SocialKeyService.getSocialPermissionForSocialActions(accountName, actorPermission),
+            SocialKeyService.getSocialPermissionForProfileUpdating(accountName, actorPermission),
+            SocialKeyService.getSocialPermissionForEmissionClaim(accountName, actorPermission),
+        ];
     }
     /**
      * @deprecated

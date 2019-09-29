@@ -1,4 +1,4 @@
-import { IBlockchainAction } from '../../common/interfaces/common-interfaces';
+import { Action } from 'eosjs/dist/eosjs-serialize';
 
 import SmartContractsDictionary = require('../../dictionary/smart-contracts-dictionary');
 import TransactionsBuilder = require('../../service/transactions-builder');
@@ -9,7 +9,7 @@ class SocialKeyService {
   public static getSocialPermissionForSocialActions(
     accountFrom: string,
     actorPermission: string = PermissionsDictionary.active(),
-  ): IBlockchainAction {
+  ): Action {
     const smartContract = SmartContractsDictionary.uosActivity();
     const actionName    = SmartContractsActionsDictionary.socialAction();
 
@@ -19,7 +19,7 @@ class SocialKeyService {
   public static getSocialPermissionForProfileUpdating(
     accountFrom: string,
     actorPermission: string = PermissionsDictionary.active(),
-  ): IBlockchainAction {
+  ): Action {
     const smartContract = SmartContractsDictionary.uosAccountInfo();
     const actionName    = SmartContractsActionsDictionary.setProfile();
 
@@ -29,14 +29,14 @@ class SocialKeyService {
   public static getSocialPermissionForEmissionClaim(
     accountFrom: string,
     actorPermission: string = PermissionsDictionary.active(),
-  ): IBlockchainAction {
+  ): Action {
     const smartContract = SmartContractsDictionary.uosCalcs();
     const actionName    = SmartContractsActionsDictionary.withdrawal();
 
     return SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName, actorPermission);
   }
 
-  public static getBindSocialKeyAction(accountName: string, publicSocialKey: string): IBlockchainAction {
+  public static getBindSocialKeyAction(accountName: string, publicSocialKey: string): Action {
     return {
       account: SmartContractsDictionary.eosIo(),
       name: SmartContractsActionsDictionary.updateAuth(),
@@ -65,7 +65,7 @@ class SocialKeyService {
     smartContract: string,
     actionName: string,
     actorPermission: string = PermissionsDictionary.active(),
-  ): IBlockchainAction {
+  ): Action {
     const targetPermission    = PermissionsDictionary.social();
     const authorization       = TransactionsBuilder.getSingleUserAuthorization(accountFrom, actorPermission);
 

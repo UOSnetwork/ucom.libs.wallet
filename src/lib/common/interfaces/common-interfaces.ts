@@ -7,18 +7,7 @@ interface ITransactionPushResponse {
   readonly processed: IStringToAny;
 }
 
-interface IBlockchainAction {
-  account:  string,
-  name:     string,
-  authorization: {
-    actor: string,
-    permission: string,
-  }[],
-  data: IStringToAny,
-}
-
 export {
   ITransactionPushResponse,
   IStringToAny,
-  IBlockchainAction,
 };

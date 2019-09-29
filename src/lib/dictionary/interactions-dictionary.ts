@@ -1,6 +1,3 @@
-const TRUST = 'trust';
-const UNTRUST = 'untrust';
-
 const FOLLOW_TO_ACCOUNT   = 'follow_to_account';
 const UNFOLLOW_TO_ACCOUNT = 'unfollow_to_account';
 
@@ -47,11 +44,11 @@ class InteractionsDictionary {
   }
 
   public static trust(): string {
-    return TRUST;
+    return 'trust';
   }
 
   public static untrust(): string {
-    return UNTRUST;
+    return 'untrust';
   }
 
   public static followToAccount(): string {

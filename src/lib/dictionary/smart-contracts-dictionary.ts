@@ -1,4 +1,8 @@
 class SmartContractsDictionary {
+  public static eosIoMultiSignature(): string {
+    return 'eosio.msig';
+  }
+
   public static historicalSenderAccountName(): string {
     return 'uoshistorian';
   }

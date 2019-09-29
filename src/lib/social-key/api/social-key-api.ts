@@ -1,4 +1,4 @@
-import { IBlockchainAction } from '../../common/interfaces/common-interfaces';
+import { Action } from 'eosjs/dist/eosjs-serialize';
 
 import EosClient = require('../../common/client/eos-client');
 import EosCryptoService = require('../../common/services/eos-crypto-service');
@@ -60,7 +60,7 @@ class SocialKeyApi {
   public static getAssignSocialPermissionsActions(
     accountName: string,
     actorPermission: string = PermissionsDictionary.active(),
-  ): IBlockchainAction[] {
+  ): Action[] {
     return [
       SocialKeyService.getSocialPermissionForSocialActions(accountName, actorPermission),
       SocialKeyService.getSocialPermissionForProfileUpdating(accountName, actorPermission),

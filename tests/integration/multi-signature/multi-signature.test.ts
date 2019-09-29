@@ -3,11 +3,18 @@ import RegistrationApi = require('../../../src/lib/registration/api/registration
 import BlockchainRegistry = require('../../../src/lib/blockchain-registry');
 import MultiSignatureApi = require('../../../src/lib/multi-signature/api/multi-signature-api');
 import PermissionsDictionary = require('../../../src/lib/dictionary/permissions-dictionary');
+import CommonChecker = require('../../helpers/common/common-checker');
 
 Helper.initForEnvByProcessVariable();
 
-const accountName       = Helper.getTesterAccountName();
 const activePrivateKey  = Helper.getTesterAccountPrivateKey();
+
+const accountName = Helper.getTesterAccountName();
+const socialPrivateKey = Helper.getTesterAccountSocialPrivateKey();
+const socialPermission = PermissionsDictionary.social();
+
+const accountTo = Helper.getAccountNameTo();
+
 
 const JEST_TIMEOUT = 30000;
 
@@ -79,6 +86,14 @@ it('should create new multi-signature account', async () => {
   ];
 
   expect(state.permissions).toEqual(expectedPermissions);
+}, JEST_TIMEOUT);
+
+it('should create a proposal', async () => {
+
+  // TODO - internal server error
+  const response = await MultiSignatureApi.createTrustProposal(accountName, accountTo, socialPrivateKey, socialPermission);
+
+  CommonChecker.expectNotEmpty(response);
 }, JEST_TIMEOUT);
 
 export {};
