@@ -18,10 +18,7 @@ class TransactionsBuilder {
         };
     }
     static getSingleUserAuthorization(actorAccountName, permission) {
-        return [{
-                permission,
-                actor: actorAccountName,
-            }];
+        return [{ permission, actor: actorAccountName }];
     }
 }
 module.exports = TransactionsBuilder;
