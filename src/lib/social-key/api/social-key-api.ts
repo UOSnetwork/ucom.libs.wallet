@@ -1,3 +1,5 @@
+import { IBlockchainAction } from '../../common/interfaces/common-interfaces';
+
 import EosClient = require('../../common/client/eos-client');
 import EosCryptoService = require('../../common/services/eos-crypto-service');
 import BlockchainRegistry = require('../../blockchain-registry');
@@ -48,12 +50,22 @@ class SocialKeyApi {
 
     const actions = [
       SocialKeyService.getBindSocialKeyAction(accountName, socialPublicKey),
-      SocialKeyService.getSocialPermissionForSocialActions(accountName),
-      SocialKeyService.getSocialPermissionForProfileUpdating(accountName),
-      SocialKeyService.getSocialPermissionForEmissionClaim(accountName),
+
+      ...this.getAssignSocialPermissionsActions(accountName),
     ];
 
     return EosClient.sendTransaction(activePrivateKey, actions);
+  }
+
+  public static getAssignSocialPermissionsActions(
+    accountName: string,
+    actorPermission: string = PermissionsDictionary.active(),
+  ): IBlockchainAction[] {
+    return [
+      SocialKeyService.getSocialPermissionForSocialActions(accountName, actorPermission),
+      SocialKeyService.getSocialPermissionForProfileUpdating(accountName, actorPermission),
+      SocialKeyService.getSocialPermissionForEmissionClaim(accountName, actorPermission),
+    ];
   }
 
   /**

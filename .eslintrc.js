@@ -57,6 +57,7 @@ module.exports = {
         "max-len": "off",
         "unicorn/prevent-abbreviations": "off",
         "no-use-before-define": "off",
+        "node/no-missing-import": "off",
       }
     }
   ]

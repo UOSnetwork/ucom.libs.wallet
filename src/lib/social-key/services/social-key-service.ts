@@ -1,4 +1,4 @@
-import { IStringToAny } from '../../common/interfaces/common-interfaces';
+import { IBlockchainAction } from '../../common/interfaces/common-interfaces';
 
 import SmartContractsDictionary = require('../../dictionary/smart-contracts-dictionary');
 import TransactionsBuilder = require('../../service/transactions-builder');
@@ -6,28 +6,37 @@ import SmartContractsActionsDictionary = require('../../dictionary/smart-contrac
 import PermissionsDictionary = require('../../dictionary/permissions-dictionary');
 
 class SocialKeyService {
-  public static getSocialPermissionForSocialActions(accountFrom: string): IStringToAny {
+  public static getSocialPermissionForSocialActions(
+    accountFrom: string,
+    actorPermission: string = PermissionsDictionary.active(),
+  ): IBlockchainAction {
     const smartContract = SmartContractsDictionary.uosActivity();
     const actionName    = SmartContractsActionsDictionary.socialAction();
 
-    return this.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
+    return this.getSocialPermissionsForAction(accountFrom, smartContract, actionName, actorPermission);
   }
 
-  public static getSocialPermissionForProfileUpdating(accountFrom: string): IStringToAny {
+  public static getSocialPermissionForProfileUpdating(
+    accountFrom: string,
+    actorPermission: string = PermissionsDictionary.active(),
+  ): IBlockchainAction {
     const smartContract = SmartContractsDictionary.uosAccountInfo();
     const actionName    = SmartContractsActionsDictionary.setProfile();
 
-    return this.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
+    return this.getSocialPermissionsForAction(accountFrom, smartContract, actionName, actorPermission);
   }
 
-  public static getSocialPermissionForEmissionClaim(accountFrom: string): IStringToAny {
+  public static getSocialPermissionForEmissionClaim(
+    accountFrom: string,
+    actorPermission: string = PermissionsDictionary.active(),
+  ): IBlockchainAction {
     const smartContract = SmartContractsDictionary.uosCalcs();
     const actionName    = SmartContractsActionsDictionary.withdrawal();
 
-    return SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
+    return SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName, actorPermission);
   }
 
-  public static getBindSocialKeyAction(accountName: string, publicSocialKey: string): IStringToAny {
+  public static getBindSocialKeyAction(accountName: string, publicSocialKey: string): IBlockchainAction {
     return {
       account: SmartContractsDictionary.eosIo(),
       name: SmartContractsActionsDictionary.updateAuth(),
@@ -55,10 +64,10 @@ class SocialKeyService {
     accountFrom: string,
     smartContract: string,
     actionName: string,
-  ): IStringToAny {
-    const parentPermission    = PermissionsDictionary.active();
+    actorPermission: string = PermissionsDictionary.active(),
+  ): IBlockchainAction {
     const targetPermission    = PermissionsDictionary.social();
-    const authorization       = TransactionsBuilder.getSingleUserAuthorization(accountFrom, parentPermission);
+    const authorization       = TransactionsBuilder.getSingleUserAuthorization(accountFrom, actorPermission);
 
     return {
       account:  SmartContractsDictionary.eosIo(),

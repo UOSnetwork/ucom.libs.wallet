@@ -254,6 +254,10 @@ class Helper {
     });
   }
 
+  public static getTesterAccountOwnerPrivateKey(): string {
+    return accountsData[accountName].ownerPk;
+  }
+
   public static getTesterAccountPrivateKey(): string {
     return accountsData[accountName].activePk;
   }

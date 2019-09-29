@@ -39,11 +39,10 @@ class TransactionsBuilder {
     };
   }
 
-  public static getSingleUserAuthorization(actorAccountName: string, permission: string) {
-    return [{
-      permission,
-      actor: actorAccountName,
-    }];
+  public static getSingleUserAuthorization(
+    actorAccountName: string, permission: string,
+  ): { permission: string, actor: string }[] {
+    return [{ permission, actor: actorAccountName }];
   }
 }
 
