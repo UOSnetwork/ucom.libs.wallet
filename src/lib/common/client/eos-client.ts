@@ -159,8 +159,8 @@ class EosClient {
     }
   }
 
-  public static async serializeActionsByApi(privateKey: string, actions: Action[]): Promise<SerializedAction[]> {
-    const api = EosClient.getApiClient(privateKey);
+  public static async serializeActionsByApi(actions: Action[]): Promise<SerializedAction[]> {
+    const api = EosClient.getApiClientWithoutSignatures();
 
     return api.serializeActions(actions);
   }
@@ -186,6 +186,21 @@ class EosClient {
     }
 
     return new Api({ rpc, signatureProvider });
+  }
+
+  private static getApiClientWithoutSignatures() {
+    const rpc = this.getRpcClient();
+
+    if (ConfigService.isNode()) {
+      // eslint-disable-next-line global-require
+      const { TextEncoder, TextDecoder } = require('util');
+
+      return new Api({
+        rpc, textDecoder: new TextDecoder(), textEncoder: new TextEncoder(),
+      });
+    }
+
+    return new Api({ rpc });
   }
 
   /**

@@ -1,3 +1,5 @@
+import { Action } from 'eosjs/dist/eosjs-serialize';
+
 import SocialTransactionsCommonFactory = require('./social-transactions-common-factory');
 import TransactionsBuilder = require('../../service/transactions-builder');
 import AutoUpdatePostService = require('../../content/service/auto-update-post-service');
@@ -96,7 +98,7 @@ class SocialTransactionsUserToUserFactory {
     accountTo: string,
     interactionName: string,
     permission: string,
-  ) {
+  ): Action {
     const actionData = this.getActionDataWithMetaData(
       accountFrom,
       accountTo,

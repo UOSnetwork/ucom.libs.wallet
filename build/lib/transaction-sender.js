@@ -17,8 +17,8 @@ class TransactionSender {
         const action = this.getSellRamAction(accountName, bytesAmount);
         return EosClient.sendTransaction(privateKey, [action]);
     }
-    static async buyRamBytes(accountName, privateKey, bytesAmount) {
-        const action = this.getBuyRamAction(accountName, bytesAmount, accountName);
+    static async buyRamBytes(accountName, privateKey, bytesAmount, receiver) {
+        const action = this.getBuyRamAction(accountName, bytesAmount, receiver);
         return EosClient.sendSingleActionTransaction(privateKey, action);
     }
     static async claimEmission(accountName, privateKey, permission) {
@@ -133,14 +133,6 @@ class TransactionSender {
         };
         return TransactionsBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data, permission);
     }
-    /**
-     *
-     * @param {string} accountNameFrom
-     * @param {number} amount
-     * @param {string} accountNameTo
-     * @return {Object}
-     * @private
-     */
     static getBuyRamAction(accountNameFrom, amount, accountNameTo) {
         const smartContract = SmartContractsDictionary.eosIo();
         const actionName = SmartContractsActionsDictionary.buyRamBytes();

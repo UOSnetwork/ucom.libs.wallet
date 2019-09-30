@@ -1,6 +1,4 @@
 "use strict";
-const TRUST = 'trust';
-const UNTRUST = 'untrust';
 const FOLLOW_TO_ACCOUNT = 'follow_to_account';
 const UNFOLLOW_TO_ACCOUNT = 'unfollow_to_account';
 const FOLLOW_TO_ORGANIZATION = 'follow_to_organization';
@@ -33,10 +31,10 @@ class InteractionsDictionary {
         return REFERRAL;
     }
     static trust() {
-        return TRUST;
+        return 'trust';
     }
     static untrust() {
-        return UNTRUST;
+        return 'untrust';
     }
     static followToAccount() {
         return FOLLOW_TO_ACCOUNT;

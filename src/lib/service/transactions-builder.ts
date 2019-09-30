@@ -1,9 +1,9 @@
+import { Authorization } from 'eosjs/dist/eosjs-serialize';
 import { IStringToAny } from '../common/interfaces/common-interfaces';
 
 import PermissionsDictionary = require('../dictionary/permissions-dictionary');
 import SmartContractsDictionary = require('../dictionary/smart-contracts-dictionary');
 import SmartContractsActionsDictionary = require('../dictionary/smart-contracts-actions-dictionary');
-import { Authorization } from 'eosjs/dist/eosjs-serialize';
 
 class TransactionsBuilder {
   public static getSingleSocialUserAction(

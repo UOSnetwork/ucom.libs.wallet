@@ -3,27 +3,56 @@ import { Action } from 'eosjs/dist/eosjs-serialize';
 import RegistrationApi = require('../../registration/api/registration-api');
 import PermissionsDictionary = require('../../dictionary/permissions-dictionary');
 import EosClient = require('../../common/client/eos-client');
-import SocialKeyApi = require('../../social-key/api/social-key-api');
 import ActionsFactory = require('../../common/actions/actions-factory');
 import SmartContractsDictionary = require('../../dictionary/smart-contracts-dictionary');
 import SmartContractsActionsDictionary = require('../../dictionary/smart-contracts-actions-dictionary');
 import TransactionsBuilder = require('../../service/transactions-builder');
 import AccountNameService = require('../../common/services/account-name-service');
-import SocialApi = require('../../social-transactions/api/social-api');
+import SocialKeyApi = require('../../social-key/api/social-key-api');
+import SocialTransactionsUserToUserFactory = require('../../social-transactions/services/social-transactions-user-to-user-factory');
+import InteractionsDictionary = require('../../dictionary/interactions-dictionary');
+
+import _ = require('lodash');
+import moment = require('moment');
+import TransactionSender = require('../../transaction-sender');
 
 class MultiSignatureApi {
   public static async createTrustProposal(
-    accountFrom: string,
-    accountTo: string,
-    privateKey: string,
-    permission: string,
+    whoPropose: string,
+    proposePrivateKey: string,
+    proposePermission: string,
+    trustFrom: string,
+    trustTo: string,
+    expirationInDays: number,
   ) {
-    const authorization = TransactionsBuilder.getSingleUserAuthorization(accountFrom, PermissionsDictionary.social());
-
     const proposalName = AccountNameService.createRandomAccountName();
-    const transactionParts = await SocialApi.getTrustUserSignedTransaction(accountFrom, privateKey, accountTo, permission);
-    // @ts-ignore
-    const trx = await EosClient.deserializeActionsByApi(privateKey, transactionParts);
+
+    const trustAction = SocialTransactionsUserToUserFactory.getSingleSocialAction(
+      trustFrom,
+      trustTo,
+      InteractionsDictionary.trust(),
+      PermissionsDictionary.social(),
+    );
+
+    const seActions = await EosClient.serializeActionsByApi([trustAction]);
+
+    const trustActionSerialized = _.cloneDeep(trustAction);
+    trustActionSerialized.data = seActions[0].data;
+
+    const trx = {
+      // eslint-disable-next-line newline-per-chained-call
+      expiration: moment().add(expirationInDays, 'days').utc().format().replace('Z', ''),
+      ref_block_num: 0,
+      ref_block_prefix: 0,
+      max_net_usage_words: 0,
+      max_cpu_usage_ms: 0,
+      delay_sec: 0,
+      context_free_actions: [],
+      actions: [trustActionSerialized],
+      transaction_extensions: [],
+    };
+
+    const authorization = TransactionsBuilder.getSingleUserAuthorization(whoPropose, proposePermission);
 
     const actions = [
       {
@@ -31,11 +60,11 @@ class MultiSignatureApi {
         name: SmartContractsActionsDictionary.proposeMultiSignature(),
         authorization,
         data: {
-          proposer: accountFrom,
+          proposer: whoPropose,
           proposal_name: proposalName,
           requested: [
             {
-              actor: accountFrom,
+              actor: trustFrom,
               permission: PermissionsDictionary.social(),
             },
           ],
@@ -44,7 +73,62 @@ class MultiSignatureApi {
       },
     ];
 
-    return EosClient.sendTransaction(privateKey, actions);
+    return EosClient.sendTransaction(proposePrivateKey, actions);
+  }
+
+  public static async createTransferProposal(
+    whoPropose: string,
+    proposePrivateKey: string,
+    proposePermission: string,
+    accountFrom: string,
+    accountNameTo: string,
+    expirationInDays: number = 5,
+  ) {
+    const proposalName = AccountNameService.createRandomAccountName();
+
+    const stringAmount = TransactionSender.getUosAmountAsString(1, 'UOS');
+    const action = TransactionSender.getSendTokensAction(accountFrom, accountNameTo, stringAmount, '');
+
+    const seActions = await EosClient.serializeActionsByApi([action]);
+
+    const trustActionSerialized = _.cloneDeep(action);
+    trustActionSerialized.data = seActions[0].data;
+
+    const trx = {
+      // eslint-disable-next-line newline-per-chained-call
+      expiration: moment().add(expirationInDays, 'days').utc().format().replace('Z', ''),
+      ref_block_num: 0,
+      ref_block_prefix: 0,
+      max_net_usage_words: 0,
+      max_cpu_usage_ms: 0,
+      delay_sec: 0,
+      context_free_actions: [],
+      actions: [trustActionSerialized],
+      transaction_extensions: [],
+    };
+
+    const authorization = TransactionsBuilder.getSingleUserAuthorization(whoPropose, proposePermission);
+
+    const actions = [
+      {
+        account: SmartContractsDictionary.eosIoMultiSignature(),
+        name: SmartContractsActionsDictionary.proposeMultiSignature(),
+        authorization,
+        data: {
+          proposer: whoPropose,
+          proposal_name: proposalName,
+          requested: [
+            {
+              actor: accountFrom,
+              permission: PermissionsDictionary.active(),
+            },
+          ],
+          trx,
+        },
+      },
+    ];
+
+    return EosClient.sendTransaction(proposePrivateKey, actions);
   }
 
   public static async createMultiSignatureAccount(

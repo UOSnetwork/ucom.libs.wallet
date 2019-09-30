@@ -15,7 +15,7 @@ class ActionsFactory {
     weight: number = 1,
   ): Action {
     const authorization = TransactionsBuilder.getSingleUserAuthorization(actor, permissionToAct);
-    const accounts = [this.getOneAccountPermission(actor, assignToAccount, weight)];
+    const accounts = [this.getOneAccountPermission(assignToAccount, permissionToAssign, weight)];
 
     return {
       account: SmartContractsDictionary.eosIo(),

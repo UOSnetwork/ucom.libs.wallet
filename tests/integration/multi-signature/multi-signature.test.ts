@@ -10,15 +10,10 @@ Helper.initForEnvByProcessVariable();
 const activePrivateKey  = Helper.getTesterAccountPrivateKey();
 
 const accountName = Helper.getTesterAccountName();
-const socialPrivateKey = Helper.getTesterAccountSocialPrivateKey();
-const socialPermission = PermissionsDictionary.social();
-
-const accountTo = Helper.getAccountNameTo();
-
 
 const JEST_TIMEOUT = 30000;
 
-it('should create new multi-signature account', async () => {
+it('should create new multi-signature account - prototype', async () => {
   const data = RegistrationApi.generateRandomDataForRegistration();
 
   await MultiSignatureApi.createMultiSignatureAccount(
@@ -88,12 +83,34 @@ it('should create new multi-signature account', async () => {
   expect(state.permissions).toEqual(expectedPermissions);
 }, JEST_TIMEOUT);
 
-it('should create a proposal', async () => {
+it('should create a proposal - prototype', async () => {
+  const multiSignatureAccountData = {
+    accountName: 'vmqjstiipgv5',
+  };
 
-  // TODO - internal server error
-  const response = await MultiSignatureApi.createTrustProposal(accountName, accountTo, socialPrivateKey, socialPermission);
+  const expirationInDays = 5;
 
-  CommonChecker.expectNotEmpty(response);
+  // @ts-ignore
+  const transferTokenPropose = await MultiSignatureApi.createTransferProposal(
+    accountName,
+    Helper.getTesterAccountPrivateKey(),
+    PermissionsDictionary.active(),
+    multiSignatureAccountData.accountName,
+    accountName,
+    expirationInDays,
+  );
+
+  // @ts-ignore
+  const trustPropose = await MultiSignatureApi.createTrustProposal(
+    accountName,
+    Helper.getTesterAccountPrivateKey(),
+    PermissionsDictionary.active(),
+    multiSignatureAccountData.accountName,
+    accountName,
+    expirationInDays,
+  );
+
+  CommonChecker.expectNotEmpty(transferTokenPropose);
 }, JEST_TIMEOUT);
 
 export {};

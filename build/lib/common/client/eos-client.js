@@ -125,6 +125,15 @@ class EosClient {
             throw error;
         }
     }
+    static async serializeActionsByApi(actions) {
+        const api = EosClient.getApiClientWithoutSignatures();
+        return api.serializeActions(actions);
+    }
+    static async deserializeActionsByApi(privateKey, transactionParts) {
+        // #opt - private key is not required here
+        const api = EosClient.getApiClient(privateKey);
+        return api.deserializeTransaction(transactionParts.serializedTransaction);
+    }
     static getApiClient(privateKey) {
         const rpc = this.getRpcClient();
         const signatureProvider = new JsSignatureProvider([privateKey]);
@@ -136,6 +145,17 @@ class EosClient {
             });
         }
         return new Api({ rpc, signatureProvider });
+    }
+    static getApiClientWithoutSignatures() {
+        const rpc = this.getRpcClient();
+        if (ConfigService.isNode()) {
+            // eslint-disable-next-line global-require
+            const { TextEncoder, TextDecoder } = require('util');
+            return new Api({
+                rpc, textDecoder: new TextDecoder(), textEncoder: new TextEncoder(),
+            });
+        }
+        return new Api({ rpc });
     }
     /**
      *

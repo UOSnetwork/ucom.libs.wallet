@@ -1,5 +1,8 @@
 "use strict";
 class SmartContractsDictionary {
+    static eosIoMultiSignature() {
+        return 'eosio.msig';
+    }
     static historicalSenderAccountName() {
         return 'uoshistorian';
     }

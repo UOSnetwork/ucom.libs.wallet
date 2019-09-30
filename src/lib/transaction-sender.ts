@@ -1,3 +1,4 @@
+import { Action } from 'eosjs/dist/eosjs-serialize';
 import { IStringToAny } from './common/interfaces/common-interfaces';
 
 import EosClient = require('./common/client/eos-client');
@@ -25,8 +26,9 @@ class TransactionSender {
     accountName: string,
     privateKey: string,
     bytesAmount: number,
+    receiver: string,
   ): Promise<IStringToAny> {
-    const action = this.getBuyRamAction(accountName, bytesAmount, accountName);
+    const action = this.getBuyRamAction(accountName, bytesAmount, receiver);
 
     return EosClient.sendSingleActionTransaction(privateKey, action);
   }
@@ -215,15 +217,9 @@ class TransactionSender {
     );
   }
 
-  /**
-   *
-   * @param {string} accountNameFrom
-   * @param {number} amount
-   * @param {string} accountNameTo
-   * @return {Object}
-   * @private
-   */
-  static getBuyRamAction(accountNameFrom, amount, accountNameTo) {
+  private static getBuyRamAction(
+    accountNameFrom: string, amount: number, accountNameTo: string,
+  ): Action {
     const smartContract = SmartContractsDictionary.eosIo();
     const actionName    = SmartContractsActionsDictionary.buyRamBytes();
 

@@ -128,14 +128,9 @@ class WalletApi {
     return TransactionSender.sellRamBytes(accountName, privateKey, bytesAmount);
   }
 
-  /**
-   *
-   * @param {string} accountName
-   * @param {string} privateKey
-   * @param {number} bytesAmount
-   * @return {Promise<Object>}
-   */
-  static async buyRam(accountName, privateKey, bytesAmount) {
+  public static async buyRam(
+    accountName: string, privateKey: string, bytesAmount: number, receiver: string = accountName,
+  ) {
     InputValidator.isPositiveInt(bytesAmount);
     await BlockchainRegistry.doesAccountExist(accountName);
 
@@ -143,7 +138,7 @@ class WalletApi {
 
     await BlockchainRegistry.isEnoughBalanceOrException(accountName, price);
 
-    return TransactionSender.buyRamBytes(accountName, privateKey, bytesAmount);
+    return TransactionSender.buyRamBytes(accountName, privateKey, bytesAmount, receiver);
   }
 
   public static async claimEmission(

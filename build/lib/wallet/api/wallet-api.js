@@ -99,19 +99,12 @@ class WalletApi {
         await this.isMinUosAmountForRamOrException(bytesAmount);
         return TransactionSender.sellRamBytes(accountName, privateKey, bytesAmount);
     }
-    /**
-     *
-     * @param {string} accountName
-     * @param {string} privateKey
-     * @param {number} bytesAmount
-     * @return {Promise<Object>}
-     */
-    static async buyRam(accountName, privateKey, bytesAmount) {
+    static async buyRam(accountName, privateKey, bytesAmount, receiver = accountName) {
         InputValidator.isPositiveInt(bytesAmount);
         await BlockchainRegistry.doesAccountExist(accountName);
         const price = await this.isMinUosAmountForRamOrException(bytesAmount);
         await BlockchainRegistry.isEnoughBalanceOrException(accountName, price);
-        return TransactionSender.buyRamBytes(accountName, privateKey, bytesAmount);
+        return TransactionSender.buyRamBytes(accountName, privateKey, bytesAmount, receiver);
     }
     static async claimEmission(accountName, privateKey, permission = PermissionsDictionary.active()) {
         await BlockchainRegistry.doesAccountExist(accountName);
