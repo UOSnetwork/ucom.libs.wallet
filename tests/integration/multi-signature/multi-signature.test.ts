@@ -109,6 +109,7 @@ it('should create a proposal and approve - prototype', async () => {
 
   // await SocialKeyApi.bindSocialKeyWithSocialPermissions(Helper.getPetrAccountName(), Helper.getPetrActivePrivateKey(), Helper.getPetrSocialPublicKey());
 
+  // no success in adding a proposal from the jane when jane is not in the members team
   const { proposalName } = await MultiSignatureApi.createTrustProposal(
     accountName,
     Helper.getTesterAccountSocialPrivateKey(),
