@@ -266,6 +266,22 @@ class Helper {
     return accountsData[accountName].socialPrivateKey;
   }
 
+  public static getPetrAccountName(): string {
+    return accountsData.rokky.account_name;
+  }
+
+  public static getPetrActivePrivateKey(): string {
+    return accountsData.rokky.activePk;
+  }
+
+  public static getPetrSocialPrivateKey(): string {
+    return accountsData.rokky.socialPrivateKey;
+  }
+
+  public static getPetrSocialPublicKey(): string {
+    return accountsData.rokky.socialPublicKey;
+  }
+
   /**
    *
    * @return {string}
@@ -274,12 +290,12 @@ class Helper {
     return accountNameTo;
   }
 
-  /**
-   *
-   * @return {string}
-   */
-  static getAccountNameToPrivateKey() {
+  public static getAccountNameToPrivateKey(): string {
     return accountsData[accountNameTo].activePk;
+  }
+
+  public static getAccountNameToSocialPrivateKey(): string {
+    return accountsData[accountNameTo].socialPrivateKey;
   }
 
 

@@ -3,7 +3,6 @@ import RegistrationApi = require('../../../src/lib/registration/api/registration
 import BlockchainRegistry = require('../../../src/lib/blockchain-registry');
 import MultiSignatureApi = require('../../../src/lib/multi-signature/api/multi-signature-api');
 import PermissionsDictionary = require('../../../src/lib/dictionary/permissions-dictionary');
-import CommonChecker = require('../../helpers/common/common-checker');
 
 Helper.initForEnvByProcessVariable();
 
@@ -81,36 +80,58 @@ it('should create new multi-signature account - prototype', async () => {
   ];
 
   expect(state.permissions).toEqual(expectedPermissions);
+
+  console.log(data.accountName);
 }, JEST_TIMEOUT);
 
-it('should create a proposal - prototype', async () => {
+it('should create a proposal and approve - prototype', async () => {
+  // @ts-ignore
   const multiSignatureAccountData = {
-    accountName: 'vmqjstiipgv5',
+    accountName: 'pguhmvv1mzwc', // with propose and approve as social
+    // accountName: 'ozovptq53aqa', // with approve as social
+    // accountName: 'vmqjstiipgv5',
   };
 
-  const expirationInDays = 5;
+  // @ts-ignore
+  const expirationInDays = 1;
 
   // @ts-ignore
-  const transferTokenPropose = await MultiSignatureApi.createTransferProposal(
+  // const { proposalName } = await MultiSignatureApi.createTransferProposal(
+  //   accountName,
+  //   Helper.getTesterAccountPrivateKey(),
+  //   PermissionsDictionary.active(),
+  //   accountName,
+  //   multiSignatureAccountData.accountName,
+  //   accountName,
+  //   expirationInDays,
+  // );
+
+
+  // await SocialKeyApi.bindSocialKeyWithSocialPermissions(Helper.getPetrAccountName(), Helper.getPetrActivePrivateKey(), Helper.getPetrSocialPublicKey());
+
+  const { proposalName } = await MultiSignatureApi.createTrustProposal(
     accountName,
-    Helper.getTesterAccountPrivateKey(),
-    PermissionsDictionary.active(),
+    Helper.getTesterAccountSocialPrivateKey(),
+    PermissionsDictionary.social(),
+    accountName,
+    PermissionsDictionary.social(),
     multiSignatureAccountData.accountName,
     accountName,
     expirationInDays,
   );
 
-  // @ts-ignore
-  const trustPropose = await MultiSignatureApi.createTrustProposal(
-    accountName,
-    Helper.getTesterAccountPrivateKey(),
-    PermissionsDictionary.active(),
-    multiSignatureAccountData.accountName,
-    accountName,
-    expirationInDays,
-  );
+  // const proposalName = 'jqamfkzeieje';
 
-  CommonChecker.expectNotEmpty(transferTokenPropose);
+  console.log(`Proposal name is: ${proposalName}`);
+
+  await MultiSignatureApi.approveProposal(
+    accountName,
+    Helper.getTesterAccountSocialPrivateKey(),
+    PermissionsDictionary.social(),
+    accountName,
+    proposalName,
+    PermissionsDictionary.social(),
+  );
 }, JEST_TIMEOUT);
 
 export {};

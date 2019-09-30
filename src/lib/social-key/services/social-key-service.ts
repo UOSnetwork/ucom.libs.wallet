@@ -60,7 +60,7 @@ class SocialKeyService {
     };
   }
 
-  private static getSocialPermissionsForAction(
+  public static getSocialPermissionsForAction(
     accountFrom: string,
     smartContract: string,
     actionName: string,

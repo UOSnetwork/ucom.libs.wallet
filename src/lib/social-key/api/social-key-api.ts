@@ -5,6 +5,8 @@ import EosCryptoService = require('../../common/services/eos-crypto-service');
 import BlockchainRegistry = require('../../blockchain-registry');
 import PermissionsDictionary = require('../../dictionary/permissions-dictionary');
 import SocialKeyService = require('../services/social-key-service');
+import SmartContractsDictionary = require('../../dictionary/smart-contracts-dictionary');
+import SmartContractsActionsDictionary = require('../../dictionary/smart-contracts-actions-dictionary');
 
 class SocialKeyApi {
   public static generateSocialKeyFromActivePrivateKey(
@@ -66,6 +68,20 @@ class SocialKeyApi {
       SocialKeyService.getSocialPermissionForProfileUpdating(accountName, actorPermission),
       SocialKeyService.getSocialPermissionForEmissionClaim(accountName, actorPermission),
     ];
+  }
+
+  public static getAssignSocialPermissionForProposeAndApprove(accountFrom: string, privateKey: string, actorPermission: string) {
+    const actions: Action[] = [];
+
+    actions.push(
+      SocialKeyService.getSocialPermissionsForAction(accountFrom, SmartContractsDictionary.eosIoMultiSignature(), SmartContractsActionsDictionary.proposeMultiSignature(), actorPermission),
+    );
+
+    actions.push(
+      SocialKeyService.getSocialPermissionsForAction(accountFrom, SmartContractsDictionary.eosIoMultiSignature(), SmartContractsActionsDictionary.approveMultiSignature(), actorPermission),
+    );
+
+    return EosClient.sendTransaction(privateKey, actions);
   }
 
   /**

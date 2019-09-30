@@ -17,10 +17,42 @@ import moment = require('moment');
 import TransactionSender = require('../../transaction-sender');
 
 class MultiSignatureApi {
+  public static async approveProposal(
+    actor: string,
+    authPrivateKey: string,
+    authPermission: string,
+    proposerAccount: string,
+    proposalName: string,
+    approvePermission: string,
+  ) {
+    const action: Action = {
+      account: SmartContractsDictionary.eosIoMultiSignature(),
+      name: SmartContractsActionsDictionary.approveMultiSignature(),
+      authorization: [
+        {
+          actor,
+          permission: authPermission,
+        },
+      ],
+      data: {
+        proposer: proposerAccount,
+        proposal_name: proposalName,
+        level: {
+          actor,
+          permission: approvePermission,
+        },
+      },
+    };
+
+    return EosClient.sendTransaction(authPrivateKey, [action]);
+  }
+
   public static async createTrustProposal(
     whoPropose: string,
     proposePrivateKey: string,
     proposePermission: string,
+    requestedActor: string,
+    requestedPermission: string,
     trustFrom: string,
     trustTo: string,
     expirationInDays: number,
@@ -64,8 +96,8 @@ class MultiSignatureApi {
           proposal_name: proposalName,
           requested: [
             {
-              actor: trustFrom,
-              permission: PermissionsDictionary.social(),
+              actor: requestedActor,
+              permission: requestedPermission,
             },
           ],
           trx,
@@ -73,13 +105,19 @@ class MultiSignatureApi {
       },
     ];
 
-    return EosClient.sendTransaction(proposePrivateKey, actions);
+    const transaction = await EosClient.sendTransaction(proposePrivateKey, actions);
+
+    return {
+      transaction,
+      proposalName,
+    };
   }
 
   public static async createTransferProposal(
     whoPropose: string,
     proposePrivateKey: string,
     proposePermission: string,
+    proposeRequestedFrom: string,
     accountFrom: string,
     accountNameTo: string,
     expirationInDays: number = 5,
@@ -119,7 +157,7 @@ class MultiSignatureApi {
           proposal_name: proposalName,
           requested: [
             {
-              actor: accountFrom,
+              actor: proposeRequestedFrom,
               permission: PermissionsDictionary.active(),
             },
           ],
@@ -128,7 +166,12 @@ class MultiSignatureApi {
       },
     ];
 
-    return EosClient.sendTransaction(proposePrivateKey, actions);
+    const transaction = await EosClient.sendTransaction(proposePrivateKey, actions);
+
+    return {
+      transaction,
+      proposalName,
+    };
   }
 
   public static async createMultiSignatureAccount(

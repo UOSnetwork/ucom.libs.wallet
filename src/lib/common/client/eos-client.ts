@@ -148,6 +148,9 @@ class EosClient {
         actions,
       }, params);
     } catch (error) {
+      // eslint-disable-next-line no-console
+      console.dir(error.json.error);
+
       if (error instanceof RpcError && error.json.code === 401) {
         throw new BadRequestError('Private key is not valid');
       }
