@@ -3,6 +3,7 @@ import RegistrationApi = require('../../../src/lib/registration/api/registration
 import BlockchainRegistry = require('../../../src/lib/blockchain-registry');
 import MultiSignatureApi = require('../../../src/lib/multi-signature/api/multi-signature-api');
 import PermissionsDictionary = require('../../../src/lib/dictionary/permissions-dictionary');
+import CommonChecker = require('../../helpers/common/common-checker');
 
 Helper.initForEnvByProcessVariable();
 
@@ -92,34 +93,44 @@ it('should create a proposal and approve - prototype', async () => {
     // accountName: 'vmqjstiipgv5',
   };
 
+  // await WalletApi.sendTokens(Helper.getCreatorAccountName(), Helper.getCreatorPrivateKey(), multiSignatureAccountData.accountName, 9);
+
+  // @ts-ignore
+  const state = await BlockchainRegistry.getAccountInfo(multiSignatureAccountData.accountName);
+
   // @ts-ignore
   const expirationInDays = 1;
 
   // @ts-ignore
-  // const { proposalName } = await MultiSignatureApi.createTransferProposal(
-  //   accountName,
-  //   Helper.getTesterAccountPrivateKey(),
-  //   PermissionsDictionary.active(),
-  //   accountName,
-  //   multiSignatureAccountData.accountName,
-  //   accountName,
-  //   expirationInDays,
-  // );
-
-
-  // await SocialKeyApi.bindSocialKeyWithSocialPermissions(Helper.getPetrAccountName(), Helper.getPetrActivePrivateKey(), Helper.getPetrSocialPublicKey());
-
-  // no success in adding a proposal from the jane when jane is not in the members team
-  const { proposalName } = await MultiSignatureApi.createTrustProposal(
+  const { proposalName } = await MultiSignatureApi.createTransferProposal(
     accountName,
-    Helper.getTesterAccountSocialPrivateKey(),
-    PermissionsDictionary.social(),
+    Helper.getTesterAccountPrivateKey(),
+    PermissionsDictionary.active(),
     accountName,
-    PermissionsDictionary.social(),
     multiSignatureAccountData.accountName,
     accountName,
     expirationInDays,
   );
+
+  // before - 18 tokens of multisig
+  // vlad - 1659.979 tokens
+
+  // send 1 token
+
+
+  // await SocialKeyApi.assignSocialPermissionForExecute(Helper.getTesterAccountName(), Helper.getTesterAccountPrivateKey(), PermissionsDictionary.active());
+
+  // no success in adding a proposal from the jane when jane is not in the members team
+  // const { proposalName } = await MultiSignatureApi.createTrustProposal(
+  //   accountName,
+  //   Helper.getTesterAccountSocialPrivateKey(),
+  //   PermissionsDictionary.social(),
+  //   accountName,
+  //   PermissionsDictionary.social(),
+  //   multiSignatureAccountData.accountName,
+  //   accountName,
+  //   expirationInDays,
+  // );
 
   // const proposalName = 'jqamfkzeieje';
 
@@ -127,12 +138,24 @@ it('should create a proposal and approve - prototype', async () => {
 
   await MultiSignatureApi.approveProposal(
     accountName,
-    Helper.getTesterAccountSocialPrivateKey(),
-    PermissionsDictionary.social(),
+    Helper.getTesterAccountPrivateKey(),
+    PermissionsDictionary.active(),
     accountName,
     proposalName,
-    PermissionsDictionary.social(),
+    PermissionsDictionary.active(),
   );
-}, JEST_TIMEOUT);
+
+  // @ts-ignore
+  const response = await MultiSignatureApi.executeProposal(
+    multiSignatureAccountData.accountName,
+    Helper.getTesterAccountPrivateKey(),
+    PermissionsDictionary.active(),
+    accountName,
+    proposalName,
+    accountName,
+  );
+
+  CommonChecker.expectNotEmpty(response);
+}, JEST_TIMEOUT * 1000);
 
 export {};

@@ -11,6 +11,10 @@ class SmartContractsActionsDictionary {
     return 'approve';
   }
 
+  public static executeMultiSignature(): string {
+    return 'exec';
+  }
+
   public static newAccount(): string {
     return 'newaccount';
   }

@@ -84,6 +84,13 @@ class SocialKeyApi {
     return EosClient.sendTransaction(privateKey, actions);
   }
 
+  public static assignSocialPermissionForExecute(accountFrom: string, privateKey: string, actorPermission: string) {
+    const action =
+      SocialKeyService.getSocialPermissionsForAction(accountFrom, SmartContractsDictionary.eosIoMultiSignature(), SmartContractsActionsDictionary.executeMultiSignature(), actorPermission);
+
+    return EosClient.sendTransaction(privateKey, [action]);
+  }
+
   /**
    * @deprecated
    * @see bindSocialKeyWithSocialPermissions

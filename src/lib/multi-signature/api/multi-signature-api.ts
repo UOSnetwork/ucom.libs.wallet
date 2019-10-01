@@ -17,6 +17,28 @@ import moment = require('moment');
 import TransactionSender = require('../../transaction-sender');
 
 class MultiSignatureApi {
+  public static async executeProposal(
+    actorAccount: string,
+    actorPrivateKey: string,
+    actorPermission: string,
+    proposerAccount: string,
+    proposalName: string,
+    executerName: string,
+  ) {
+    const action: Action = {
+      account: SmartContractsDictionary.eosIoMultiSignature(),
+      name:    SmartContractsActionsDictionary.executeMultiSignature(),
+      authorization: TransactionsBuilder.getSingleUserAuthorization(actorAccount, actorPermission),
+      data: {
+        proposer:       proposerAccount,
+        proposal_name:  proposalName,
+        executer:       executerName,
+      },
+    };
+
+    return EosClient.sendTransaction(actorPrivateKey, [action]);
+  }
+
   public static async approveProposal(
     actor: string,
     authPrivateKey: string,
