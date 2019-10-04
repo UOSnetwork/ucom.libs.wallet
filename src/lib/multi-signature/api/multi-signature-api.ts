@@ -88,6 +88,7 @@ class MultiSignatureApi {
       PermissionsDictionary.social(),
     );
 
+    // @ts-ignore
     const seActions = await EosClient.serializeActionsByApi([trustAction]);
 
     const trustActionSerialized = _.cloneDeep(trustAction);
@@ -121,6 +122,10 @@ class MultiSignatureApi {
               actor: requestedActor,
               permission: requestedPermission,
             },
+            {
+              actor: 'janejanejane',
+              permission: requestedPermission,
+            },
           ],
           trx,
         },
@@ -135,6 +140,105 @@ class MultiSignatureApi {
     };
   }
 
+  public static async createChangeActiveMembersProposal(
+    // @ts-ignore
+    whoPropose: string, proposePrivateKey: string, proposePermission: string, proposeRequestedFrom: string, expirationInDays: number = 5,
+    multiSignatureAccount: string,
+  ) {
+    const threshold = 2;
+
+    // @ts-ignore
+    const actionPermission = PermissionsDictionary.owner();
+    // @ts-ignore
+    const action = {
+      account: SmartContractsDictionary.eosIo(),
+      name: SmartContractsActionsDictionary.updateAuth(),
+      authorization: [
+        {
+          actor: multiSignatureAccount,
+          permission: PermissionsDictionary.owner(),
+        },
+      ],
+      data: {
+        account: multiSignatureAccount,
+        permission: PermissionsDictionary.active(),
+        parent: PermissionsDictionary.owner(),
+        auth: {
+          threshold,
+          keys: [],
+          accounts: [
+            {
+              permission: {
+                actor: 'vladvladvlad',
+                permission: PermissionsDictionary.active(),
+              },
+              weight: 1,
+            },
+            {
+              permission: {
+                actor: 'janejanejane',
+                permission: PermissionsDictionary.active(),
+              },
+              weight: 1,
+            },
+          ],
+          waits: [],
+        },
+      },
+    };
+
+
+    const actions = [
+      {
+        account: 'eosio',
+        name: 'updateauth',
+        authorization: [
+          {
+            actor: 'p4htopmkqua3',
+            permission: 'owner',
+          },
+        ],
+        data: {
+          account: 'p4htopmkqua3',
+          permission: 'active',
+          parent: 'owner',
+          auth: {
+            threshold: 1,
+            keys: [],
+            accounts: [{
+              permission: {
+                actor: 'vladvladvlad',
+                permission: 'active',
+              },
+              weight: 1,
+            },
+            {
+              permission: {
+                actor: 'rokkyrokkyro',
+                permission: 'active',
+              },
+              weight: 1,
+            },
+            ],
+            waits: [],
+          },
+        },
+      },
+    ];
+
+    return EosClient.sendTransaction(proposePrivateKey, actions);
+
+    // return this.createProposalWithOneRequestedAndOneAction(
+    //   whoPropose,
+    //   proposePrivateKey,
+    //   proposePermission,
+    //   proposeRequestedFrom,
+    //   expirationInDays,
+    //   action,
+    //   actionPermission,
+    // );
+  }
+
   public static async createTransferProposal(
     whoPropose: string,
     proposePrivateKey: string,
@@ -144,15 +248,35 @@ class MultiSignatureApi {
     accountNameTo: string,
     expirationInDays: number = 5,
   ) {
-    const proposalName = AccountNameService.createRandomAccountName();
-
     const stringAmount = TransactionSender.getUosAmountAsString(1, 'UOS');
     const action = TransactionSender.getSendTokensAction(accountFrom, accountNameTo, stringAmount, '');
 
+    return this.createProposalWithOneRequestedAndOneAction(
+      whoPropose,
+      proposePrivateKey,
+      proposePermission,
+      proposeRequestedFrom,
+      expirationInDays,
+      action,
+      PermissionsDictionary.active(),
+    );
+  }
+
+  private static async createProposalWithOneRequestedAndOneAction(
+    whoPropose: string,
+    proposePrivateKey: string,
+    proposePermission: string,
+    proposeRequestedFrom: string,
+    expirationInDays: number = 5,
+    action: Action,
+    actionPermission: string,
+  ) {
+    const proposalName = AccountNameService.createRandomAccountName();
+
     const seActions = await EosClient.serializeActionsByApi([action]);
 
-    const trustActionSerialized = _.cloneDeep(action);
-    trustActionSerialized.data = seActions[0].data;
+    const serializedAction = _.cloneDeep(action);
+    serializedAction.data = seActions[0].data;
 
     const trx = {
       // eslint-disable-next-line newline-per-chained-call
@@ -163,7 +287,9 @@ class MultiSignatureApi {
       max_cpu_usage_ms: 0,
       delay_sec: 0,
       context_free_actions: [],
-      actions: [trustActionSerialized],
+      actions: [
+        serializedAction,
+      ],
       transaction_extensions: [],
     };
 
@@ -180,7 +306,7 @@ class MultiSignatureApi {
           requested: [
             {
               actor: proposeRequestedFrom,
-              permission: PermissionsDictionary.active(),
+              permission: actionPermission,
             },
           ],
           trx,
@@ -229,6 +355,7 @@ class MultiSignatureApi {
       PermissionsDictionary.owner(),
     );
 
+    // @ts-ignore
     const ownerPermissionAction = ActionsFactory.addOneUserAccountByUpdateAuthAction(
       multiSignatureAccountName,
       PermissionsDictionary.owner(),
