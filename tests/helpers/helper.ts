@@ -254,6 +254,22 @@ class Helper {
     });
   }
 
+  public static getAliceAccountName(): string {
+    return accountsData.alice.account_name;
+  }
+
+  public static getAlicePrivateKey(): string {
+    return accountsData.alice.activePk;
+  }
+
+  public static getBobAccountName(): string {
+    return accountsData.bob.account_name;
+  }
+
+  public static getBobPrivateKey(): string {
+    return accountsData.bob.activePk;
+  }
+
   public static getTesterAccountOwnerPrivateKey(): string {
     return accountsData[accountName].ownerPk;
   }

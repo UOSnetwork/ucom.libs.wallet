@@ -70,7 +70,7 @@ class SocialKeyApi {
     ];
   }
 
-  public static getAssignSocialPermissionForProposeAndApprove(accountFrom: string, privateKey: string, actorPermission: string) {
+  public static getAssignSocialPermissionForProposeApproveAndExecute(accountFrom: string, privateKey: string, actorPermission: string) {
     const actions: Action[] = [];
 
     actions.push(
@@ -81,14 +81,11 @@ class SocialKeyApi {
       SocialKeyService.getSocialPermissionsForAction(accountFrom, SmartContractsDictionary.eosIoMultiSignature(), SmartContractsActionsDictionary.approveMultiSignature(), actorPermission),
     );
 
+    actions.push(
+      SocialKeyService.getSocialPermissionsForAction(accountFrom, SmartContractsDictionary.eosIoMultiSignature(), SmartContractsActionsDictionary.executeMultiSignature(), actorPermission),
+    );
+
     return EosClient.sendTransaction(privateKey, actions);
-  }
-
-  public static assignSocialPermissionForExecute(accountFrom: string, privateKey: string, actorPermission: string) {
-    const action =
-      SocialKeyService.getSocialPermissionsForAction(accountFrom, SmartContractsDictionary.eosIoMultiSignature(), SmartContractsActionsDictionary.executeMultiSignature(), actorPermission);
-
-    return EosClient.sendTransaction(privateKey, [action]);
   }
 
   /**

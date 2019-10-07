@@ -15,6 +15,8 @@ import InteractionsDictionary = require('../../dictionary/interactions-dictionar
 import _ = require('lodash');
 import moment = require('moment');
 import TransactionSender = require('../../transaction-sender');
+import SocialTransactionsCommonFactory = require('../../social-transactions/services/social-transactions-common-factory');
+import Helper = require('../../../../tests/helpers/helper');
 
 class MultiSignatureApi {
   public static async executeProposal(
@@ -122,10 +124,6 @@ class MultiSignatureApi {
               actor: requestedActor,
               permission: requestedPermission,
             },
-            {
-              actor: 'janejanejane',
-              permission: requestedPermission,
-            },
           ],
           trx,
         },
@@ -140,44 +138,40 @@ class MultiSignatureApi {
     };
   }
 
-  public static async createChangeActiveMembersProposal(
-    // @ts-ignore
-    whoPropose: string, proposePrivateKey: string, proposePermission: string, proposeRequestedFrom: string, expirationInDays: number = 5,
-    multiSignatureAccount: string,
+  public static async createChangeMembersProposal(
+    whoPropose: string, proposePrivateKey: string, proposePermission: string, proposeRequestedFrom: string, expirationInDays: number = 1,
+    multiSignatureAccount: string, permissionToAssign: string,
   ) {
-    const threshold = 2;
-
-    // @ts-ignore
-    const actionPermission = PermissionsDictionary.owner();
-    // @ts-ignore
+    const threshold = 1;
+    const actionPermission = PermissionsDictionary.active();
     const action = {
       account: SmartContractsDictionary.eosIo(),
       name: SmartContractsActionsDictionary.updateAuth(),
       authorization: [
         {
           actor: multiSignatureAccount,
-          permission: PermissionsDictionary.owner(),
+          permission: PermissionsDictionary.active(),
         },
       ],
       data: {
         account: multiSignatureAccount,
-        permission: PermissionsDictionary.active(),
-        parent: PermissionsDictionary.owner(),
+        permission: permissionToAssign,
+        parent: proposePermission,
         auth: {
           threshold,
           keys: [],
           accounts: [
             {
               permission: {
-                actor: 'vladvladvlad',
-                permission: PermissionsDictionary.active(),
+                actor: Helper.getBobAccountName(),
+                permission: permissionToAssign,
               },
               weight: 1,
             },
             {
               permission: {
-                actor: 'janejanejane',
-                permission: PermissionsDictionary.active(),
+                actor: Helper.getTesterAccountName(),
+                permission: permissionToAssign,
               },
               weight: 1,
             },
@@ -187,56 +181,16 @@ class MultiSignatureApi {
       },
     };
 
-
-    const actions = [
-      {
-        account: 'eosio',
-        name: 'updateauth',
-        authorization: [
-          {
-            actor: 'p4htopmkqua3',
-            permission: 'owner',
-          },
-        ],
-        data: {
-          account: 'p4htopmkqua3',
-          permission: 'active',
-          parent: 'owner',
-          auth: {
-            threshold: 1,
-            keys: [],
-            accounts: [{
-              permission: {
-                actor: 'vladvladvlad',
-                permission: 'active',
-              },
-              weight: 1,
-            },
-            {
-              permission: {
-                actor: 'rokkyrokkyro',
-                permission: 'active',
-              },
-              weight: 1,
-            },
-            ],
-            waits: [],
-          },
-        },
-      },
-    ];
-
-    return EosClient.sendTransaction(proposePrivateKey, actions);
-
-    // return this.createProposalWithOneRequestedAndOneAction(
-    //   whoPropose,
-    //   proposePrivateKey,
-    //   proposePermission,
-    //   proposeRequestedFrom,
-    //   expirationInDays,
-    //   action,
-    //   actionPermission,
-    // );
+    return this.createProposalWithOneRequestedAndOneAction(
+      whoPropose,
+      proposePrivateKey,
+      proposePermission,
+      proposeRequestedFrom,
+      expirationInDays,
+      action,
+      actionPermission,
+      SocialTransactionsCommonFactory.getNonceAction(whoPropose, actionPermission),
+    );
   }
 
   public static async createTransferProposal(
@@ -246,7 +200,7 @@ class MultiSignatureApi {
     proposeRequestedFrom: string,
     accountFrom: string,
     accountNameTo: string,
-    expirationInDays: number = 5,
+    expirationInDays: number = 1,
   ) {
     const stringAmount = TransactionSender.getUosAmountAsString(1, 'UOS');
     const action = TransactionSender.getSendTokensAction(accountFrom, accountNameTo, stringAmount, '');
@@ -270,6 +224,7 @@ class MultiSignatureApi {
     expirationInDays: number = 5,
     action: Action,
     actionPermission: string,
+    nonceAction: Action | null = null,
   ) {
     const proposalName = AccountNameService.createRandomAccountName();
 
@@ -277,6 +232,19 @@ class MultiSignatureApi {
 
     const serializedAction = _.cloneDeep(action);
     serializedAction.data = seActions[0].data;
+
+    const trxActions: Action[] = [
+      serializedAction,
+    ];
+
+    // #task - dedicated method
+    if (nonceAction) {
+      const seActionsNonce = await EosClient.serializeActionsByApi([nonceAction]);
+
+      const serializedActionNonce = _.cloneDeep(nonceAction);
+      serializedActionNonce.data = seActionsNonce[0].data;
+      trxActions.push(serializedActionNonce);
+    }
 
     const trx = {
       // eslint-disable-next-line newline-per-chained-call
@@ -287,9 +255,7 @@ class MultiSignatureApi {
       max_cpu_usage_ms: 0,
       delay_sec: 0,
       context_free_actions: [],
-      actions: [
-        serializedAction,
-      ],
+      actions: trxActions,
       transaction_extensions: [],
     };
 
@@ -325,7 +291,6 @@ class MultiSignatureApi {
   public static async createMultiSignatureAccount(
     communityAuthorAccountName: string,
     communityAuthorActivePrivateKey: string,
-
     multiSignatureAccountName: string,
     multiSignatureOwnerPrivateKey: string,
     multiSignatureOwnerPublicKey: string,
@@ -355,7 +320,6 @@ class MultiSignatureApi {
       PermissionsDictionary.owner(),
     );
 
-    // @ts-ignore
     const ownerPermissionAction = ActionsFactory.addOneUserAccountByUpdateAuthAction(
       multiSignatureAccountName,
       PermissionsDictionary.owner(),

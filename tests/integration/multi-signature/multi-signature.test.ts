@@ -5,17 +5,17 @@ import MultiSignatureApi = require('../../../src/lib/multi-signature/api/multi-s
 import PermissionsDictionary = require('../../../src/lib/dictionary/permissions-dictionary');
 import CommonChecker = require('../../helpers/common/common-checker');
 
-Helper.initForProductionEnv();
+Helper.initForEnvByProcessVariable();
 
 const activePrivateKey  = Helper.getTesterAccountPrivateKey();
 
 const accountName = Helper.getTesterAccountName();
 
+const janeAccoutName = Helper.getAccountNameTo();
+
 const JEST_TIMEOUT = 30000;
 
-// const mSigAccount     = 'msigtest1234';
-
-it('should create new multi-signature account - prototype', async () => {
+it('should create new multi-signature account', async () => {
   const data = RegistrationApi.generateRandomDataForRegistration();
 
   await MultiSignatureApi.createMultiSignatureAccount(
@@ -83,130 +83,44 @@ it('should create new multi-signature account - prototype', async () => {
   ];
 
   expect(state.permissions).toEqual(expectedPermissions);
-
-  console.log(data.accountName);
 }, JEST_TIMEOUT);
 
-it('should create a proposal and approve - prototype', async () => {
-  // @ts-ignore
-  const multiSignatureAccountData = {
-    accountName: 'cfhj3mcvr2ug', // production account name
-    // accountName: mSigAccount,
-    // accountName: 'pguhmvv1mzwc', // with propose and approve as social
-    // accountName: 'ozovptq53aqa', // with approve as social
-    // accountName: 'vmqjstiipgv5',
-  };
-
-  // alice1231231
-
-  // @ts-ignore
-  const stateBefore = await BlockchainRegistry.getRawAccountData(multiSignatureAccountData.accountName);
-
-  // @ts-ignore
-  const expirationInDays = 1;
-
-  // @ts-ignore
-  const { proposalName } = await MultiSignatureApi.createTransferProposal(
-    accountName,
-    Helper.getTesterAccountPrivateKey(),
-    PermissionsDictionary.active(),
-    accountName,
-    multiSignatureAccountData.accountName,
-    accountName,
-    expirationInDays,
-  );
-
-  // before - 18 tokens of multisig
-  // vlad - 1659.979 tokens
-
-  // send 1 token
-
-
-  // await SocialKeyApi.assignSocialPermissionForExecute(Helper.getTesterAccountName(), Helper.getTesterAccountPrivateKey(), PermissionsDictionary.active());
-
-  // no success in adding a proposal from the jane when jane is not in the members team
-  // const { proposalName } = await MultiSignatureApi.createTrustProposal(
-  //   accountName,
-  //   Helper.getTesterAccountSocialPrivateKey(),
-  //   PermissionsDictionary.social(),
-  //   accountName,
-  //   PermissionsDictionary.social(),
-  //   multiSignatureAccountData.accountName,
-  //   accountName,
-  //   expirationInDays,
-  // );
-
-  // const proposalName = 'jqamfkzeieje';
-
-  console.log(`Proposal name is: ${proposalName}`);
-
-  await MultiSignatureApi.approveProposal(
-    accountName,
-    Helper.getTesterAccountPrivateKey(),
-    PermissionsDictionary.active(),
-    accountName,
-    proposalName,
-    PermissionsDictionary.active(),
-  );
-
-  // @ts-ignore
-  const response = await MultiSignatureApi.executeProposal(
-    accountName,
-    Helper.getTesterAccountPrivateKey(),
-    PermissionsDictionary.active(),
-    accountName,
-    proposalName,
-    accountName,
-  );
-
-  CommonChecker.expectNotEmpty(response);
-
-  const stateAfter = await BlockchainRegistry.getAccountInfo(multiSignatureAccountData.accountName);
-
-  CommonChecker.expectNotEmpty(stateAfter);
-}, JEST_TIMEOUT * 1000);
-
-
 // @ts-ignore
-async function changeSocialMembers(multiSignatureAccount: string) {
-  const msigData = {
-    accountName: 'p4htopmkqua3',
-    ownerPrivateKey: '12345',
-  };
-
+async function changeMembers(multiSignatureAccount: string) {
   const expirationInDays = 1;
 
   const executorAccountName = accountName;
-  const executorPrivateKey = Helper.getTesterAccountOwnerPrivateKey();
 
-  // @ts-ignore
-  const response123 = await MultiSignatureApi.createChangeActiveMembersProposal(
-    msigData.accountName,
-    msigData.ownerPrivateKey,
-    PermissionsDictionary.owner(),
+
+  const executorPrivateKey  = Helper.getTesterAccountPrivateKey();
+  const permission = PermissionsDictionary.active();
+  const permissionToAssign = PermissionsDictionary.social();
+
+  const { proposalName: changeSocialMembersProposalName } = await MultiSignatureApi.createChangeMembersProposal(
+    executorAccountName,
+    executorPrivateKey,
+    permission,
     executorAccountName,
     expirationInDays,
-    msigData.accountName,
+    multiSignatureAccount,
+    permissionToAssign,
   );
-
-  const changeSocialMembersProposalName = 'yzbvltokujbe';
 
   console.log(`ChangeSocialMembersProposalName name is: ${changeSocialMembersProposalName}`);
 
   await MultiSignatureApi.approveProposal(
     executorAccountName,
     executorPrivateKey,
-    PermissionsDictionary.owner(),
+    permission,
     executorAccountName,
     changeSocialMembersProposalName,
-    PermissionsDictionary.owner(),
+    permission,
   );
 
-  // @ts-ignore
   const executeResponse = await MultiSignatureApi.executeProposal(
     executorAccountName,
     executorPrivateKey,
-    PermissionsDictionary.owner(),
+    permission,
     executorAccountName,
     changeSocialMembersProposalName,
     executorAccountName,
@@ -216,17 +130,16 @@ async function changeSocialMembers(multiSignatureAccount: string) {
 }
 
 it('should add new member with social permission and execute a trust', async () => {
-  const expirationInDays = 1;
+  // const expirationInDays = 1;
   // @ts-ignore
   const multiSignatureAccountData = {
-    accountName: 'cfhj3mcvr2ug', // with propose and approve as social
-    // accountName: mSigAccount, // with propose and approve as social
-    // accountName: 'pguhmvv1mzwc', // with propose and approve as social
-    // accountName: 'ozovptq53aqa', // with approve as social
-    // accountName: 'vmqjstiipgv5',
+    // accountName: 'ih2jwtakzjft', // with active threshold 2
+    accountName: 'tyvknaqf3het', // with propose and approve as social
   };
 
-  await changeSocialMembers(multiSignatureAccountData.accountName);
+  // await changeMembers(multiSignatureAccountData.accountName);
+
+  // await WalletApi.sendTokens(janeAccoutName, janeActivePrivateKey, multiSignatureAccountData.accountName, 100);
 
   // @ts-ignore
   const state =
@@ -235,61 +148,49 @@ it('should add new member with social permission and execute a trust', async () 
   // await WalletApi.sendTokens(Helper.getCreatorAccountName(), Helper.getCreatorPrivateKey(), multiSignatureAccountData.accountName, 9);
 
   // @ts-ignore
-  // const state = await BlockchainRegistry.getAccountInfo(multiSignatureAccountData.accountName);
-
+  const multiSigStateBefore = await BlockchainRegistry.getAccountInfo(multiSignatureAccountData.accountName);
   // @ts-ignore
-  const { proposalName } = await MultiSignatureApi.createTransferProposal(
-    accountName,
-    Helper.getTesterAccountPrivateKey(),
-    PermissionsDictionary.active(),
-    accountName,
-    multiSignatureAccountData.accountName,
-    accountName,
-    expirationInDays,
-  );
-
-  // before - 18 tokens of multisig
-  // vlad - 1659.979 tokens
-
-  // send 1 token
-
-
-  // await SocialKeyApi.assignSocialPermissionForExecute(Helper.getTesterAccountName(), Helper.getTesterAccountPrivateKey(), PermissionsDictionary.active());
+  const janeStateBefore     = await BlockchainRegistry.getAccountInfo(janeAccoutName);
 
   // no success in adding a proposal from the jane when jane is not in the members team
-  // const { proposalName } = await MultiSignatureApi.createTrustProposal(
-  //   accountName,
-  //   Helper.getTesterAccountSocialPrivateKey(),
-  //   PermissionsDictionary.social(),
-  //   accountName,
-  //   PermissionsDictionary.social(),
-  //   multiSignatureAccountData.accountName,
-  //   accountName,
-  //   expirationInDays,
-  // );
+  const { proposalName } = await MultiSignatureApi.createTrustProposal(
+    Helper.getAliceAccountName(),
+    Helper.getAlicePrivateKey(),
+    PermissionsDictionary.social(),
+    Helper.getBobAccountName(),
+    PermissionsDictionary.social(),
+    multiSignatureAccountData.accountName,
+    janeAccoutName,
+    1,
+  );
 
-  // const proposalName = 'jqamfkzeieje';
+  // const proposalName = 'uff3q2gvw3q2';
 
   console.log(`Proposal name is: ${proposalName}`);
 
   await MultiSignatureApi.approveProposal(
-    accountName,
-    Helper.getTesterAccountPrivateKey(),
-    PermissionsDictionary.active(),
-    accountName,
+    Helper.getBobAccountName(),
+    Helper.getBobPrivateKey(),
+    PermissionsDictionary.social(),
+    Helper.getAliceAccountName(),
     proposalName,
-    PermissionsDictionary.active(),
+    PermissionsDictionary.social(),
   );
 
   // @ts-ignore
   const response = await MultiSignatureApi.executeProposal(
-    accountName,
-    Helper.getTesterAccountPrivateKey(),
-    PermissionsDictionary.active(),
-    accountName,
+    Helper.getAliceAccountName(),
+    Helper.getAlicePrivateKey(),
+    PermissionsDictionary.social(),
+    Helper.getAliceAccountName(),
     proposalName,
-    accountName,
+    Helper.getAliceAccountName(),
   );
+
+  // @ts-ignore
+  const multiSigStateAfter = await BlockchainRegistry.getAccountInfo(multiSignatureAccountData.accountName);
+  // @ts-ignore
+  const janeStateAfter     = await BlockchainRegistry.getAccountInfo(janeAccoutName);
 
   CommonChecker.expectNotEmpty(response);
 }, JEST_TIMEOUT * 1000);
