@@ -1,72 +1,71 @@
+import BigNumber from 'bignumber.js';
+
 const moment    = require('moment');
 const bytebuffer = require('bytebuffer');
 
 const { Long } = bytebuffer;
 
-const BigNumber = require('bignumber.js');
+const BigNumberLib = require('bignumber.js');
 
 const UNSTAKE_WITHIN_DAYS = 3; // #task - move to config
 
+interface NameWithEncoded {
+  name: string,
+  encoded: BigNumber,
+}
+
 class ConverterHelper {
-  /**
-   *
-   * @param {string} stringValue
-   * @param {string} token
-   * @return {number}
-   */
-  static getTokensAmountFromString(stringValue, token = 'UOS') {
+  public static getTokensAmountFromString(stringValue: string, token: string = 'UOS'): number {
     const value = stringValue.replace(` ${token}`, '');
 
     return +value;
   }
 
-  /**
-   *
-   * @param {string} stringValue
-   * @return {number}
-   */
-  static getRamAmountFromString(stringValue) {
+  public static getRamAmountFromString(stringValue: string): number {
     const value = stringValue.replace(' RAM', '');
 
     return +value;
   }
 
-  /**
-   *
-   * @param {string} requestDatetime
-   * @return {string}
-   */
-  static getRequestDateTime(requestDatetime) {
+  public static getRequestDateTime(requestDatetime: string): string {
     const date = moment(`${requestDatetime}Z`);
     return date.utc().format();
   }
 
-  /**
-   *
-   * @param {string} requestDatetime
-   * @return {string}
-   */
-  static getUnstakedOnDatetime(requestDatetime) {
+  public static getUnstakedOnDatetime(requestDatetime: string): string {
     const date = moment(`${requestDatetime}Z`);
     const newDate = date.add(UNSTAKE_WITHIN_DAYS, 'days');
 
     return newDate.utc().format();
   }
 
-  /**
-   *
-   * @param {string} accountName
-   * @returns {string}
-   */
-  static getAccountNameAsBoundString(accountName) {
-    // @ts-ignore
-    const encoded = new BigNumber(this.encodeName(accountName, false));
+  public static getAccountNameAsBoundString(accountName: string): string {
+    const encoded = this.getAccountNameAsBigNumber(accountName);
 
     return encoded.toString();
   }
 
+  public static getAccountNameAsBigNumber(accountName: string): BigNumber {
+    return new BigNumberLib(this.encodeName(accountName, false));
+  }
+
+  public static sortAccountNamesByUInt64(accountNames: string[]): string[] {
+    const usersWithEncoded: NameWithEncoded[] = [];
+
+    for (const name of accountNames) {
+      usersWithEncoded.push({
+        name,
+        encoded: this.getAccountNameAsBigNumber(name),
+      });
+    }
+
+    usersWithEncoded.sort((a: NameWithEncoded, b: NameWithEncoded) => a.encoded.comparedTo(b.encoded));
+
+    return usersWithEncoded.map((item: NameWithEncoded) => item.name);
+  }
+
   /**
-   Copied from eosjs v16
+   Copied from eosJs v16
    Encode a name (a base32 string) to a number.
 
    For performance reasons, the blockchain uses the numerical encoding of strings
@@ -77,13 +76,12 @@ class ConverterHelper {
    @arg {string} name - A string to encode, up to 12 characters long.
    @arg {string} [littleEndian = true] - Little or Bigendian encoding
 
-   @return {string<uint64>} - compressed string (from name arg).  A string is
+   @return string - compressed string (from name arg).  A string is
    always used because a number could exceed JavaScript's 52 bit limit.
   */
   // eslint-disable-next-line sonarjs/cognitive-complexity
-  static encodeName(name) {
+  private static encodeName(name, littleEndian = false): string {
     // eslint-disable-next-line prefer-rest-params
-    const littleEndian = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
     if (typeof name !== 'string') throw new TypeError('name parameter is a required string');
 
@@ -92,7 +90,7 @@ class ConverterHelper {
     let bitstr = '';
     for (let i = 0; i <= 12; i += 1) {
       // process all 64 bits (even if name is short)
-      const c = i < name.length ? this.charidx(name[i]) : 0;
+      const c = i < name.length ? this.charIdx(name[i]) : 0;
       const bitlen = i < 12 ? 5 : 4;
       let bits = Number(c).toString(2);
       if (bits.length > bitlen) {
@@ -126,14 +124,13 @@ class ConverterHelper {
       iteratorError = error;
     } finally {
       try {
-        // noinspection JSUnresolvedVariable
+        // noinspection JSUnusedAssignment
         if (!iteratorNormalCompletion && iterator.return) {
-          // noinspection JSUnresolvedVariable
+          // noinspection JSUnusedAssignment
           iterator.return();
         }
       } finally {
         if (didIteratorError) {
-          // noinspection ThrowInsideFinallyBlockJS
           // eslint-disable-next-line no-unsafe-finally
           throw iteratorError;
         }
@@ -143,15 +140,13 @@ class ConverterHelper {
     // noinspection JSUnresolvedFunction
     const ulName = Long.fromString(leHex, true, 16).toString();
 
-    // console.log('encodeName', name, value.toString(), ulName.toString(), JSON.stringify(bitstr.split(/(.....)/).slice(1)))
-
     return ulName.toString();
   }
 
-  static charidx(ch) {
-    const charmap = '.12345abcdefghijklmnopqrstuvwxyz';
+  private static charIdx(ch: string) {
+    const charMap = '.12345abcdefghijklmnopqrstuvwxyz';
 
-    const idx = charmap.indexOf(ch);
+    const idx = charMap.indexOf(ch);
     // eslint-disable-next-line prefer-template
     if (idx === -1) throw new TypeError('Invalid character: \'' + ch + '\'');
 
