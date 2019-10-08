@@ -1,5 +1,6 @@
 import ActionsService from '../../service/actions-service';
 import { BadRequestError } from '../../errors/errors';
+import { IStringToAny } from '../../common/interfaces/common-interfaces';
 
 import EosClient = require('../../common/client/eos-client');
 import InputValidator = require('../../validators/input-validator');
@@ -7,6 +8,7 @@ import BlockchainRegistry = require('../../blockchain-registry');
 import TransactionSender = require('../../transaction-sender');
 import ConfigService = require('../../../config/config-service');
 import PermissionsDictionary = require('../../dictionary/permissions-dictionary');
+import ConverterHelper = require('../../helpers/converter-helper');
 
 class WalletApi {
   /**
@@ -55,14 +57,14 @@ class WalletApi {
     producers: string[],
     permission: string = PermissionsDictionary.active(),
   ) {
-    if (producers.length > 30) {
-      throw new BadRequestError('It is possible to vote up to 30 block producers');
-    }
-
     await BlockchainRegistry.doBlockProducersExist(producers);
     await BlockchainRegistry.isSelfDelegatedStake(accountName);
 
-    const uniqueProducers = [...new Set(producers.sort())];
+    const uniqueProducers = ConverterHelper.getUniqueAccountNamesSortedByUInt64(producers);
+
+    if (uniqueProducers.length > 30) {
+      throw new BadRequestError('It is possible to vote up to 30 block producers');
+    }
 
     const action = TransactionSender.getVoteForBlockProducersAction(accountName, uniqueProducers, permission);
 
@@ -79,7 +81,8 @@ class WalletApi {
       throw new BadRequestError('Please provide nodeTitles as a valid javascript array');
     }
 
-    const uniqueNodes = [...new Set(nodeTitles.sort())];
+    const uniqueNodes = ConverterHelper.getUniqueAccountNamesSortedByUInt64(nodeTitles);
+
     if (uniqueNodes.length > 30) {
       throw new BadRequestError('It is possible to vote up to 30 calculating nodes');
     }
@@ -89,12 +92,7 @@ class WalletApi {
     return EosClient.sendTransaction(privateKey, [action]);
   }
 
-  /**
-   * @deprecated
-   * @param {string} accountName
-   * @return {Promise<Object>}
-   */
-  static async getRawVoteInfo(accountName) {
+  public static async getRawVoteInfo(accountName: string): Promise<IStringToAny> {
     return BlockchainRegistry.getRawVoteInfo(accountName);
   }
 

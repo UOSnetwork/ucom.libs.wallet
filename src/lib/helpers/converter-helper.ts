@@ -49,6 +49,14 @@ class ConverterHelper {
     return new BigNumberLib(this.encodeName(accountName, false));
   }
 
+  public static getUniqueAccountNamesSortedByUInt64(accountNames: string[]): string[] {
+    const sorted = this.sortAccountNamesByUInt64(accountNames);
+
+    return [
+      ...new Set(sorted),
+    ];
+  }
+
   public static sortAccountNamesByUInt64(accountNames: string[]): string[] {
     const usersWithEncoded: NameWithEncoded[] = [];
 
