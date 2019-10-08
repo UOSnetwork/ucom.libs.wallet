@@ -7,7 +7,8 @@ class UosAccountsPropertiesApi {
             limit,
             lower_bound: lowerBound,
         };
-        return rpc.fetch('/v1/uos_rates/get_accounts', query);
+        const response = await rpc.fetch('/v1/uos_rates/get_accounts', query);
+        return (typeof response === 'string') ? JSON.parse(response) : response;
     }
     static async getAllAccountsTableRows(indexBy = null, flatten = true) {
         let lowerBound = 0;
