@@ -206,6 +206,14 @@ class WalletApi {
     );
   }
 
+  public static async getRawAccountData(accountName: string): Promise<IStringToAny | null> {
+    try {
+      return await BlockchainRegistry.getRawAccountData(accountName);
+    } catch (error) {
+      return null;
+    }
+  }
+
   /**
    * @param {string} accountName
    * @return {{tokens: {active: number}}}

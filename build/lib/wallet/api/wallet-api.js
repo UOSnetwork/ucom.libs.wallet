@@ -143,6 +143,14 @@ class WalletApi {
         await BlockchainRegistry.doesAccountExist(accountName);
         return TransactionSender.stakeOrUnstakeTokens(accountName, privateKey, netAmount, cpuAmount);
     }
+    static async getRawAccountData(accountName) {
+        try {
+            return await BlockchainRegistry.getRawAccountData(accountName);
+        }
+        catch (error) {
+            return null;
+        }
+    }
     /**
      * @param {string} accountName
      * @return {{tokens: {active: number}}}
