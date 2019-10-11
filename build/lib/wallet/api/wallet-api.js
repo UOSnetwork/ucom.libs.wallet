@@ -10,6 +10,7 @@ const BlockchainRegistry = require("../../blockchain-registry");
 const TransactionSender = require("../../transaction-sender");
 const ConfigService = require("../../../config/config-service");
 const PermissionsDictionary = require("../../dictionary/permissions-dictionary");
+const ConverterHelper = require("../../helpers/converter-helper");
 class WalletApi {
     /**
      * @deprecated
@@ -47,12 +48,12 @@ class WalletApi {
         ConfigService.initForProductionEnv();
     }
     static async voteForBlockProducers(accountName, privateKey, producers, permission = PermissionsDictionary.active()) {
-        if (producers.length > 30) {
-            throw new errors_1.BadRequestError('It is possible to vote up to 30 block producers');
-        }
         await BlockchainRegistry.doBlockProducersExist(producers);
         await BlockchainRegistry.isSelfDelegatedStake(accountName);
-        const uniqueProducers = [...new Set(producers.sort())];
+        const uniqueProducers = ConverterHelper.getUniqueAccountNamesSortedByUInt64(producers);
+        if (uniqueProducers.length > 30) {
+            throw new errors_1.BadRequestError('It is possible to vote up to 30 block producers');
+        }
         const action = TransactionSender.getVoteForBlockProducersAction(accountName, uniqueProducers, permission);
         return EosClient.sendTransaction(privateKey, [action]);
     }
@@ -60,18 +61,13 @@ class WalletApi {
         if (!Array.isArray(nodeTitles)) {
             throw new errors_1.BadRequestError('Please provide nodeTitles as a valid javascript array');
         }
-        const uniqueNodes = [...new Set(nodeTitles.sort())];
+        const uniqueNodes = ConverterHelper.getUniqueAccountNamesSortedByUInt64(nodeTitles);
         if (uniqueNodes.length > 30) {
             throw new errors_1.BadRequestError('It is possible to vote up to 30 calculating nodes');
         }
         const action = actions_service_1.default.getVoteForCalculators(accountName, uniqueNodes, '', permission);
         return EosClient.sendTransaction(privateKey, [action]);
     }
-    /**
-     * @deprecated
-     * @param {string} accountName
-     * @return {Promise<Object>}
-     */
     static async getRawVoteInfo(accountName) {
         return BlockchainRegistry.getRawVoteInfo(accountName);
     }
@@ -139,6 +135,14 @@ class WalletApi {
         InputValidator.isNonNegativeInt(cpuAmount);
         await BlockchainRegistry.doesAccountExist(accountName);
         return TransactionSender.stakeOrUnstakeTokens(accountName, privateKey, netAmount, cpuAmount);
+    }
+    static async getRawAccountData(accountName) {
+        try {
+            return await BlockchainRegistry.getRawAccountData(accountName);
+        }
+        catch (error) {
+            return null;
+        }
     }
     /**
      * @param {string} accountName

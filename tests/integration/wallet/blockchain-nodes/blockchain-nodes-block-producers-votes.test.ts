@@ -13,7 +13,6 @@ const permission        = PermissionsDictionary.social();
 
 const nonExistedAccountErrorRegex = new RegExp('Probably account does not exist. Please check spelling');
 const noStakeErrorRegex = new RegExp('It is possible to vote only if you have self-staked tokens.');
-const maxProducersLimitErrorRegex = new RegExp('It is possible to vote up to 30 block producers');
 const noSuchBlockProducersErrorRegex = new RegExp('There is no such block producers: no_such_bp1, no_such_bp2');
 
 const firstBp = Helper.getFirstBlockProducer();
@@ -64,16 +63,6 @@ describe('Block producers voting', () => {
 
       await Helper.rollbackAllUnstakingRequests(accountName, activePrivateKey);
     }, JEST_TIMEOUT);
-  });
-
-  it('It is not possible for more than 30 BP', async () => {
-    const fakeProducers: string[] = [];
-    for (let i = 0; i < 31; i += 1) {
-      fakeProducers.push(`producer_${i}`);
-    }
-
-    await expect(WalletApi.voteForBlockProducers(accountName, socialPrivateKey, fakeProducers, permission))
-      .rejects.toThrow(maxProducersLimitErrorRegex);
   });
 
   it('it is not possible to vote for producer which does not exist', async () => {
