@@ -1,4 +1,4 @@
-import { Authorization } from 'eosjs/dist/eosjs-serialize';
+import { Action, Authorization } from 'eosjs/dist/eosjs-serialize';
 import { IStringToAny } from '../common/interfaces/common-interfaces';
 
 import PermissionsDictionary = require('../dictionary/permissions-dictionary');
@@ -29,7 +29,7 @@ class TransactionsBuilder {
     actionName: string,
     data: IStringToAny,
     permission = PermissionsDictionary.active(),
-  ) {
+  ): Action {
     const authorization = this.getSingleUserAuthorization(actorAccountName, permission);
 
     return {

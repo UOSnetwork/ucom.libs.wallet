@@ -1,4 +1,6 @@
 /* eslint-disable unicorn/prevent-abbreviations,max-len,no-shadow,jest/valid-expect,no-unused-vars,security/detect-object-injection,no-console */
+import { UOS } from '../../src/lib/dictionary/currency-dictionary';
+
 import WalletApi = require('../../src/lib/wallet/api/wallet-api');
 import EosClient = require('../../src/lib/common/client/eos-client');
 import BlockchainRegistry = require('../../src/lib/blockchain-registry');
@@ -155,7 +157,7 @@ class Helper {
   static checkUnstakingRequestIsEmpty(data) {
     expect(data.amount).toBe(0);
     expect(data.request_datetime).toBeNull();
-    expect(data.currency).toBe('UOS');
+    expect(data.currency).toBe(UOS);
   }
 
   /**
@@ -166,7 +168,7 @@ class Helper {
   static checkUnstakingRequestValues(data, amount) {
     expect(data.amount).toBe(amount);
     expect(data.request_datetime).not.toBeNull();
-    expect(data.currency).toBe('UOS');
+    expect(data.currency).toBe(UOS);
   }
 
   /**

@@ -1,3 +1,5 @@
+import { UOS } from './dictionary/currency-dictionary';
+
 import ConverterHelper = require('./helpers/converter-helper');
 
 const _         = require('lodash');
@@ -10,7 +12,7 @@ const dataSchema = {
     emission:         0,
     unstaking_request: {
       amount: 0,
-      currency: 'UOS',
+      currency: UOS,
       request_datetime: null,
       unstaked_on_datetime: null,
     },
@@ -30,11 +32,11 @@ const dataSchema = {
       tokens: {
         self_delegated: 0,
         delegated: 0,
-        currency: 'UOS',
+        currency: UOS,
       },
       unstaking_request: {
         amount: 0,
-        currency: 'UOS',
+        currency: UOS,
         request_datetime: null,
         unstaked_on_datetime: null,
       },
@@ -47,11 +49,11 @@ const dataSchema = {
       tokens: {
         self_delegated: 0,
         delegated: 0,
-        currency: 'UOS',
+        currency: UOS,
       },
       unstaking_request: {
         amount: 0,
-        currency: 'UOS',
+        currency: UOS,
         request_datetime: null,
         unstaked_on_datetime: null,
       },

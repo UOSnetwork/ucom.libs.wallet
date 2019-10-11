@@ -1,9 +1,12 @@
 import { Action } from 'eosjs/dist/eosjs-serialize';
+import { MultiSignatureActions } from '../service/multi-signature-actions';
+import { IStringToAny } from '../../common/interfaces/common-interfaces';
+import { MultiSignatureValidator } from '../validators/multi-signature-validator';
+import { UOS } from '../../dictionary/currency-dictionary';
 
 import RegistrationApi = require('../../registration/api/registration-api');
 import PermissionsDictionary = require('../../dictionary/permissions-dictionary');
 import EosClient = require('../../common/client/eos-client');
-import ActionsFactory = require('../../common/actions/actions-factory');
 import SmartContractsDictionary = require('../../dictionary/smart-contracts-dictionary');
 import SmartContractsActionsDictionary = require('../../dictionary/smart-contracts-actions-dictionary');
 import TransactionsBuilder = require('../../service/transactions-builder');
@@ -17,8 +20,58 @@ import moment = require('moment');
 import TransactionSender = require('../../transaction-sender');
 import SocialTransactionsCommonFactory = require('../../social-transactions/services/social-transactions-common-factory');
 import Helper = require('../../../../tests/helpers/helper');
+import ContentTransactionsCommonFactory = require('../../content/service/content-transactions-common-factory');
 
 class MultiSignatureApi {
+  public static async createMultiSignatureAccount(
+    authorAccountName: string,
+    authorActivePrivateKey: string,
+    multiSignatureAccountName: string,
+    multiSignatureOwnerPrivateKey: string,
+    multiSignatureOwnerPublicKey: string,
+    multiSignatureActivePublicKey: string,
+    profile: IStringToAny = {},
+    addSocialMembers: string[] = [],
+  ) {
+    await MultiSignatureValidator.validateCreation(authorAccountName, multiSignatureAccountName);
+
+    await RegistrationApi.createNewAccountInBlockchain(
+      authorAccountName,
+      authorActivePrivateKey,
+      multiSignatureAccountName,
+      multiSignatureOwnerPublicKey,
+      multiSignatureActivePublicKey,
+    );
+
+    const authorPermissionActions = MultiSignatureActions.getAuthorPermissionActions(
+      multiSignatureAccountName,
+      authorAccountName,
+
+    );
+
+    const socialAccounts = [
+      authorAccountName,
+      ...addSocialMembers,
+    ];
+
+    const socialPermissionAction = MultiSignatureActions.getSocialPermissionAction(
+      multiSignatureAccountName,
+      socialAccounts,
+      PermissionsDictionary.owner(),
+    );
+
+    const actions: Action[] = [
+      ...SocialKeyApi.getAssignSocialPermissionsActions(multiSignatureAccountName, PermissionsDictionary.owner()),
+
+      ...authorPermissionActions,
+      socialPermissionAction,
+
+      ContentTransactionsCommonFactory.getSetProfileAction(multiSignatureAccountName, profile, PermissionsDictionary.owner()),
+    ];
+
+    return EosClient.sendTransaction(multiSignatureOwnerPrivateKey, actions);
+  }
+
   public static async executeProposal(
     actorAccount: string,
     actorPrivateKey: string,
@@ -90,7 +143,6 @@ class MultiSignatureApi {
       PermissionsDictionary.social(),
     );
 
-    // @ts-ignore
     const seActions = await EosClient.serializeActionsByApi([trustAction]);
 
     const trustActionSerialized = _.cloneDeep(trustAction);
@@ -202,7 +254,7 @@ class MultiSignatureApi {
     accountNameTo: string,
     expirationInDays: number = 1,
   ) {
-    const stringAmount = TransactionSender.getUosAmountAsString(1, 'UOS');
+    const stringAmount = TransactionSender.getUosAmountAsString(1, UOS);
     const action = TransactionSender.getSendTokensAction(accountFrom, accountNameTo, stringAmount, '');
 
     return this.createProposalWithOneRequestedAndOneAction(
@@ -286,57 +338,6 @@ class MultiSignatureApi {
       transaction,
       proposalName,
     };
-  }
-
-  public static async createMultiSignatureAccount(
-    communityAuthorAccountName: string,
-    communityAuthorActivePrivateKey: string,
-    multiSignatureAccountName: string,
-    multiSignatureOwnerPrivateKey: string,
-    multiSignatureOwnerPublicKey: string,
-    multiSignatureActivePublicKey: string,
-  ) {
-    await RegistrationApi.createNewAccountInBlockchain(
-      communityAuthorAccountName,
-      communityAuthorActivePrivateKey,
-      multiSignatureAccountName,
-      multiSignatureOwnerPublicKey,
-      multiSignatureActivePublicKey,
-    );
-
-    const socialPermissionAction = ActionsFactory.addOneUserAccountByUpdateAuthAction(
-      multiSignatureAccountName,
-      PermissionsDictionary.owner(),
-      communityAuthorAccountName,
-      PermissionsDictionary.social(),
-      PermissionsDictionary.active(),
-    );
-
-    const activePermissionAction = ActionsFactory.addOneUserAccountByUpdateAuthAction(
-      multiSignatureAccountName,
-      PermissionsDictionary.owner(),
-      communityAuthorAccountName,
-      PermissionsDictionary.active(),
-      PermissionsDictionary.owner(),
-    );
-
-    const ownerPermissionAction = ActionsFactory.addOneUserAccountByUpdateAuthAction(
-      multiSignatureAccountName,
-      PermissionsDictionary.owner(),
-      communityAuthorAccountName,
-      PermissionsDictionary.owner(),
-      '',
-    );
-
-    const actions: Action[] = [
-      socialPermissionAction,
-      ...SocialKeyApi.getAssignSocialPermissionsActions(multiSignatureAccountName, PermissionsDictionary.owner()),
-
-      activePermissionAction,
-      ownerPermissionAction,
-    ];
-
-    return EosClient.sendTransaction(multiSignatureOwnerPrivateKey, actions);
   }
 }
 

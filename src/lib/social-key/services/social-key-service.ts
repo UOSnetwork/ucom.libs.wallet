@@ -36,6 +36,18 @@ class SocialKeyService {
     return SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName, actorPermission);
   }
 
+  public static getSocialPermissionForProposeApproveAndExecute(accountFrom: string, actorPermission: string) {
+    const set = [
+      SmartContractsActionsDictionary.proposeMultiSignature(),
+      SmartContractsActionsDictionary.approveMultiSignature(),
+      SmartContractsActionsDictionary.executeMultiSignature(),
+    ];
+
+    return set.map((action: string) => SocialKeyService.getSocialPermissionsForAction(
+      accountFrom, SmartContractsDictionary.eosIoMultiSignature(), action, actorPermission,
+    ));
+  }
+
   public static getBindSocialKeyAction(accountName: string, publicSocialKey: string): Action {
     return {
       account: SmartContractsDictionary.eosIo(),

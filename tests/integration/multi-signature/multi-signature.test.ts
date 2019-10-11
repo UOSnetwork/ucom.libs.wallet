@@ -4,6 +4,7 @@ import BlockchainRegistry = require('../../../src/lib/blockchain-registry');
 import MultiSignatureApi = require('../../../src/lib/multi-signature/api/multi-signature-api');
 import PermissionsDictionary = require('../../../src/lib/dictionary/permissions-dictionary');
 import CommonChecker = require('../../helpers/common/common-checker');
+import ContentApi = require('../../../src/lib/content/api/content-api');
 
 Helper.initForEnvByProcessVariable();
 
@@ -18,9 +19,18 @@ const JEST_TIMEOUT = 30000;
 it('should create new multi-signature account', async () => {
   const data = RegistrationApi.generateRandomDataForRegistration();
 
+  const fakeProfile = {
+    name: 'helloworld',
+    about: 'about the community',
+  };
+
   await MultiSignatureApi.createMultiSignatureAccount(
     accountName, activePrivateKey,
     data.accountName, data.ownerPrivateKey, data.ownerPublicKey, data.activePublicKey,
+    fakeProfile,
+    [
+      Helper.getBobAccountName(),
+    ],
   );
 
   const state = await BlockchainRegistry.getRawAccountData(data.accountName);
@@ -71,6 +81,13 @@ it('should create new multi-signature account', async () => {
         accounts: [
           {
             permission: {
+              actor: Helper.getBobAccountName(),
+              permission: PermissionsDictionary.social(),
+            },
+            weight: 1,
+          },
+          {
+            permission: {
               actor: accountName,
               permission: PermissionsDictionary.social(),
             },
@@ -83,6 +100,15 @@ it('should create new multi-signature account', async () => {
   ];
 
   expect(state.permissions).toEqual(expectedPermissions);
+
+  const smartContractData = await ContentApi.getOneAccountProfileFromSmartContractTable(data.accountName);
+
+  const expectedData = {
+    acc: data.accountName,
+    profile_json: JSON.stringify(fakeProfile),
+  };
+
+  expect(smartContractData).toMatchObject(expectedData);
 }, JEST_TIMEOUT);
 
 // @ts-ignore

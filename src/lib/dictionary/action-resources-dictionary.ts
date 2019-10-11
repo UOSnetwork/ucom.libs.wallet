@@ -1,18 +1,24 @@
-class ActionResourcesDictionary {
-  public static UOS(): string {
-    return 'UOS';
-  }
+import { UOS } from './currency-dictionary';
 
+class ActionResourcesDictionary {
   public static basicResourceRam(): number {
     return 8192;
   }
 
+  public static basicResourceNetTokensNumber(): number {
+    return 1;
+  }
+
+  public static basicResourceCpuTokensNumber(): number {
+    return 1;
+  }
+
   public static basicResourceCpuTokens(): string {
-    return `1.0000 ${this.UOS()}`;
+    return `${this.basicResourceCpuTokensNumber()}.0000 ${UOS}`;
   }
 
   public static basicResourceNetTokens(): string {
-    return `1.0000 ${this.UOS()}`;
+    return `${this.basicResourceNetTokensNumber()}.0000 ${UOS}`;
   }
 }
 

@@ -1,6 +1,7 @@
 import ActionsService from '../../service/actions-service';
 import { BadRequestError } from '../../errors/errors';
 import { IStringToAny } from '../../common/interfaces/common-interfaces';
+import { UOS } from '../../dictionary/currency-dictionary';
 
 import EosClient = require('../../common/client/eos-client');
 import InputValidator = require('../../validators/input-validator');
@@ -217,9 +218,12 @@ class WalletApi {
     return BlockchainRegistry.getAccountInfo(accountName);
   }
 
-  // noinspection JSUnusedGlobalSymbols
-  static async getAccountBalance(accountName, symbol) {
+  public static async getAccountBalance(accountName: string, symbol: string): Promise<number> {
     return BlockchainRegistry.getAccountBalance(accountName, symbol);
+  }
+
+  public static async getAccountUosBalance(accountName): Promise<number> {
+    return BlockchainRegistry.getAccountBalance(accountName, UOS);
   }
 
   /**

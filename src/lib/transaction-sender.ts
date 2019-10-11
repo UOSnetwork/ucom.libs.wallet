@@ -1,5 +1,6 @@
 import { Action } from 'eosjs/dist/eosjs-serialize';
 import { IStringToAny } from './common/interfaces/common-interfaces';
+import { UOS } from './dictionary/currency-dictionary';
 
 import EosClient = require('./common/client/eos-client');
 import BlockchainRegistry = require('./blockchain-registry');
@@ -187,7 +188,7 @@ class TransactionSender {
    * @param {string} symbol
    * @return {Promise<Object>}
    */
-  static async sendTokens(accountNameFrom, privateKey, accountNameTo, amount, memo = '', symbol = ActionResourcesDictionary.UOS()) {
+  static async sendTokens(accountNameFrom, privateKey, accountNameTo, amount, memo = '', symbol = UOS) {
     const stringAmount  = this.getUosAmountAsString(amount, symbol);
     const action        = this.getSendTokensAction(accountNameFrom, accountNameTo, stringAmount, memo);
 
@@ -345,7 +346,7 @@ class TransactionSender {
    * @return {string}
    * @private
    */
-  static getUosAmountAsString(amount, symbol = ActionResourcesDictionary.UOS()): string {
+  static getUosAmountAsString(amount, symbol = UOS): string {
     return `${Math.floor(amount)}.0000 ${symbol}`;
   }
 
