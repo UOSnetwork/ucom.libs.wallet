@@ -2,6 +2,7 @@ import ActionsService from '../../service/actions-service';
 import { BadRequestError } from '../../errors/errors';
 import { IStringToAny } from '../../common/interfaces/common-interfaces';
 import { UOS } from '../../dictionary/currency-dictionary';
+import { IAccountData } from '../../account/interfaces/account-data-interfaces';
 
 import EosClient = require('../../common/client/eos-client');
 import InputValidator = require('../../validators/input-validator');
@@ -202,7 +203,7 @@ class WalletApi {
     );
   }
 
-  public static async getRawAccountData(accountName: string): Promise<IStringToAny | null> {
+  public static async getRawAccountData(accountName: string): Promise<IAccountData | null> {
     try {
       return await BlockchainRegistry.getRawAccountData(accountName);
     } catch (error) {

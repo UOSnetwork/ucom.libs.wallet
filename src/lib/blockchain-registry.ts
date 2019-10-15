@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { BadRequestError } from './errors/errors';
 import { UOS } from './dictionary/currency-dictionary';
+import { IAccountData } from './account/interfaces/account-data-interfaces';
 
 import EosClient = require('./common/client/eos-client');
 import ConverterHelper = require('./helpers/converter-helper');
@@ -275,7 +276,7 @@ class BlockchainRegistry {
     }
   }
 
-  public static async getRawAccountData(accountName: string) {
+  public static async getRawAccountData(accountName: string): Promise<IAccountData> {
     const rpc = EosClient.getRpcClient();
 
     return rpc.get_account(accountName);

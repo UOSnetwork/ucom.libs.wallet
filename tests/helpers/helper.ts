@@ -280,8 +280,16 @@ class Helper {
     return accountsData[accountName].activePk;
   }
 
+  public static getVladActivePrivateKey(): string {
+    return this.getTesterAccountPrivateKey();
+  }
+
   public static getTesterAccountSocialPrivateKey(): string {
     return accountsData[accountName].socialPrivateKey;
+  }
+
+  public static getVladSocialPrivateKey(): string {
+    return this.getTesterAccountSocialPrivateKey();
   }
 
   public static getPetrAccountName(): string {
@@ -317,12 +325,16 @@ class Helper {
   }
 
 
-  /**
-   *
-   * @return {string}
-   */
-  static getTesterAccountName() {
+  public static getTesterAccountName(): string {
     return accountName;
+  }
+
+  public static getVladAccountName(): string {
+    return this.getTesterAccountName();
+  }
+
+  public static getMultiSignatureAccount(): string {
+    return 'cz4kagygcrrd';
   }
 
   /**

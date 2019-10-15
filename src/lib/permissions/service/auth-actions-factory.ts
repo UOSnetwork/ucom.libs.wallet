@@ -1,18 +1,11 @@
 import { Action } from 'eosjs/dist/eosjs-serialize';
+import { IAuthAccountPermissions } from '../../account/interfaces/account-data-interfaces';
 
 import SmartContractsDictionary = require('../../dictionary/smart-contracts-dictionary');
 import SmartContractsActionsDictionary = require('../../dictionary/smart-contracts-actions-dictionary');
 import TransactionsBuilder = require('../../service/transactions-builder');
 import PermissionsDictionary = require('../../dictionary/permissions-dictionary');
 import ConverterHelper = require('../../helpers/converter-helper');
-
-interface IAuthPermissions {
-  permission: {
-      actor:      string,
-      permission: string
-    },
-  weight: number
-}
 
 class AuthActionsFactory {
   public static addUserAccountsByUpdateAuthAction(
@@ -27,9 +20,13 @@ class AuthActionsFactory {
 
     const accounts = ConverterHelper.getUniqueAccountNamesSortedByUInt64(givenAccounts);
 
-    const accountsWithPermissions: IAuthPermissions[] = [];
+    const accountsWithPermissions: IAuthAccountPermissions[] = [];
     for (const account of accounts) {
-      accountsWithPermissions.push(this.getOneAccountPermission(account, assignPermission, weight));
+      // In order not to use a member-owner key for the owner permission active permission is set
+      const accountPermission = assignPermission === PermissionsDictionary.owner() ? PermissionsDictionary.active()
+        : assignPermission;
+
+      accountsWithPermissions.push(this.getOneAccountPermission(account, accountPermission, weight));
     }
 
     const smartContract = SmartContractsDictionary.eosIo();
@@ -52,7 +49,7 @@ class AuthActionsFactory {
 
   private static getOneAccountPermission(
     actor: string, permission: string, weight: number,
-  ): IAuthPermissions {
+  ): IAuthAccountPermissions {
     return {
       permission: {
         actor,

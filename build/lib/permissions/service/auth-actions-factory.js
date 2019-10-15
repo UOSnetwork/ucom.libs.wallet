@@ -12,7 +12,10 @@ class AuthActionsFactory {
         const accounts = ConverterHelper.getUniqueAccountNamesSortedByUInt64(givenAccounts);
         const accountsWithPermissions = [];
         for (const account of accounts) {
-            accountsWithPermissions.push(this.getOneAccountPermission(account, assignPermission, weight));
+            // In order not to use a member-owner key for the owner permission active permission is set
+            const accountPermission = assignPermission === PermissionsDictionary.owner() ? PermissionsDictionary.active()
+                : assignPermission;
+            accountsWithPermissions.push(this.getOneAccountPermission(account, accountPermission, weight));
         }
         const smartContract = SmartContractsDictionary.eosIo();
         const action = SmartContractsActionsDictionary.updateAuth();

@@ -3,6 +3,11 @@ import { MultiSignatureActions } from '../service/multi-signature-actions';
 import { IStringToAny } from '../../common/interfaces/common-interfaces';
 import { MultiSignatureValidator } from '../validators/multi-signature-validator';
 import { UOS } from '../../dictionary/currency-dictionary';
+import {
+  extractAccountsFromMultiSignaturePermission,
+} from '../../account/helpers/account-data-helper';
+import { symmetricDifference } from '../../helpers/array-helper';
+import { MULTI_SIGNATURE_EXPIRATION_IN_DAYS } from '../../dictionary/transaction-dictionary';
 
 import RegistrationApi = require('../../registration/api/registration-api');
 import PermissionsDictionary = require('../../dictionary/permissions-dictionary');
@@ -19,8 +24,10 @@ import _ = require('lodash');
 import moment = require('moment');
 import TransactionSender = require('../../transaction-sender');
 import SocialTransactionsCommonFactory = require('../../social-transactions/services/social-transactions-common-factory');
-import Helper = require('../../../../tests/helpers/helper');
 import ContentTransactionsCommonFactory = require('../../content/service/content-transactions-common-factory');
+import BlockchainRegistry = require('../../blockchain-registry');
+import MultiSignatureWorkflow = require('../service/multi-signature-workflow');
+import ContentApi = require('../../content/api/content-api');
 
 class MultiSignatureApi {
   public static async createMultiSignatureAccount(
@@ -72,56 +79,17 @@ class MultiSignatureApi {
     return EosClient.sendTransaction(multiSignatureOwnerPrivateKey, actions);
   }
 
-  public static async executeProposal(
-    actorAccount: string,
-    actorPrivateKey: string,
-    actorPermission: string,
-    proposerAccount: string,
-    proposalName: string,
-    executerName: string,
-  ) {
-    const action: Action = {
-      account: SmartContractsDictionary.eosIoMultiSignature(),
-      name:    SmartContractsActionsDictionary.executeMultiSignature(),
-      authorization: TransactionsBuilder.getSingleUserAuthorization(actorAccount, actorPermission),
-      data: {
-        proposer:       proposerAccount,
-        proposal_name:  proposalName,
-        executer:       executerName,
-      },
-    };
+  public static async areSocialMembersChanged(
+    multiSignatureAccountName: string,
+    addSocialMembers: string[],
+  ): Promise<boolean> {
+    const accountData = await BlockchainRegistry.getRawAccountData(multiSignatureAccountName);
 
-    return EosClient.sendTransaction(actorPrivateKey, [action]);
-  }
+    const socialMembers = extractAccountsFromMultiSignaturePermission(accountData, PermissionsDictionary.social());
 
-  public static async approveProposal(
-    actor: string,
-    authPrivateKey: string,
-    authPermission: string,
-    proposerAccount: string,
-    proposalName: string,
-    approvePermission: string,
-  ) {
-    const action: Action = {
-      account: SmartContractsDictionary.eosIoMultiSignature(),
-      name: SmartContractsActionsDictionary.approveMultiSignature(),
-      authorization: [
-        {
-          actor,
-          permission: authPermission,
-        },
-      ],
-      data: {
-        proposer: proposerAccount,
-        proposal_name: proposalName,
-        level: {
-          actor,
-          permission: approvePermission,
-        },
-      },
-    };
+    const difference = symmetricDifference<string>(socialMembers, addSocialMembers);
 
-    return EosClient.sendTransaction(authPrivateKey, [action]);
+    return difference.length > 0;
   }
 
   public static async createTrustProposal(
@@ -190,59 +158,53 @@ class MultiSignatureApi {
     };
   }
 
-  public static async createChangeMembersProposal(
-    whoPropose: string, proposePrivateKey: string, proposePermission: string, proposeRequestedFrom: string, expirationInDays: number = 1,
-    multiSignatureAccount: string, permissionToAssign: string,
+  public static async updateProfile(
+    actorAccountName: string,
+    actorPrivateKey: string,
+    proposePermission: string,
+    multiSignatureAccount: string,
+    profile: IStringToAny,
   ) {
-    const threshold = 1;
-    const actionPermission = PermissionsDictionary.active();
-    const action = {
-      account: SmartContractsDictionary.eosIo(),
-      name: SmartContractsActionsDictionary.updateAuth(),
-      authorization: [
-        {
-          actor: multiSignatureAccount,
-          permission: PermissionsDictionary.active(),
-        },
-      ],
-      data: {
-        account: multiSignatureAccount,
-        permission: permissionToAssign,
-        parent: proposePermission,
-        auth: {
-          threshold,
-          keys: [],
-          accounts: [
-            {
-              permission: {
-                actor: Helper.getBobAccountName(),
-                permission: permissionToAssign,
-              },
-              weight: 1,
-            },
-            {
-              permission: {
-                actor: Helper.getTesterAccountName(),
-                permission: permissionToAssign,
-              },
-              weight: 1,
-            },
-          ],
-          waits: [],
-        },
-      },
-    };
+    await ContentApi.isEnoughRamOrException(multiSignatureAccount, profile);
+    const actions: Action[] = [
+      ContentTransactionsCommonFactory.getSetProfileAction(multiSignatureAccount, profile, proposePermission),
+    ];
 
-    return this.createProposalWithOneRequestedAndOneAction(
-      whoPropose,
-      proposePrivateKey,
-      proposePermission,
-      proposeRequestedFrom,
-      expirationInDays,
-      action,
-      actionPermission,
-      SocialTransactionsCommonFactory.getNonceAction(whoPropose, actionPermission),
-    );
+    return this.proposeApproveAndExecuteByProposer(actorAccountName, actorPrivateKey, proposePermission, actions);
+  }
+
+  public static async createAndExecuteProfileUpdateAndSocialMembers(
+    accountName: string,
+    activePrivateKey: string,
+    multiSignatureAccount: string,
+    profile: IStringToAny,
+    socialMembers: string[],
+  ) {
+    const permission = PermissionsDictionary.active();
+
+    await ContentApi.isEnoughRamOrException(multiSignatureAccount, profile);
+
+    const actions: Action[] = [
+      ContentTransactionsCommonFactory.getSetProfileAction(multiSignatureAccount, profile, permission),
+
+      MultiSignatureActions.getSocialPermissionAction(multiSignatureAccount, socialMembers, permission),
+      SocialTransactionsCommonFactory.getNonceAction(multiSignatureAccount, permission),
+    ];
+
+    return this.proposeApproveAndExecuteByProposer(accountName, activePrivateKey, permission, actions);
+  }
+
+  public static async changeSocialMembers(
+    accountName: string, activePrivateKey: string, multiSignatureAccount: string, socialMembers: string[],
+  ) {
+    const permission = PermissionsDictionary.active();
+
+    const actions: Action[] = [
+      MultiSignatureActions.getSocialPermissionAction(multiSignatureAccount, socialMembers, permission),
+      SocialTransactionsCommonFactory.getNonceAction(multiSignatureAccount, permission),
+    ];
+
+    return this.proposeApproveAndExecuteByProposer(accountName, activePrivateKey, permission, actions);
   }
 
   public static async createTransferProposal(
@@ -252,55 +214,41 @@ class MultiSignatureApi {
     proposeRequestedFrom: string,
     accountFrom: string,
     accountNameTo: string,
-    expirationInDays: number = 1,
   ) {
     const stringAmount = TransactionSender.getUosAmountAsString(1, UOS);
     const action = TransactionSender.getSendTokensAction(accountFrom, accountNameTo, stringAmount, '');
 
-    return this.createProposalWithOneRequestedAndOneAction(
+    return this.pushProposal(
       whoPropose,
       proposePrivateKey,
       proposePermission,
-      proposeRequestedFrom,
-      expirationInDays,
-      action,
+      [proposeRequestedFrom],
+      [action],
       PermissionsDictionary.active(),
     );
   }
 
-  private static async createProposalWithOneRequestedAndOneAction(
+  private static async pushProposal(
     whoPropose: string,
     proposePrivateKey: string,
     proposePermission: string,
-    proposeRequestedFrom: string,
-    expirationInDays: number = 5,
-    action: Action,
+    accountsToApprove: string[],
+    givenActions: Action[],
     actionPermission: string,
-    nonceAction: Action | null = null,
   ) {
     const proposalName = AccountNameService.createRandomAccountName();
 
-    const seActions = await EosClient.serializeActionsByApi([action]);
+    const trxActions = _.cloneDeep(givenActions);
 
-    const serializedAction = _.cloneDeep(action);
-    serializedAction.data = seActions[0].data;
+    const seActions = await EosClient.serializeActionsByApi(givenActions);
 
-    const trxActions: Action[] = [
-      serializedAction,
-    ];
-
-    // #task - dedicated method
-    if (nonceAction) {
-      const seActionsNonce = await EosClient.serializeActionsByApi([nonceAction]);
-
-      const serializedActionNonce = _.cloneDeep(nonceAction);
-      serializedActionNonce.data = seActionsNonce[0].data;
-      trxActions.push(serializedActionNonce);
+    for (const [i, element] of trxActions.entries()) {
+      element.data = seActions[i].data;
     }
 
     const trx = {
       // eslint-disable-next-line newline-per-chained-call
-      expiration: moment().add(expirationInDays, 'days').utc().format().replace('Z', ''),
+      expiration: moment().add(MULTI_SIGNATURE_EXPIRATION_IN_DAYS, 'days').utc().format().replace('Z', ''),
       ref_block_num: 0,
       ref_block_prefix: 0,
       max_net_usage_words: 0,
@@ -313,6 +261,8 @@ class MultiSignatureApi {
 
     const authorization = TransactionsBuilder.getSingleUserAuthorization(whoPropose, proposePermission);
 
+    const requested = this.getRequestedFromAccountNames(accountsToApprove, actionPermission);
+
     const actions = [
       {
         account: SmartContractsDictionary.eosIoMultiSignature(),
@@ -321,12 +271,7 @@ class MultiSignatureApi {
         data: {
           proposer: whoPropose,
           proposal_name: proposalName,
-          requested: [
-            {
-              actor: proposeRequestedFrom,
-              permission: actionPermission,
-            },
-          ],
+          requested,
           trx,
         },
       },
@@ -338,6 +283,40 @@ class MultiSignatureApi {
       transaction,
       proposalName,
     };
+  }
+
+  private static async proposeApproveAndExecuteByProposer(
+    account: string,
+    privateKey: string,
+    permission: string,
+    actions: Action[],
+  ) {
+    const { proposalName, transaction: proposeResponse } = await this.pushProposal(
+      account,
+      privateKey,
+      permission,
+      [account],
+      actions,
+      permission,
+    );
+
+    const approveResponse =
+      await MultiSignatureWorkflow.approveProposal(account, privateKey, permission, account, proposalName, permission);
+    const executeResponse =
+      await MultiSignatureWorkflow.executeProposal(account, privateKey, permission, account, proposalName, account);
+
+    return {
+      proposalName,
+      proposeResponse,
+      approveResponse,
+      executeResponse,
+    };
+  }
+
+  private static getRequestedFromAccountNames(
+    accountNames: string[], permission: string,
+  ): { actor: string; permission: string }[] {
+    return accountNames.map((actor: string) => ({ actor, permission }));
   }
 }
 

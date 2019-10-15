@@ -1,0 +1,2 @@
+export const JEST_TIMEOUT_LONGER  = 5000 * 10;
+export const JEST_TIMEOUT_DEBUG   = JEST_TIMEOUT_LONGER * 100;

@@ -46,12 +46,12 @@ class SocialKeyApi {
     socialPublicKey:  string,
   ) {
     // #task - simplified check - check only first action of transaction - social key binding
-    await this.socialKeyNotExistOrError(accountName);
+    // await this.socialKeyNotExistOrError(accountName);
 
     const actions = [
       SocialKeyService.getBindSocialKeyAction(accountName, socialPublicKey),
 
-      ...this.getAssignSocialPermissionsActions(accountName),
+      // ...this.getAssignSocialPermissionsActions(accountName),
     ];
 
     return EosClient.sendTransaction(activePrivateKey, actions);
