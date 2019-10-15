@@ -1,15 +1,13 @@
 import { Action, SerializedAction } from 'eosjs/dist/eosjs-serialize';
 import { BadRequestError } from '../../errors/errors';
 import { IStringToAny } from '../interfaces/common-interfaces';
+import { BLOCKS_BEHIND, EXPIRATION_IN_SECONDS } from '../../dictionary/transaction-dictionary';
 
 import ConverterHelper = require('../../helpers/converter-helper');
 import ConfigService = require('../../../config/config-service');
 
 const { Api, JsonRpc, RpcError } = require('eosjs');
 const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig');
-
-const BLOCKS_BEHIND         = 3;
-const EXPIRATION_IN_SECONDS = 30;
 
 class EosClient {
   /**
