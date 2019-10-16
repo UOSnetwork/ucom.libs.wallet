@@ -6,14 +6,11 @@ import SmartContractsActionsDictionary = require('../../dictionary/smart-contrac
 import PermissionsDictionary = require('../../dictionary/permissions-dictionary');
 
 class SocialKeyService {
-  public static getSocialPermissionForSocialActions(
-    accountFrom: string,
-    actorPermission: string = PermissionsDictionary.active(),
-  ): Action {
+  public static getSocialPermissionForSocialActions(account: string, permission: string): Action {
     const smartContract = SmartContractsDictionary.uosActivity();
     const actionName    = SmartContractsActionsDictionary.socialAction();
 
-    return this.getSocialPermissionsForAction(accountFrom, smartContract, actionName, actorPermission);
+    return this.getSocialPermissionsForAction(account, smartContract, actionName, permission);
   }
 
   public static getSocialPermissionForProfileUpdating(
@@ -36,7 +33,10 @@ class SocialKeyService {
     return SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName, actorPermission);
   }
 
-  public static getSocialPermissionForProposeApproveAndExecute(accountFrom: string, actorPermission: string) {
+  public static getSocialPermissionForProposeApproveAndExecute(
+    accountFrom: string,
+    actorPermission: string = PermissionsDictionary.active(),
+  ): Action[] {
     const set = [
       SmartContractsActionsDictionary.proposeMultiSignature(),
       SmartContractsActionsDictionary.approveMultiSignature(),
@@ -73,23 +73,22 @@ class SocialKeyService {
   }
 
   public static getSocialPermissionsForAction(
-    accountFrom: string,
+    account: string,
     smartContract: string,
     actionName: string,
-    actorPermission: string = PermissionsDictionary.active(),
+    permission: string,
   ): Action {
-    const targetPermission    = PermissionsDictionary.social();
-    const authorization       = TransactionsBuilder.getSingleUserAuthorization(accountFrom, actorPermission);
+    const authorization = TransactionsBuilder.getSingleUserAuthorization(account, permission);
 
     return {
       account:  SmartContractsDictionary.eosIo(),
       name:     SmartContractsActionsDictionary.linkAuth(),
       authorization,
       data: {
-        account:      accountFrom,
+        account,
         code:         smartContract,
         type:         actionName,
-        requirement:  targetPermission,
+        requirement:  PermissionsDictionary.social(),
       },
     };
   }
