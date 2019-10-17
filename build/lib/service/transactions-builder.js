@@ -3,7 +3,7 @@ const PermissionsDictionary = require("../dictionary/permissions-dictionary");
 const SmartContractsDictionary = require("../dictionary/smart-contracts-dictionary");
 const SmartContractsActionsDictionary = require("../dictionary/smart-contracts-actions-dictionary");
 class TransactionsBuilder {
-    static getSingleSocialUserAction(actorAccountName, data, permission) {
+    static getSingleSocialUserAction(actorAccountName, data, permission = PermissionsDictionary.social()) {
         const smartContract = SmartContractsDictionary.uosActivity();
         const actionName = SmartContractsActionsDictionary.socialAction();
         return this.getSingleUserAction(actorAccountName, smartContract, actionName, data, permission);

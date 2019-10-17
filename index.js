@@ -15,6 +15,8 @@ module.exports = {
     ContentInteractionsApi: require('./build/lib/social-transactions/api/content-interactions-api'),
   },
 
+  ContentPublicationsActionsApi: require('./build/lib/content/api/content-publications-actions-api'),
+
   SocialKeyApi: require('./build/lib/social-key/api/social-key-api'),
   RegistrationApi: require('./build/lib/registration/api/registration-api'),
 

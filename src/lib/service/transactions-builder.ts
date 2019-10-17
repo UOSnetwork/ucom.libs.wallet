@@ -9,7 +9,7 @@ class TransactionsBuilder {
   public static getSingleSocialUserAction(
     actorAccountName: string,
     data: IStringToAny,
-    permission: string,
+    permission: string = PermissionsDictionary.social(),
   ) {
     const smartContract = SmartContractsDictionary.uosActivity();
     const actionName    = SmartContractsActionsDictionary.socialAction();
