@@ -13,6 +13,7 @@ class CommonContentService {
     isNew: boolean,
     entityNameFor: string,
     interactionName: string,
+    entityBlockchainIdFor: string,
     givenExtraMetaData: IStringToAny = {},
   ) {
     const extraMetaData = {
@@ -31,10 +32,9 @@ class CommonContentService {
       processedContent,
       contentBlockchainId,
       entityNameFor,
-      organizationBlockchainId,
+      entityBlockchainIdFor,
       accountName,
     );
-
 
     const metaData = ContentHelper.getMetadata(accountName, contentBlockchainId, extraMetaData);
 

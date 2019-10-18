@@ -27,6 +27,7 @@ class ContentPublicationsActionsApi {
       isNew,
       entityNameFor,
       interactionName,
+      organizationBlockchainId,
     );
 
     return {
@@ -52,6 +53,7 @@ class ContentPublicationsActionsApi {
       isNew,
       entityNameFor,
       interactionName,
+      organizationBlockchainId,
     );
   }
 }

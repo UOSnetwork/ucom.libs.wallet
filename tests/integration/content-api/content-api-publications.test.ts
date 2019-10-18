@@ -40,7 +40,7 @@ describe('Create publication', () => {
     ContentPostsChecker.checkPostPushingFromUserResponse(response, accountNameFrom, interactionName, blockchain_id);
   }, JEST_TIMEOUT);
 
-  it('Send a new publication from organization to the blockchain', async () => {
+  it('Smoke - send a new publication from organization to the blockchain', async () => {
     const content                   = ContentPostsGenerator.getSamplePostInputFields();
     const organizationBlockchainId  = ContentOrganizationsGenerator.getBlockchainId();
 

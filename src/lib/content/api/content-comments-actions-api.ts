@@ -13,7 +13,7 @@ class ContentCommentsActionsApi {
     parentBlockchainId: string,
     givenContent: IStringToAny,
     isReply: boolean,
-  ): Action {
+  ): { action: Action, blockchain_id: string } {
     const interactionName = InteractionsDictionary.createCommentFromOrganization();
 
     const commentBlockchainId: string = ContentIdGenerator.getForComment();
@@ -21,7 +21,7 @@ class ContentCommentsActionsApi {
 
     const { entityNameFor, metaData } = this.getEntityNameForAndMetaData(parentBlockchainId, isReply);
 
-    return CommonContentService.getSingleSocialContentActionFromOrganization(
+    const action = CommonContentService.getSingleSocialContentActionFromOrganization(
       accountName,
       organizationBlockchainId,
       givenContent,
@@ -29,8 +29,14 @@ class ContentCommentsActionsApi {
       isNew,
       entityNameFor,
       interactionName,
+      parentBlockchainId,
       metaData,
     );
+
+    return {
+      action,
+      blockchain_id: commentBlockchainId,
+    };
   }
 
   public static getUpdateCommentFromOrganizationAction(
@@ -54,6 +60,7 @@ class ContentCommentsActionsApi {
       isNew,
       entityNameFor,
       interactionName,
+      parentBlockchainId,
       metaData,
     );
   }
