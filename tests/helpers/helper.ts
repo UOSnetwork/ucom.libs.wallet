@@ -27,6 +27,8 @@ let accountNameTo = 'janejanejane';
 let firstBlockProducer = 'calc1';
 let secondBlockProducer = 'calc2';
 
+let multiSignatureAccount = 'tgkkay4ijpx1'; // cz4kagygcrrd
+
 class Helper {
   public static getHistoricalSenderAccountName(): string {
     return SmartContractsDictionary.historicalSenderAccountName();
@@ -91,6 +93,8 @@ class Helper {
     firstBlockProducer = 'calc1';
     secondBlockProducer = 'calc2';
 
+    multiSignatureAccount = 'cz4kagygcrrd';
+
     ConfigService.initNodeJsEnv();
     ConfigService.initForTestEnv();
   }
@@ -101,6 +105,8 @@ class Helper {
 
     firstBlockProducer = 'calc1';
     secondBlockProducer = 'calc2';
+
+    multiSignatureAccount = 'cz4kagygcrrd';
 
     ConfigService.initNodeJsEnv();
     ConfigService.initForStagingEnv();
@@ -116,6 +122,8 @@ class Helper {
 
     firstBlockProducer = 'initbp111151';
     secondBlockProducer = 'initbp111141';
+
+    multiSignatureAccount = 'tgkkay4ijpx1';
 
     ConfigService.initNodeJsEnv();
     ConfigService.initForProductionEnv();
@@ -334,7 +342,7 @@ class Helper {
   }
 
   public static getMultiSignatureAccount(): string {
-    return 'cz4kagygcrrd';
+    return multiSignatureAccount;
   }
 
   /**

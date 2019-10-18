@@ -1,6 +1,6 @@
 import { Action } from 'eosjs/dist/eosjs-serialize';
 import { MultiSignatureActions } from '../service/multi-signature-actions';
-import { IStringToAny } from '../../common/interfaces/common-interfaces';
+import { IStringToAny, ITransactionPushResponse } from '../../common/interfaces/common-interfaces';
 import { MultiSignatureValidator } from '../validators/multi-signature-validator';
 import { UOS } from '../../dictionary/currency-dictionary';
 import {
@@ -228,6 +228,43 @@ class MultiSignatureApi {
     );
   }
 
+  public static async proposeApproveAndExecuteByProposer(
+    account: string,
+    privateKey: string,
+    permission: string,
+    actionsOfMultiSignature: Action[],
+  ): Promise<{
+    proposalName: string,
+    proposeResponse: ITransactionPushResponse,
+    approveResponse: ITransactionPushResponse,
+    executeResponse: ITransactionPushResponse,
+  }> {
+    if (!Array.isArray(actionsOfMultiSignature)) {
+      throw new TypeError('actionsOfMultiSignature parameter type must be an array');
+    }
+
+    const { proposalName, transaction: proposeResponse } = await this.pushProposal(
+      account,
+      privateKey,
+      permission,
+      [account],
+      actionsOfMultiSignature,
+      permission,
+    );
+
+    const approveResponse =
+      await MultiSignatureWorkflow.approveProposal(account, privateKey, permission, account, proposalName, permission);
+    const executeResponse =
+      await MultiSignatureWorkflow.executeProposal(account, privateKey, permission, account, proposalName, account);
+
+    return {
+      proposalName,
+      proposeResponse,
+      approveResponse,
+      executeResponse,
+    };
+  }
+
   private static async pushProposal(
     whoPropose: string,
     proposePrivateKey: string,
@@ -282,34 +319,6 @@ class MultiSignatureApi {
     return {
       transaction,
       proposalName,
-    };
-  }
-
-  private static async proposeApproveAndExecuteByProposer(
-    account: string,
-    privateKey: string,
-    permission: string,
-    actions: Action[],
-  ) {
-    const { proposalName, transaction: proposeResponse } = await this.pushProposal(
-      account,
-      privateKey,
-      permission,
-      [account],
-      actions,
-      permission,
-    );
-
-    const approveResponse =
-      await MultiSignatureWorkflow.approveProposal(account, privateKey, permission, account, proposalName, permission);
-    const executeResponse =
-      await MultiSignatureWorkflow.executeProposal(account, privateKey, permission, account, proposalName, account);
-
-    return {
-      proposalName,
-      proposeResponse,
-      approveResponse,
-      executeResponse,
     };
   }
 

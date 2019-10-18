@@ -1,4 +1,5 @@
 import { Action } from 'eosjs/dist/eosjs-serialize';
+import { ITransactionPushResponse } from '../../common/interfaces/common-interfaces';
 
 import SmartContractsDictionary = require('../../dictionary/smart-contracts-dictionary');
 import SmartContractsActionsDictionary = require('../../dictionary/smart-contracts-actions-dictionary');
@@ -15,7 +16,7 @@ class MultiSignatureWorkflow {
     proposerAccount: string,
     proposalName: string,
     executerName: string,
-  ) {
+  ): Promise<ITransactionPushResponse> {
     const action: Action = {
       account: smartContract,
       name:    SmartContractsActionsDictionary.executeMultiSignature(),
@@ -37,7 +38,7 @@ class MultiSignatureWorkflow {
     proposerAccount: string,
     proposalName: string,
     approvePermission: string,
-  ) {
+  ): Promise<ITransactionPushResponse> {
     const action: Action = {
       account: smartContract,
       name: SmartContractsActionsDictionary.approveMultiSignature(),

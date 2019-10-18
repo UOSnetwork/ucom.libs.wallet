@@ -13,13 +13,13 @@ class ContentPublicationsActionsApi {
     accountName: string,
     organizationBlockchainId: string,
     givenContent: IStringToAny,
-  ): Action {
+  ): { blockchain_id: string, action: Action } {
     const interactionName = InteractionsDictionary.createMediaPostFromOrganization();
 
     const publicationBlockchainId = ContentIdGenerator.getForMediaPost();
     const isNew = true;
 
-    return CommonContentService.getSingleSocialContentActionFromOrganization(
+    const action = CommonContentService.getSingleSocialContentActionFromOrganization(
       accountName,
       organizationBlockchainId,
       givenContent,
@@ -28,6 +28,11 @@ class ContentPublicationsActionsApi {
       entityNameFor,
       interactionName,
     );
+
+    return {
+      action,
+      blockchain_id: publicationBlockchainId,
+    };
   }
 
   public static getUpdatePublicationFromOrganizationAction(
