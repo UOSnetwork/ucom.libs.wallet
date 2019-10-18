@@ -38,7 +38,7 @@ class ContentOrganizationsApi {
 
     const content = {
       ...givenContent,
-      ...ContentHelper.getUpdatedAtInsideObject(),
+      ...ContentHelper.getDateTimeFields(false, true),
     };
 
     const { signed_transaction } = await this.signSendOrganizationToBlockchain(

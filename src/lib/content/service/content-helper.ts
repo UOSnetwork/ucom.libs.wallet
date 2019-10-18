@@ -7,7 +7,9 @@ class ContentHelper {
     return isReply ? EntityNames.COMMENTS : EntityNames.POSTS;
   }
 
-  public static getDateTimeFields(createdAt: boolean, updatedAt: boolean) {
+  public static getDateTimeFields(
+    createdAt: boolean, updatedAt: boolean,
+  ): { created_at?: string, updated_at?: string} {
     const data: any = {};
 
     if (createdAt) {
@@ -19,12 +21,6 @@ class ContentHelper {
     }
 
     return data;
-  }
-
-  public static getUpdatedAtInsideObject() {
-    return {
-      updated_at: moment().utc().format(),
-    };
   }
 
   public static getMetadata(
