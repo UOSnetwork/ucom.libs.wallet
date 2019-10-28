@@ -58,7 +58,7 @@ class ContentApi {
     return data[0];
   }
 
-  private static async isEnoughRamOrException(accountNameFrom: string, profileJsonObject: any) {
+  public static async isEnoughRamOrException(accountNameFrom: string, profileJsonObject: any) {
     const newProfileLength = JSON.stringify(profileJsonObject).length;
 
     const currentProfile: any = await ContentApi.getOneAccountProfileFromSmartContractTable(accountNameFrom);

@@ -1,7 +1,15 @@
+import { EntityNames } from 'ucom.libs.common';
+
 import moment = require('moment');
 
 class ContentHelper {
-  public static getDateTimeFields(createdAt: boolean, updatedAt: boolean) {
+  public static getCommentParentEntityName(isReply: boolean): string {
+    return isReply ? EntityNames.COMMENTS : EntityNames.POSTS;
+  }
+
+  public static getDateTimeFields(
+    createdAt: boolean, updatedAt: boolean,
+  ): { created_at?: string, updated_at?: string} {
     const data: any = {};
 
     if (createdAt) {
@@ -13,12 +21,6 @@ class ContentHelper {
     }
 
     return data;
-  }
-
-  public static getUpdatedAtInsideObject() {
-    return {
-      updated_at: moment().utc().format(),
-    };
   }
 
   public static getMetadata(
@@ -46,6 +48,26 @@ class ContentHelper {
     if (!momentDate.isValid()) {
       throw new TypeError(`Provided created_at value is not a valid datetime string: ${content.created_at}`);
     }
+  }
+
+  public static getContentWithExtraFields(
+    givenContent: any,
+    contentId: string,
+    entityNameFor: string,
+    entityBlockchainIdFor: string,
+    authorAccountName: string,
+  ) {
+    const data = {
+      blockchain_id:            contentId,
+      entity_name_for:          entityNameFor,
+      entity_blockchain_id_for: entityBlockchainIdFor,
+      author_account_name:      authorAccountName,
+    };
+
+    return {
+      ...givenContent,
+      ...data,
+    };
   }
 }
 

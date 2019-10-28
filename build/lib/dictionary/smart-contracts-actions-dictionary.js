@@ -3,6 +3,15 @@ class SmartContractsActionsDictionary {
     static updateAuth() {
         return 'updateauth';
     }
+    static proposeMultiSignature() {
+        return 'propose';
+    }
+    static approveMultiSignature() {
+        return 'approve';
+    }
+    static executeMultiSignature() {
+        return 'exec';
+    }
     static newAccount() {
         return 'newaccount';
     }

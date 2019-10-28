@@ -4,6 +4,7 @@ import {
   CheckManyObjectsOptionsDto,
   ObjectInterfaceRulesDto,
 } from '../../../helpers/common/interfaces/options-interfaces';
+import { UOS } from '../../../../src/lib/dictionary/currency-dictionary';
 
 
 import Helper = require('../../../helpers/helper');
@@ -206,7 +207,7 @@ describe('Blockchain nodes fetching', () => {
         currency: {
           type: 'string',
           length: 1,
-          value: 'UOS',
+          value: UOS,
         },
         scaled_importance_amount: {
           type: 'number',

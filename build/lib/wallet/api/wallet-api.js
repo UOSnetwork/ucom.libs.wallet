@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 const actions_service_1 = __importDefault(require("../../service/actions-service"));
 const errors_1 = require("../../errors/errors");
+const currency_dictionary_1 = require("../../dictionary/currency-dictionary");
 const EosClient = require("../../common/client/eos-client");
 const InputValidator = require("../../validators/input-validator");
 const BlockchainRegistry = require("../../blockchain-registry");
@@ -95,19 +96,12 @@ class WalletApi {
         await this.isMinUosAmountForRamOrException(bytesAmount);
         return TransactionSender.sellRamBytes(accountName, privateKey, bytesAmount);
     }
-    /**
-     *
-     * @param {string} accountName
-     * @param {string} privateKey
-     * @param {number} bytesAmount
-     * @return {Promise<Object>}
-     */
-    static async buyRam(accountName, privateKey, bytesAmount) {
+    static async buyRam(accountName, privateKey, bytesAmount, receiver = accountName) {
         InputValidator.isPositiveInt(bytesAmount);
         await BlockchainRegistry.doesAccountExist(accountName);
         const price = await this.isMinUosAmountForRamOrException(bytesAmount);
         await BlockchainRegistry.isEnoughBalanceOrException(accountName, price);
-        return TransactionSender.buyRamBytes(accountName, privateKey, bytesAmount);
+        return TransactionSender.buyRamBytes(accountName, privateKey, bytesAmount, receiver);
     }
     static async claimEmission(accountName, privateKey, permission = PermissionsDictionary.active()) {
         await BlockchainRegistry.doesAccountExist(accountName);
@@ -158,9 +152,11 @@ class WalletApi {
     static async getAccountState(accountName) {
         return BlockchainRegistry.getAccountInfo(accountName);
     }
-    // noinspection JSUnusedGlobalSymbols
     static async getAccountBalance(accountName, symbol) {
         return BlockchainRegistry.getAccountBalance(accountName, symbol);
+    }
+    static async getAccountUosBalance(accountName) {
+        return BlockchainRegistry.getAccountBalance(accountName, currency_dictionary_1.UOS);
     }
     /**
      *

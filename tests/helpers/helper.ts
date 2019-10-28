@@ -1,4 +1,6 @@
 /* eslint-disable unicorn/prevent-abbreviations,max-len,no-shadow,jest/valid-expect,no-unused-vars,security/detect-object-injection,no-console */
+import { UOS } from '../../src/lib/dictionary/currency-dictionary';
+
 import WalletApi = require('../../src/lib/wallet/api/wallet-api');
 import EosClient = require('../../src/lib/common/client/eos-client');
 import BlockchainRegistry = require('../../src/lib/blockchain-registry');
@@ -24,6 +26,8 @@ let accountNameTo = 'janejanejane';
 
 let firstBlockProducer = 'calc1';
 let secondBlockProducer = 'calc2';
+
+let multiSignatureAccount = 'tgkkay4ijpx1'; // cz4kagygcrrd
 
 class Helper {
   public static getHistoricalSenderAccountName(): string {
@@ -89,6 +93,8 @@ class Helper {
     firstBlockProducer = 'calc1';
     secondBlockProducer = 'calc2';
 
+    multiSignatureAccount = 'cz4kagygcrrd';
+
     ConfigService.initNodeJsEnv();
     ConfigService.initForTestEnv();
   }
@@ -99,6 +105,8 @@ class Helper {
 
     firstBlockProducer = 'calc1';
     secondBlockProducer = 'calc2';
+
+    multiSignatureAccount = 'cz4kagygcrrd';
 
     ConfigService.initNodeJsEnv();
     ConfigService.initForStagingEnv();
@@ -114,6 +122,8 @@ class Helper {
 
     firstBlockProducer = 'initbp111151';
     secondBlockProducer = 'initbp111141';
+
+    multiSignatureAccount = 'tgkkay4ijpx1';
 
     ConfigService.initNodeJsEnv();
     ConfigService.initForProductionEnv();
@@ -155,7 +165,7 @@ class Helper {
   static checkUnstakingRequestIsEmpty(data) {
     expect(data.amount).toBe(0);
     expect(data.request_datetime).toBeNull();
-    expect(data.currency).toBe('UOS');
+    expect(data.currency).toBe(UOS);
   }
 
   /**
@@ -166,7 +176,7 @@ class Helper {
   static checkUnstakingRequestValues(data, amount) {
     expect(data.amount).toBe(amount);
     expect(data.request_datetime).not.toBeNull();
-    expect(data.currency).toBe('UOS');
+    expect(data.currency).toBe(UOS);
   }
 
   /**
@@ -254,12 +264,56 @@ class Helper {
     });
   }
 
+  public static getAliceAccountName(): string {
+    return accountsData.alice.account_name;
+  }
+
+  public static getAlicePrivateKey(): string {
+    return accountsData.alice.activePk;
+  }
+
+  public static getBobAccountName(): string {
+    return accountsData.bob.account_name;
+  }
+
+  public static getBobPrivateKey(): string {
+    return accountsData.bob.activePk;
+  }
+
+  public static getTesterAccountOwnerPrivateKey(): string {
+    return accountsData[accountName].ownerPk;
+  }
+
   public static getTesterAccountPrivateKey(): string {
     return accountsData[accountName].activePk;
   }
 
+  public static getVladActivePrivateKey(): string {
+    return this.getTesterAccountPrivateKey();
+  }
+
   public static getTesterAccountSocialPrivateKey(): string {
     return accountsData[accountName].socialPrivateKey;
+  }
+
+  public static getVladSocialPrivateKey(): string {
+    return this.getTesterAccountSocialPrivateKey();
+  }
+
+  public static getPetrAccountName(): string {
+    return accountsData.rokky.account_name;
+  }
+
+  public static getPetrActivePrivateKey(): string {
+    return accountsData.rokky.activePk;
+  }
+
+  public static getPetrSocialPrivateKey(): string {
+    return accountsData.rokky.socialPrivateKey;
+  }
+
+  public static getPetrSocialPublicKey(): string {
+    return accountsData.rokky.socialPublicKey;
   }
 
   /**
@@ -270,21 +324,25 @@ class Helper {
     return accountNameTo;
   }
 
-  /**
-   *
-   * @return {string}
-   */
-  static getAccountNameToPrivateKey() {
+  public static getAccountNameToPrivateKey(): string {
     return accountsData[accountNameTo].activePk;
   }
 
+  public static getAccountNameToSocialPrivateKey(): string {
+    return accountsData[accountNameTo].socialPrivateKey;
+  }
 
-  /**
-   *
-   * @return {string}
-   */
-  static getTesterAccountName() {
+
+  public static getTesterAccountName(): string {
     return accountName;
+  }
+
+  public static getVladAccountName(): string {
+    return this.getTesterAccountName();
+  }
+
+  public static getMultiSignatureAccount(): string {
+    return multiSignatureAccount;
   }
 
   /**

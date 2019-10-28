@@ -1,4 +1,6 @@
 /* eslint-disable unicorn/import-index,max-len,jest/no-disabled-tests */
+import { UOS } from '../../../src/lib/dictionary/currency-dictionary';
+
 import Helper = require('../../helpers/helper');
 import WalletApi = require('../../../src/lib/wallet/api/wallet-api');
 
@@ -46,7 +48,7 @@ describe('Get blockchain info and validation checks', () => {
           expect(typeof data.net).toBe('number');
           expect(data.net).toBeGreaterThan(0);
 
-          expect(data.currency).toBe('UOS');
+          expect(data.currency).toBe(UOS);
         });
       });
 
@@ -92,8 +94,10 @@ describe('Get blockchain info and validation checks', () => {
 
     it('buyRam validation', async () => {
       await expect(WalletApi.buyRam(accountName, 'sample_key', 0)).rejects.toThrow(positiveIntErrorRegex);
-      // noinspection JSCheckFunctionSignatures
-      await expect(WalletApi.buyRam(accountName, 'sample_key', 'abc')).rejects.toThrow(positiveIntErrorRegex);
+      await expect(
+        // @ts-ignore
+        WalletApi.buyRam(accountName, 'sample_key', 'abc'),
+      ).rejects.toThrow(positiveIntErrorRegex);
 
       const nonExistedAccount = Helper.getNonExistedAccountName();
       await expect(WalletApi.buyRam(nonExistedAccount, 'sample_key', 1000)).rejects.toThrow(nonExistedAccountErrorRegex);

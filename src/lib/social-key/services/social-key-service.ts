@@ -1,4 +1,4 @@
-import { IStringToAny } from '../../common/interfaces/common-interfaces';
+import { Action } from 'eosjs/dist/eosjs-serialize';
 
 import SmartContractsDictionary = require('../../dictionary/smart-contracts-dictionary');
 import TransactionsBuilder = require('../../service/transactions-builder');
@@ -6,28 +6,49 @@ import SmartContractsActionsDictionary = require('../../dictionary/smart-contrac
 import PermissionsDictionary = require('../../dictionary/permissions-dictionary');
 
 class SocialKeyService {
-  public static getSocialPermissionForSocialActions(accountFrom: string): IStringToAny {
+  public static getSocialPermissionForSocialActions(account: string, permission: string): Action {
     const smartContract = SmartContractsDictionary.uosActivity();
     const actionName    = SmartContractsActionsDictionary.socialAction();
 
-    return this.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
+    return this.getSocialPermissionsForAction(account, smartContract, actionName, permission);
   }
 
-  public static getSocialPermissionForProfileUpdating(accountFrom: string): IStringToAny {
+  public static getSocialPermissionForProfileUpdating(
+    accountFrom: string,
+    actorPermission: string = PermissionsDictionary.active(),
+  ): Action {
     const smartContract = SmartContractsDictionary.uosAccountInfo();
     const actionName    = SmartContractsActionsDictionary.setProfile();
 
-    return this.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
+    return this.getSocialPermissionsForAction(accountFrom, smartContract, actionName, actorPermission);
   }
 
-  public static getSocialPermissionForEmissionClaim(accountFrom: string): IStringToAny {
+  public static getSocialPermissionForEmissionClaim(
+    accountFrom: string,
+    actorPermission: string = PermissionsDictionary.active(),
+  ): Action {
     const smartContract = SmartContractsDictionary.uosCalcs();
     const actionName    = SmartContractsActionsDictionary.withdrawal();
 
-    return SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName);
+    return SocialKeyService.getSocialPermissionsForAction(accountFrom, smartContract, actionName, actorPermission);
   }
 
-  public static getBindSocialKeyAction(accountName: string, publicSocialKey: string): IStringToAny {
+  public static getSocialPermissionForProposeApproveAndExecute(
+    accountFrom: string,
+    actorPermission: string = PermissionsDictionary.active(),
+  ): Action[] {
+    const set = [
+      SmartContractsActionsDictionary.proposeMultiSignature(),
+      SmartContractsActionsDictionary.approveMultiSignature(),
+      SmartContractsActionsDictionary.executeMultiSignature(),
+    ];
+
+    return set.map((action: string) => SocialKeyService.getSocialPermissionsForAction(
+      accountFrom, SmartContractsDictionary.eosIoMultiSignature(), action, actorPermission,
+    ));
+  }
+
+  public static getBindSocialKeyAction(accountName: string, publicSocialKey: string): Action {
     return {
       account: SmartContractsDictionary.eosIo(),
       name: SmartContractsActionsDictionary.updateAuth(),
@@ -51,24 +72,23 @@ class SocialKeyService {
     };
   }
 
-  private static getSocialPermissionsForAction(
-    accountFrom: string,
+  public static getSocialPermissionsForAction(
+    account: string,
     smartContract: string,
     actionName: string,
-  ): IStringToAny {
-    const parentPermission    = PermissionsDictionary.active();
-    const targetPermission    = PermissionsDictionary.social();
-    const authorization       = TransactionsBuilder.getSingleUserAuthorization(accountFrom, parentPermission);
+    permission: string,
+  ): Action {
+    const authorization = TransactionsBuilder.getSingleUserAuthorization(account, permission);
 
     return {
       account:  SmartContractsDictionary.eosIo(),
       name:     SmartContractsActionsDictionary.linkAuth(),
       authorization,
       data: {
-        account:      accountFrom,
+        account,
         code:         smartContract,
         type:         actionName,
-        requirement:  targetPermission,
+        requirement:  PermissionsDictionary.social(),
       },
     };
   }

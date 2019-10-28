@@ -4,12 +4,21 @@ const TransactionsBuilder = require("../../service/transactions-builder");
 const SmartContractsDictionary = require("../../dictionary/smart-contracts-dictionary");
 const EosClient = require("../../common/client/eos-client");
 const PermissionsDictionary = require("../../dictionary/permissions-dictionary");
+const moment = require("moment");
 class SocialTransactionsCommonFactory {
     static async getSignedTransaction(accountName, privateKey, interactionName, metaData, content, permission) {
         const smartContract = SmartContractsDictionary.uosActivity();
         const actionName = SmartContractsActionsDictionary.socialAction();
         const actionData = this.getActionData(accountName, interactionName, metaData, content);
         return this.getSignedTransactionWithOneAction(accountName, privateKey, permission, smartContract, actionName, actionData);
+    }
+    static getNonceAction(accountName, permission) {
+        const smartContract = SmartContractsDictionary.uosActivity();
+        const actionName = SmartContractsActionsDictionary.socialAction();
+        const nonceData = this.getActionData(accountName, 'nonce', {
+            data: moment().utc().format(),
+        }, '');
+        return TransactionsBuilder.getSingleUserAction(accountName, smartContract, actionName, nonceData, permission);
     }
     static async getSignedResendTransaction(historicalSenderPrivateKey, interactionName, metaData, content, timestamp) {
         const historicalSender = SmartContractsDictionary.historicalSenderAccountName();

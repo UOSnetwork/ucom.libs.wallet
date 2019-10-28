@@ -1,3 +1,4 @@
+import { Action, SerializedAction } from 'eosjs/dist/eosjs-serialize';
 import { BadRequestError } from '../../errors/errors';
 import { IStringToAny } from '../interfaces/common-interfaces';
 import { BLOCKS_BEHIND, EXPIRATION_IN_SECONDS } from '../../dictionary/transaction-dictionary';
@@ -145,6 +146,9 @@ class EosClient {
         actions,
       }, params);
     } catch (error) {
+      // eslint-disable-next-line no-console
+      console.dir(error.json.error);
+
       if (error instanceof RpcError && error.json.code === 401) {
         throw new BadRequestError('Private key is not valid');
       }
@@ -154,6 +158,19 @@ class EosClient {
       }
       throw error;
     }
+  }
+
+  public static async serializeActionsByApi(actions: Action[]): Promise<SerializedAction[]> {
+    const api = EosClient.getApiClientWithoutSignatures();
+
+    return api.serializeActions(actions);
+  }
+
+  public static async deserializeActionsByApi(privateKey: string, transactionParts: any): Promise<any> {
+    // #opt - private key is not required here
+    const api = EosClient.getApiClient(privateKey);
+
+    return api.deserializeTransaction(transactionParts.serializedTransaction);
   }
 
   private static getApiClient(privateKey: string) {
@@ -170,6 +187,21 @@ class EosClient {
     }
 
     return new Api({ rpc, signatureProvider });
+  }
+
+  private static getApiClientWithoutSignatures() {
+    const rpc = this.getRpcClient();
+
+    if (ConfigService.isNode()) {
+      // eslint-disable-next-line global-require
+      const { TextEncoder, TextDecoder } = require('util');
+
+      return new Api({
+        rpc, textDecoder: new TextDecoder(), textEncoder: new TextEncoder(),
+      });
+    }
+
+    return new Api({ rpc });
   }
 
   /**

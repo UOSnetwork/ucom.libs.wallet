@@ -42,7 +42,7 @@ class ContentPublicationsApi {
     isReply: boolean,
     permission: string = PermissionsDictionary.active(),
   ): Promise<{ signed_transaction: any, blockchain_id: string }> {
-    const parentEntityName = this.getCommentParentEntityName(isReply);
+    const parentEntityName = ContentHelper.getCommentParentEntityName(isReply);
 
     const interactionName = InteractionsDictionary.createCommentFromAccount();
 
@@ -71,7 +71,7 @@ class ContentPublicationsApi {
     isReply: boolean,
     permission: string = PermissionsDictionary.active(),
   ): Promise<any> {
-    const parentEntityName = this.getCommentParentEntityName(isReply);
+    const parentEntityName = ContentHelper.getCommentParentEntityName(isReply);
 
     const interactionName = InteractionsDictionary.updateCommentFromAccount();
 
@@ -104,7 +104,7 @@ class ContentPublicationsApi {
     isReply: boolean,
   ): Promise<any> {
     const interactionName = InteractionsDictionary.createCommentFromAccount();
-    const parentEntityName = this.getCommentParentEntityName(isReply);
+    const parentEntityName = ContentHelper.getCommentParentEntityName(isReply);
 
     const extraMetadata = {
       parent_content_id: parentContentBlockchainId,
@@ -131,7 +131,7 @@ class ContentPublicationsApi {
     isReply: boolean,
     permission: string = PermissionsDictionary.active(),
   ): Promise<{ signed_transaction: any, blockchain_id: string }> {
-    const parentEntityName = this.getCommentParentEntityName(isReply);
+    const parentEntityName = ContentHelper.getCommentParentEntityName(isReply);
 
     const interactionName = InteractionsDictionary.createCommentFromOrganization();
 
@@ -166,7 +166,7 @@ class ContentPublicationsApi {
     isReply: boolean,
     permission: string = PermissionsDictionary.active(),
   ): Promise<{ signed_transaction: any, blockchain_id: string }> {
-    const parentEntityName = this.getCommentParentEntityName(isReply);
+    const parentEntityName = ContentHelper.getCommentParentEntityName(isReply);
 
     const interactionName = InteractionsDictionary.updateCommentFromOrganization();
 
@@ -204,7 +204,7 @@ class ContentPublicationsApi {
     isReply: boolean,
   ): Promise<any> {
     const interactionName = InteractionsDictionary.createCommentFromOrganization();
-    const parentEntityName = this.getCommentParentEntityName(isReply);
+    const parentEntityName = ContentHelper.getCommentParentEntityName(isReply);
 
     const extraMetadata = {
       parent_content_id:    parentContentBlockchainId,
@@ -270,7 +270,7 @@ class ContentPublicationsApi {
 
     const contentId: string = ContentIdGenerator.getForRepost();
 
-    const givenContentWithExtraFields = this.getContentWithExtraFields(
+    const givenContentWithExtraFields = ContentHelper.getContentWithExtraFields(
       givenContent,
       contentId,
       entityNameFor,
@@ -640,7 +640,7 @@ class ContentPublicationsApi {
     givenContentId: string | null = null,
   ): Promise<{ signed_transaction: any, blockchain_id: string }> {
     const contentId: string = givenContentId || ContentIdGenerator.getForMediaPost();
-    const content = this.getContentWithExtraFields(
+    const content = ContentHelper.getContentWithExtraFields(
       givenContent,
       contentId,
       entityNameFor,
@@ -684,7 +684,7 @@ class ContentPublicationsApi {
   ): Promise<{ signed_transaction: any, blockchain_id: string }> {
     const contentId: string = givenContentId || ContentIdGenerator.getForComment();
 
-    const content = this.getContentWithExtraFields(
+    const content = ContentHelper.getContentWithExtraFields(
       givenContent,
       contentId,
       parentEntityName,
@@ -727,7 +727,7 @@ class ContentPublicationsApi {
   ): Promise<{ signed_transaction: any, blockchain_id: string }> {
     const contentId: string = givenContentId || ContentIdGenerator.getForDirectPost();
 
-    const content = this.getContentWithExtraFields(
+    const content = ContentHelper.getContentWithExtraFields(
       givenContent,
       contentId,
       entityNameFor,
@@ -764,7 +764,7 @@ class ContentPublicationsApi {
     extraMetaData: any = {},
     contentId: string,
   ): Promise<{ signed_transaction: any, blockchain_id: string }> {
-    const content = this.getContentWithExtraFields(
+    const content = ContentHelper.getContentWithExtraFields(
       givenContent,
       contentId,
       entityNameFor,
@@ -794,31 +794,6 @@ class ContentPublicationsApi {
       content,
       content.created_at,
     );
-  }
-
-  private static getContentWithExtraFields(
-    givenContent: any,
-    contentId: string,
-    entityNameFor: string,
-    entityBlockchainIdFor: string,
-    authorAccountName: string,
-  ) {
-    const data = {
-      blockchain_id:            contentId,
-      entity_name_for:          entityNameFor,
-      entity_blockchain_id_for: entityBlockchainIdFor,
-      author_account_name:      authorAccountName,
-    };
-
-    return {
-      ...givenContent,
-      ...data,
-    };
-  }
-
-
-  private static getCommentParentEntityName(isReply: boolean): string {
-    return isReply ? EntityNames.COMMENTS : EntityNames.POSTS;
   }
 }
 

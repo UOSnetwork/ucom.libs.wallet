@@ -1,4 +1,5 @@
 "use strict";
+const currency_dictionary_1 = require("./dictionary/currency-dictionary");
 const EosClient = require("./common/client/eos-client");
 const BlockchainRegistry = require("./blockchain-registry");
 const TransactionsBuilder = require("./service/transactions-builder");
@@ -17,8 +18,8 @@ class TransactionSender {
         const action = this.getSellRamAction(accountName, bytesAmount);
         return EosClient.sendTransaction(privateKey, [action]);
     }
-    static async buyRamBytes(accountName, privateKey, bytesAmount) {
-        const action = this.getBuyRamAction(accountName, bytesAmount, accountName);
+    static async buyRamBytes(accountName, privateKey, bytesAmount, receiver) {
+        const action = this.getBuyRamAction(accountName, bytesAmount, receiver);
         return EosClient.sendSingleActionTransaction(privateKey, action);
     }
     static async claimEmission(accountName, privateKey, permission) {
@@ -118,7 +119,7 @@ class TransactionSender {
      * @param {string} symbol
      * @return {Promise<Object>}
      */
-    static async sendTokens(accountNameFrom, privateKey, accountNameTo, amount, memo = '', symbol = ActionResourcesDictionary.UOS()) {
+    static async sendTokens(accountNameFrom, privateKey, accountNameTo, amount, memo = '', symbol = currency_dictionary_1.UOS) {
         const stringAmount = this.getUosAmountAsString(amount, symbol);
         const action = this.getSendTokensAction(accountNameFrom, accountNameTo, stringAmount, memo);
         return EosClient.sendTransaction(privateKey, [action]);
@@ -133,14 +134,6 @@ class TransactionSender {
         };
         return TransactionsBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data, permission);
     }
-    /**
-     *
-     * @param {string} accountNameFrom
-     * @param {number} amount
-     * @param {string} accountNameTo
-     * @return {Object}
-     * @private
-     */
     static getBuyRamAction(accountNameFrom, amount, accountNameTo) {
         const smartContract = SmartContractsDictionary.eosIo();
         const actionName = SmartContractsActionsDictionary.buyRamBytes();
@@ -239,7 +232,7 @@ class TransactionSender {
      * @return {string}
      * @private
      */
-    static getUosAmountAsString(amount, symbol = ActionResourcesDictionary.UOS()) {
+    static getUosAmountAsString(amount, symbol = currency_dictionary_1.UOS) {
         return `${Math.floor(amount)}.0000 ${symbol}`;
     }
     static getClaimEmissionAction(accountNameFrom, permission) {

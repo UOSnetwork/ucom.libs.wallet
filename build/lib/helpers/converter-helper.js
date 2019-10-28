@@ -1,11 +1,12 @@
 "use strict";
+const currency_dictionary_1 = require("../dictionary/currency-dictionary");
 const moment = require('moment');
 const bytebuffer = require('bytebuffer');
 const { Long } = bytebuffer;
 const BigNumberLib = require('bignumber.js');
 const UNSTAKE_WITHIN_DAYS = 3; // #task - move to config
 class ConverterHelper {
-    static getTokensAmountFromString(stringValue, token = 'UOS') {
+    static getTokensAmountFromString(stringValue, token = currency_dictionary_1.UOS) {
         const value = stringValue.replace(` ${token}`, '');
         return +value;
     }

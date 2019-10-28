@@ -1,6 +1,8 @@
 import ActionsService from '../../service/actions-service';
 import { BadRequestError } from '../../errors/errors';
 import { IStringToAny } from '../../common/interfaces/common-interfaces';
+import { UOS } from '../../dictionary/currency-dictionary';
+import { IAccountData } from '../../account/interfaces/account-data-interfaces';
 
 import EosClient = require('../../common/client/eos-client');
 import InputValidator = require('../../validators/input-validator');
@@ -126,14 +128,9 @@ class WalletApi {
     return TransactionSender.sellRamBytes(accountName, privateKey, bytesAmount);
   }
 
-  /**
-   *
-   * @param {string} accountName
-   * @param {string} privateKey
-   * @param {number} bytesAmount
-   * @return {Promise<Object>}
-   */
-  static async buyRam(accountName, privateKey, bytesAmount) {
+  public static async buyRam(
+    accountName: string, privateKey: string, bytesAmount: number, receiver: string = accountName,
+  ) {
     InputValidator.isPositiveInt(bytesAmount);
     await BlockchainRegistry.doesAccountExist(accountName);
 
@@ -141,7 +138,7 @@ class WalletApi {
 
     await BlockchainRegistry.isEnoughBalanceOrException(accountName, price);
 
-    return TransactionSender.buyRamBytes(accountName, privateKey, bytesAmount);
+    return TransactionSender.buyRamBytes(accountName, privateKey, bytesAmount, receiver);
   }
 
   public static async claimEmission(
@@ -206,7 +203,7 @@ class WalletApi {
     );
   }
 
-  public static async getRawAccountData(accountName: string): Promise<IStringToAny | null> {
+  public static async getRawAccountData(accountName: string): Promise<IAccountData | null> {
     try {
       return await BlockchainRegistry.getRawAccountData(accountName);
     } catch (error) {
@@ -222,9 +219,12 @@ class WalletApi {
     return BlockchainRegistry.getAccountInfo(accountName);
   }
 
-  // noinspection JSUnusedGlobalSymbols
-  static async getAccountBalance(accountName, symbol) {
+  public static async getAccountBalance(accountName: string, symbol: string): Promise<number> {
     return BlockchainRegistry.getAccountBalance(accountName, symbol);
+  }
+
+  public static async getAccountUosBalance(accountName): Promise<number> {
+    return BlockchainRegistry.getAccountBalance(accountName, UOS);
   }
 
   /**

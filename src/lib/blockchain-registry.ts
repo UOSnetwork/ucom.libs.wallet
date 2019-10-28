@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 import { BadRequestError } from './errors/errors';
+import { UOS } from './dictionary/currency-dictionary';
+import { IAccountData } from './account/interfaces/account-data-interfaces';
 
 import EosClient = require('./common/client/eos-client');
 import ConverterHelper = require('./helpers/converter-helper');
@@ -233,7 +235,7 @@ class BlockchainRegistry {
       net: 0,
       cpu: 0,
 
-      currency: 'UOS',
+      currency: UOS,
     };
 
     const response = await rpc.get_account(accountName);
@@ -248,13 +250,7 @@ class BlockchainRegistry {
     return data;
   }
 
-  /**
-   *
-   * @param {string} accountName
-   * @param {string} symbol
-   * @return {Promise<number>}
-   */
-  static async getAccountBalance(accountName, symbol = 'UOS') {
+  public static async getAccountBalance(accountName: string, symbol: string = UOS): Promise<number> {
     const rpc = EosClient.getRpcClient();
 
     const balanceResponse = await rpc.get_currency_balance('eosio.token', accountName, symbol);
@@ -280,7 +276,7 @@ class BlockchainRegistry {
     }
   }
 
-  public static async getRawAccountData(accountName: string) {
+  public static async getRawAccountData(accountName: string): Promise<IAccountData> {
     const rpc = EosClient.getRpcClient();
 
     return rpc.get_account(accountName);

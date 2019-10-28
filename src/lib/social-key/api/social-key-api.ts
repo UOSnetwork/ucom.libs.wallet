@@ -1,3 +1,5 @@
+import { Action } from 'eosjs/dist/eosjs-serialize';
+
 import EosClient = require('../../common/client/eos-client');
 import EosCryptoService = require('../../common/services/eos-crypto-service');
 import BlockchainRegistry = require('../../blockchain-registry');
@@ -43,17 +45,34 @@ class SocialKeyApi {
     activePrivateKey: string,
     socialPublicKey:  string,
   ) {
+    const permission = PermissionsDictionary.active();
+
     // #task - simplified check - check only first action of transaction - social key binding
     await this.socialKeyNotExistOrError(accountName);
 
     const actions = [
       SocialKeyService.getBindSocialKeyAction(accountName, socialPublicKey),
-      SocialKeyService.getSocialPermissionForSocialActions(accountName),
-      SocialKeyService.getSocialPermissionForProfileUpdating(accountName),
-      SocialKeyService.getSocialPermissionForEmissionClaim(accountName),
+
+      SocialKeyService.getSocialPermissionForSocialActions(accountName, permission),
+      SocialKeyService.getSocialPermissionForProfileUpdating(accountName, permission),
+      SocialKeyService.getSocialPermissionForEmissionClaim(accountName, permission),
+      SocialKeyService.getSocialPermissionForProposeApproveAndExecute(accountName, permission),
     ];
 
     return EosClient.sendTransaction(activePrivateKey, actions);
+  }
+
+  public static getAssignSocialPermissionsActions(
+    accountName: string,
+    actorPermission: string = PermissionsDictionary.active(),
+  ): Action[] {
+    return [
+      SocialKeyService.getSocialPermissionForSocialActions(accountName, actorPermission),
+      SocialKeyService.getSocialPermissionForProfileUpdating(accountName, actorPermission),
+      SocialKeyService.getSocialPermissionForEmissionClaim(accountName, actorPermission),
+
+      ...SocialKeyService.getSocialPermissionForProposeApproveAndExecute(accountName, actorPermission),
+    ];
   }
 
   /**
@@ -70,7 +89,7 @@ class SocialKeyApi {
 
     const actions = [
       SocialKeyService.getBindSocialKeyAction(accountName, socialPublicKey),
-      SocialKeyService.getSocialPermissionForSocialActions(accountName),
+      SocialKeyService.getSocialPermissionForSocialActions(accountName, PermissionsDictionary.active()),
     ];
 
     return EosClient.sendTransaction(activePrivateKey, actions);
@@ -87,6 +106,34 @@ class SocialKeyApi {
       SocialKeyService.getSocialPermissionForProfileUpdating(accountName),
       SocialKeyService.getSocialPermissionForEmissionClaim(accountName),
     ];
+
+    let result;
+    try {
+      result = await EosClient.sendTransaction(activePrivateKey, actions);
+    } catch (error) {
+      if (error.json && error.json.error && error.json.error.name === 'action_validate_exception') {
+        // suppress this type of error = permissions already exist
+
+        return null;
+      }
+
+      throw error;
+    }
+
+    return result;
+  }
+
+  public static async addSocialPermissionsToProposeApproveAndExecute(
+    accountName:      string,
+    activePrivateKey: string,
+  ) {
+    // #task - simplified check - check only first action of transaction - social key binding
+    await this.socialKeyExistOrError(accountName);
+
+    const actions = SocialKeyService.getSocialPermissionForProposeApproveAndExecute(
+      accountName,
+      PermissionsDictionary.active(),
+    );
 
     let result;
     try {

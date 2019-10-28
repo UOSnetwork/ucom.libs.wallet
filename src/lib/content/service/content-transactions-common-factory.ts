@@ -1,3 +1,6 @@
+import { Action } from 'eosjs/dist/eosjs-serialize';
+import { IStringToAny } from '../../common/interfaces/common-interfaces';
+
 import SmartContractsActionsDictionary = require('../../dictionary/smart-contracts-actions-dictionary');
 import TransactionsBuilder = require('../../service/transactions-builder');
 import SmartContractsDictionary = require('../../dictionary/smart-contracts-dictionary');
@@ -10,23 +13,27 @@ class ContentTransactionsCommonFactory {
     profileJsonObject: any,
     permission: string,
   ) {
+    const action = this.getSetProfileAction(accountName, profileJsonObject, permission);
+
+    return EosClient.getSignedTransaction(privateKey, [action]);
+  }
+
+  public static getSetProfileAction(accountName: string, profile: IStringToAny, permission: string): Action {
     const actionName    = SmartContractsActionsDictionary.setProfile();
     const smartContract = SmartContractsDictionary.uosAccountInfo();
 
     const data = {
       acc:          accountName,
-      profile_json: JSON.stringify(profileJsonObject),
+      profile_json: JSON.stringify(profile),
     };
 
-    const actions = TransactionsBuilder.getSingleUserAction(
+    return TransactionsBuilder.getSingleUserAction(
       accountName,
       smartContract,
       actionName,
       data,
       permission,
     );
-
-    return EosClient.getSignedTransaction(privateKey, [actions]);
   }
 }
 

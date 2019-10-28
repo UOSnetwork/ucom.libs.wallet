@@ -1,3 +1,4 @@
+import { Action, Authorization } from 'eosjs/dist/eosjs-serialize';
 import { IStringToAny } from '../common/interfaces/common-interfaces';
 
 import PermissionsDictionary = require('../dictionary/permissions-dictionary');
@@ -8,7 +9,7 @@ class TransactionsBuilder {
   public static getSingleSocialUserAction(
     actorAccountName: string,
     data: IStringToAny,
-    permission: string,
+    permission: string = PermissionsDictionary.social(),
   ) {
     const smartContract = SmartContractsDictionary.uosActivity();
     const actionName    = SmartContractsActionsDictionary.socialAction();
@@ -28,7 +29,7 @@ class TransactionsBuilder {
     actionName: string,
     data: IStringToAny,
     permission = PermissionsDictionary.active(),
-  ) {
+  ): Action {
     const authorization = this.getSingleUserAuthorization(actorAccountName, permission);
 
     return {
@@ -39,11 +40,10 @@ class TransactionsBuilder {
     };
   }
 
-  public static getSingleUserAuthorization(actorAccountName: string, permission: string) {
-    return [{
-      permission,
-      actor: actorAccountName,
-    }];
+  public static getSingleUserAuthorization(
+    actorAccountName: string, permission: string,
+  ): Authorization[] {
+    return [{ permission, actor: actorAccountName }];
   }
 }
 

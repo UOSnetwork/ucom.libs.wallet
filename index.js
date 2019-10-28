@@ -14,6 +14,9 @@ module.exports = {
 
     ContentInteractionsApi: require('./build/lib/social-transactions/api/content-interactions-api'),
   },
+  ContentIdGenerator: require('./build/lib/content/service/content-id-generator'),
+
+  ContentPublicationsActionsApi: require('./build/lib/content/api/content-publications-actions-api'),
 
   SocialKeyApi: require('./build/lib/social-key/api/social-key-api'),
   RegistrationApi: require('./build/lib/registration/api/registration-api'),
@@ -23,6 +26,7 @@ module.exports = {
   EosClient: require('./build/lib/common/client/eos-client'),
   ConfigService: require('./build/config/config-service'),
   PrepareTransactionApi: require('./build/lib/common/api/prepare-transaction-api'),
+  MultiSignatureApi: require('./build/lib/multi-signature/api/multi-signature-api'),
 
   BlockchainNodes: require('./build/lib/governance/api/blockchain-nodes-api'),
   Dictionary: {

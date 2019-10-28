@@ -1,6 +1,7 @@
 "use strict";
 /* eslint-disable no-console */
 const errors_1 = require("./errors/errors");
+const currency_dictionary_1 = require("./dictionary/currency-dictionary");
 const EosClient = require("./common/client/eos-client");
 const ConverterHelper = require("./helpers/converter-helper");
 const AccountInfo = require("./account-info");
@@ -184,7 +185,7 @@ class BlockchainRegistry {
         const data = {
             net: 0,
             cpu: 0,
-            currency: 'UOS',
+            currency: currency_dictionary_1.UOS,
         };
         const response = await rpc.get_account(accountName);
         if (response.self_delegated_bandwidth) {
@@ -195,13 +196,7 @@ class BlockchainRegistry {
         }
         return data;
     }
-    /**
-     *
-     * @param {string} accountName
-     * @param {string} symbol
-     * @return {Promise<number>}
-     */
-    static async getAccountBalance(accountName, symbol = 'UOS') {
+    static async getAccountBalance(accountName, symbol = currency_dictionary_1.UOS) {
         const rpc = EosClient.getRpcClient();
         const balanceResponse = await rpc.get_currency_balance('eosio.token', accountName, symbol);
         if (balanceResponse.length === 0) {

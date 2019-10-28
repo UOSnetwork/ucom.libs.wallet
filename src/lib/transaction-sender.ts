@@ -1,4 +1,6 @@
+import { Action } from 'eosjs/dist/eosjs-serialize';
 import { IStringToAny } from './common/interfaces/common-interfaces';
+import { UOS } from './dictionary/currency-dictionary';
 
 import EosClient = require('./common/client/eos-client');
 import BlockchainRegistry = require('./blockchain-registry');
@@ -25,8 +27,9 @@ class TransactionSender {
     accountName: string,
     privateKey: string,
     bytesAmount: number,
+    receiver: string,
   ): Promise<IStringToAny> {
-    const action = this.getBuyRamAction(accountName, bytesAmount, accountName);
+    const action = this.getBuyRamAction(accountName, bytesAmount, receiver);
 
     return EosClient.sendSingleActionTransaction(privateKey, action);
   }
@@ -185,7 +188,7 @@ class TransactionSender {
    * @param {string} symbol
    * @return {Promise<Object>}
    */
-  static async sendTokens(accountNameFrom, privateKey, accountNameTo, amount, memo = '', symbol = ActionResourcesDictionary.UOS()) {
+  static async sendTokens(accountNameFrom, privateKey, accountNameTo, amount, memo = '', symbol = UOS) {
     const stringAmount  = this.getUosAmountAsString(amount, symbol);
     const action        = this.getSendTokensAction(accountNameFrom, accountNameTo, stringAmount, memo);
 
@@ -215,15 +218,9 @@ class TransactionSender {
     );
   }
 
-  /**
-   *
-   * @param {string} accountNameFrom
-   * @param {number} amount
-   * @param {string} accountNameTo
-   * @return {Object}
-   * @private
-   */
-  static getBuyRamAction(accountNameFrom, amount, accountNameTo) {
+  private static getBuyRamAction(
+    accountNameFrom: string, amount: number, accountNameTo: string,
+  ): Action {
     const smartContract = SmartContractsDictionary.eosIo();
     const actionName    = SmartContractsActionsDictionary.buyRamBytes();
 
@@ -349,7 +346,7 @@ class TransactionSender {
    * @return {string}
    * @private
    */
-  static getUosAmountAsString(amount, symbol = ActionResourcesDictionary.UOS()): string {
+  static getUosAmountAsString(amount, symbol = UOS): string {
     return `${Math.floor(amount)}.0000 ${symbol}`;
   }
 

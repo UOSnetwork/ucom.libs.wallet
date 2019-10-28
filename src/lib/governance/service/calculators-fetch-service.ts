@@ -1,4 +1,5 @@
 import SmartContractsDictionary from '../../dictionary/smart-contracts-dictionary';
+import { UOS } from '../../dictionary/currency-dictionary';
 
 import EosClient = require('../../common/client/eos-client');
 import BlockchainNodesDictionary = require('../dictionary/blockchain-nodes-dictionary');
@@ -66,7 +67,7 @@ class CalculatorsFetchService {
 
         scaled_importance_amount: 0,
 
-        currency:     'UOS',
+        currency:     UOS,
         bp_status:    BlockchainNodesDictionary.getBackupOrInactive(node),
       };
     }
@@ -102,7 +103,7 @@ class CalculatorsFetchService {
             title:        producer,
             votes_count:  0,
             votes_amount: 0,
-            currency:     'UOS',
+            currency:     UOS,
 
             scaled_importance_amount: 0,
 

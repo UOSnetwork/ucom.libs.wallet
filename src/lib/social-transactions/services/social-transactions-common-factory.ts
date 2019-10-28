@@ -1,8 +1,11 @@
+import { Action } from 'eosjs/dist/eosjs-serialize';
+
 import SmartContractsActionsDictionary = require('../../dictionary/smart-contracts-actions-dictionary');
 import TransactionsBuilder = require('../../service/transactions-builder');
 import SmartContractsDictionary = require('../../dictionary/smart-contracts-dictionary');
 import EosClient = require('../../common/client/eos-client');
 import PermissionsDictionary = require('../../dictionary/permissions-dictionary');
+import moment = require('moment');
 
 class SocialTransactionsCommonFactory {
   public static async getSignedTransaction(
@@ -18,6 +21,17 @@ class SocialTransactionsCommonFactory {
 
     const actionData = this.getActionData(accountName, interactionName, metaData, content);
     return this.getSignedTransactionWithOneAction(accountName, privateKey, permission, smartContract, actionName, actionData);
+  }
+
+  public static getNonceAction(accountName: string, permission: string): Action {
+    const smartContract = SmartContractsDictionary.uosActivity();
+    const actionName    = SmartContractsActionsDictionary.socialAction();
+
+    const nonceData = this.getActionData(accountName, 'nonce', {
+      data: moment().utc().format(),
+    }, '');
+
+    return TransactionsBuilder.getSingleUserAction(accountName, smartContract, actionName, nonceData, permission);
   }
 
   public static async getSignedResendTransaction(

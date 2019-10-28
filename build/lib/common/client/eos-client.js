@@ -115,6 +115,8 @@ class EosClient {
             }, params);
         }
         catch (error) {
+            // eslint-disable-next-line no-console
+            console.dir(error.json.error);
             if (error instanceof RpcError && error.json.code === 401) {
                 throw new errors_1.BadRequestError('Private key is not valid');
             }
@@ -123,6 +125,15 @@ class EosClient {
             }
             throw error;
         }
+    }
+    static async serializeActionsByApi(actions) {
+        const api = EosClient.getApiClientWithoutSignatures();
+        return api.serializeActions(actions);
+    }
+    static async deserializeActionsByApi(privateKey, transactionParts) {
+        // #opt - private key is not required here
+        const api = EosClient.getApiClient(privateKey);
+        return api.deserializeTransaction(transactionParts.serializedTransaction);
     }
     static getApiClient(privateKey) {
         const rpc = this.getRpcClient();
@@ -135,6 +146,17 @@ class EosClient {
             });
         }
         return new Api({ rpc, signatureProvider });
+    }
+    static getApiClientWithoutSignatures() {
+        const rpc = this.getRpcClient();
+        if (ConfigService.isNode()) {
+            // eslint-disable-next-line global-require
+            const { TextEncoder, TextDecoder } = require('util');
+            return new Api({
+                rpc, textDecoder: new TextDecoder(), textEncoder: new TextEncoder(),
+            });
+        }
+        return new Api({ rpc });
     }
     /**
      *

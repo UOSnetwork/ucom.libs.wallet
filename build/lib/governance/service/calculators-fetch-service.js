@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 const smart_contracts_dictionary_1 = __importDefault(require("../../dictionary/smart-contracts-dictionary"));
+const currency_dictionary_1 = require("../../dictionary/currency-dictionary");
 const EosClient = require("../../common/client/eos-client");
 const BlockchainNodesDictionary = require("../dictionary/blockchain-nodes-dictionary");
 const _ = require('lodash');
@@ -47,7 +48,7 @@ class CalculatorsFetchService {
                 votes_count: 0,
                 votes_amount: 0,
                 scaled_importance_amount: 0,
-                currency: 'UOS',
+                currency: currency_dictionary_1.UOS,
                 bp_status: BlockchainNodesDictionary.getBackupOrInactive(node),
             };
         }
@@ -73,7 +74,7 @@ class CalculatorsFetchService {
                         title: producer,
                         votes_count: 0,
                         votes_amount: 0,
-                        currency: 'UOS',
+                        currency: currency_dictionary_1.UOS,
                         scaled_importance_amount: 0,
                         bp_status: activeProducers[producer] ?
                             BlockchainNodesDictionary.statusActive()

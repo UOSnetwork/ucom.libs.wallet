@@ -1,3 +1,5 @@
+import { JEST_TIMEOUT_LONGER } from '../../helpers/jest/jest-dictionary';
+
 import Helper = require('../../helpers/helper');
 import SocialKeyApi = require('../../../src/lib/social-key/api/social-key-api');
 import SocialApi = require('../../../src/lib/social-transactions/api/social-api');
@@ -34,6 +36,12 @@ it('Suppress an error about permission already set', async () => {
 
   expect(result).toBeNull();
 }, JEST_TIMEOUT * 3);
+
+it('Suppress an error about permission already set for propose, approve and execute', async () => {
+  const result = await SocialKeyApi.addSocialPermissionsToProposeApproveAndExecute('gx1bf5dy42de', '5JnDV6EEV39tZ3zaYNfG3dYXL4JsrVkXNu2qdWmmYyCwMGgjz2s');
+
+  expect(result).toBeNull();
+}, JEST_TIMEOUT_LONGER);
 
 it('Get current account permissions state and try to send transaction', async () => {
   const current = await SocialKeyApi.getAccountCurrentSocialKey(accountName);
@@ -106,7 +114,7 @@ it('Bind emission and profile updating rules', async () => {
   );
 
   await checkTrustAndProfileUpdating(user);
-}, JEST_TIMEOUT * 3);
+}, JEST_TIMEOUT_LONGER);
 
 it('Bind a social key', async () => {
   const user = RegistrationApi.generateRandomDataForRegistration();
