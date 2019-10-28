@@ -1,11 +1,10 @@
 "use strict";
 const errors_1 = require("../../errors/errors");
+const transaction_dictionary_1 = require("../../dictionary/transaction-dictionary");
 const ConverterHelper = require("../../helpers/converter-helper");
 const ConfigService = require("../../../config/config-service");
 const { Api, JsonRpc, RpcError } = require('eosjs');
 const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig');
-const BLOCKS_BEHIND = 3;
-const EXPIRATION_IN_SECONDS = 30;
 class EosClient {
     /**
      * @deprecated
@@ -108,8 +107,8 @@ class EosClient {
             const api = this.getApiClient(actorPrivateKey);
             const params = {
                 broadcast,
-                blocksBehind: BLOCKS_BEHIND,
-                expireSeconds: EXPIRATION_IN_SECONDS,
+                blocksBehind: transaction_dictionary_1.BLOCKS_BEHIND,
+                expireSeconds: transaction_dictionary_1.EXPIRATION_IN_SECONDS,
             };
             return await api.transact({
                 actions,

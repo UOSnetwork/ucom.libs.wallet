@@ -58,6 +58,9 @@ module.exports = {
         "unicorn/prevent-abbreviations": "off",
         "no-use-before-define": "off",
         "node/no-missing-import": "off",
+        "jest/no-export": "off",
+        "jest/expect-expect": "off",
+        "jest/no-standalone-expect": "off",
       }
     }
   ]
