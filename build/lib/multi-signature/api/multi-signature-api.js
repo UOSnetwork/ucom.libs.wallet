@@ -120,6 +120,20 @@ class MultiSignatureApi {
         const action = TransactionSender.getSendTokensAction(accountFrom, accountNameTo, stringAmount, '');
         return this.pushProposal(whoPropose, proposePrivateKey, proposePermission, [proposeRequestedFrom], [action], PermissionsDictionary.active());
     }
+    static async proposeApproveAndExecuteByProposer(account, privateKey, permission, actionsOfMultiSignature) {
+        if (!Array.isArray(actionsOfMultiSignature)) {
+            throw new TypeError('actionsOfMultiSignature parameter type must be an array');
+        }
+        const { proposalName, transaction: proposeResponse } = await this.pushProposal(account, privateKey, permission, [account], actionsOfMultiSignature, permission);
+        const approveResponse = await MultiSignatureWorkflow.approveProposal(account, privateKey, permission, account, proposalName, permission);
+        const executeResponse = await MultiSignatureWorkflow.executeProposal(account, privateKey, permission, account, proposalName, account);
+        return {
+            proposalName,
+            proposeResponse,
+            approveResponse,
+            executeResponse,
+        };
+    }
     static async pushProposal(whoPropose, proposePrivateKey, proposePermission, accountsToApprove, givenActions, actionPermission) {
         const proposalName = AccountNameService.createRandomAccountName();
         const trxActions = _.cloneDeep(givenActions);
@@ -158,17 +172,6 @@ class MultiSignatureApi {
         return {
             transaction,
             proposalName,
-        };
-    }
-    static async proposeApproveAndExecuteByProposer(account, privateKey, permission, actions) {
-        const { proposalName, transaction: proposeResponse } = await this.pushProposal(account, privateKey, permission, [account], actions, permission);
-        const approveResponse = await MultiSignatureWorkflow.approveProposal(account, privateKey, permission, account, proposalName, permission);
-        const executeResponse = await MultiSignatureWorkflow.executeProposal(account, privateKey, permission, account, proposalName, account);
-        return {
-            proposalName,
-            proposeResponse,
-            approveResponse,
-            executeResponse,
         };
     }
     static getRequestedFromAccountNames(accountNames, permission) {

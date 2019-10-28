@@ -15,11 +15,6 @@ class ContentHelper {
         }
         return data;
     }
-    static getUpdatedAtInsideObject() {
-        return {
-            updated_at: moment().utc().format(),
-        };
-    }
     static getMetadata(accountNameFrom, contentId, extraMetaData = {}) {
         return Object.assign({ account_from: accountNameFrom, content_id: contentId }, extraMetaData);
     }

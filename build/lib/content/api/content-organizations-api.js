@@ -12,7 +12,7 @@ class ContentOrganizationsApi {
     }
     static async signUpdateOrganization(accountNameFrom, privateKey, givenContent, organizationBlockchainId, permission = PermissionsDictionary.active()) {
         const interactionName = InteractionsDictionary.updateOrganization();
-        const content = Object.assign(Object.assign({}, givenContent), ContentHelper.getUpdatedAtInsideObject());
+        const content = Object.assign(Object.assign({}, givenContent), ContentHelper.getDateTimeFields(false, true));
         const { signed_transaction } = await this.signSendOrganizationToBlockchain(accountNameFrom, privateKey, permission, content, interactionName, organizationBlockchainId);
         return signed_transaction;
     }

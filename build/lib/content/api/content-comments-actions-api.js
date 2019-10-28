@@ -2,22 +2,32 @@
 const ContentHelper = require("../service/content-helper");
 const InteractionsDictionary = require("../../dictionary/interactions-dictionary");
 const ContentIdGenerator = require("../service/content-id-generator");
-const SocialTransactionsCommonFactory = require("../../social-transactions/services/social-transactions-common-factory");
-const TransactionsBuilder = require("../../service/transactions-builder");
+const CommonContentService = require("../service/common-content-service");
 class ContentCommentsActionsApi {
     static getCreateCommentFromOrganizationAction(accountName, organizationBlockchainId, parentBlockchainId, givenContent, isReply) {
-        const parentEntityName = ContentHelper.getCommentParentEntityName(isReply);
         const interactionName = InteractionsDictionary.createCommentFromOrganization();
-        const processedContent = Object.assign(Object.assign({}, givenContent), ContentHelper.getDateTimeFields(true, true));
-        const contentId = ContentIdGenerator.getForComment();
-        const content = ContentHelper.getContentWithExtraFields(processedContent, contentId, parentEntityName, parentBlockchainId, accountName);
-        const extraMetaData = {
-            organization_id_from: organizationBlockchainId,
-            parent_content_id: parentBlockchainId,
+        const commentBlockchainId = ContentIdGenerator.getForComment();
+        const isNew = true;
+        const { entityNameFor, metaData } = this.getEntityNameForAndMetaData(parentBlockchainId, isReply);
+        const action = CommonContentService.getSingleSocialContentActionFromOrganization(accountName, organizationBlockchainId, givenContent, commentBlockchainId, isNew, entityNameFor, interactionName, parentBlockchainId, metaData);
+        return {
+            action,
+            blockchain_id: commentBlockchainId,
         };
-        const metaData = ContentHelper.getMetadata(accountName, contentId, extraMetaData);
-        const actionData = SocialTransactionsCommonFactory.getActionData(accountName, interactionName, metaData, content);
-        return TransactionsBuilder.getSingleSocialUserAction(accountName, actionData);
+    }
+    static getUpdateCommentFromOrganizationAction(accountName, organizationBlockchainId, parentBlockchainId, givenContent, isReply, commentBlockchainId) {
+        const interactionName = InteractionsDictionary.updateCommentFromOrganization();
+        const isNew = false;
+        const { entityNameFor, metaData } = this.getEntityNameForAndMetaData(parentBlockchainId, isReply);
+        return CommonContentService.getSingleSocialContentActionFromOrganization(accountName, organizationBlockchainId, givenContent, commentBlockchainId, isNew, entityNameFor, interactionName, parentBlockchainId, metaData);
+    }
+    static getEntityNameForAndMetaData(parentBlockchainId, isReply) {
+        return {
+            entityNameFor: ContentHelper.getCommentParentEntityName(isReply),
+            metaData: {
+                parent_content_id: parentBlockchainId,
+            },
+        };
     }
 }
 module.exports = ContentCommentsActionsApi;
