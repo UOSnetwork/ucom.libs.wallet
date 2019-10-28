@@ -15,7 +15,7 @@ import CommonChecker = require('../../helpers/common/common-checker');
 
 const JEST_TIMEOUT = 15000;
 
-Helper.initForProductionEnv();
+Helper.initForEnvByProcessVariable();
 
 const accountNameFrom = Helper.getTesterAccountName();
 const privateKey      = Helper.getTesterAccountSocialPrivateKey();
