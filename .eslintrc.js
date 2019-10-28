@@ -61,6 +61,7 @@ module.exports = {
         "jest/no-export": "off",
         "jest/expect-expect": "off",
         "jest/no-standalone-expect": "off",
+        "node/no-missing-require": "off",
       }
     }
   ]
