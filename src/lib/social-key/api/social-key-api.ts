@@ -56,7 +56,7 @@ class SocialKeyApi {
       SocialKeyService.getSocialPermissionForSocialActions(accountName, permission),
       SocialKeyService.getSocialPermissionForProfileUpdating(accountName, permission),
       SocialKeyService.getSocialPermissionForEmissionClaim(accountName, permission),
-      SocialKeyService.getSocialPermissionForProposeApproveAndExecute(accountName, permission),
+      ...SocialKeyService.getSocialPermissionForProposeApproveAndExecute(accountName, permission),
     ];
 
     return EosClient.sendTransaction(activePrivateKey, actions);

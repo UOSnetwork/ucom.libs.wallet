@@ -89,7 +89,7 @@ describe('Create comment', () => {
     const response = await MultiSignatureApi.proposeApproveAndExecuteByProposer(accountNameFrom, privateKey, permission, [action]);
 
     CommonChecker.expectNotEmpty(response);
-  }, JEST_TIMEOUT);
+  }, JEST_TIMEOUT * 5);
 });
 
 describe('Update comment', () => {
