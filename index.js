@@ -17,6 +17,7 @@ module.exports = {
   ContentIdGenerator: require('./build/lib/content/service/content-id-generator'),
 
   ContentPublicationsActionsApi: require('./build/lib/content/api/content-publications-actions-api'),
+  ContentCommentsActionsApi: require('./build/lib/content/api/content-comments-actions-api'),
 
   SocialKeyApi: require('./build/lib/social-key/api/social-key-api'),
   RegistrationApi: require('./build/lib/registration/api/registration-api'),
