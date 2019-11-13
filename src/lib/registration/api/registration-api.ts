@@ -55,6 +55,7 @@ class RegistrationApi {
     newAccountName: string,
     ownerPubKey: string,
     activePubKey: string,
+    isMultiSignature: boolean = false,
   ) {
     const authorization = TransactionsBuilder.getSingleUserAuthorization(
       accountCreatorName,
@@ -95,7 +96,7 @@ class RegistrationApi {
       data: {
         payer:    accountCreatorName,
         receiver: newAccountName,
-        bytes:    ActionResourcesDictionary.basicResourceRam(),
+        bytes:    isMultiSignature ? ActionResourcesDictionary.basicResourceRamForMultiSignature() : ActionResourcesDictionary.basicResourceRam(),
       },
     },
     {

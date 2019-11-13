@@ -26,7 +26,7 @@ const ContentApi = require("../../content/api/content-api");
 class MultiSignatureApi {
     static async createMultiSignatureAccount(authorAccountName, authorActivePrivateKey, multiSignatureAccountName, multiSignatureOwnerPrivateKey, multiSignatureOwnerPublicKey, multiSignatureActivePublicKey, profile = {}, addSocialMembers = []) {
         await multi_signature_validator_1.MultiSignatureValidator.validateCreation(authorAccountName, multiSignatureAccountName);
-        await RegistrationApi.createNewAccountInBlockchain(authorAccountName, authorActivePrivateKey, multiSignatureAccountName, multiSignatureOwnerPublicKey, multiSignatureActivePublicKey);
+        await RegistrationApi.createNewAccountInBlockchain(authorAccountName, authorActivePrivateKey, multiSignatureAccountName, multiSignatureOwnerPublicKey, multiSignatureActivePublicKey, true);
         const authorPermissionActions = multi_signature_actions_1.MultiSignatureActions.getAuthorPermissionActions(multiSignatureAccountName, authorAccountName);
         const socialAccounts = [
             authorAccountName,

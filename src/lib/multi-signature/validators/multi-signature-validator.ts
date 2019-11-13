@@ -4,7 +4,7 @@ import BlockchainRegistry = require('../../blockchain-registry');
 
 export class MultiSignatureValidator {
   public static async validateCreation(authorAccountName: string, multiSignatureAccountName: string): Promise<void> {
-    const ram = ActionResourcesDictionary.basicResourceRam();
+    const ram = ActionResourcesDictionary.basicResourceRamForMultiSignature();
     const net = ActionResourcesDictionary.basicResourceNetTokensNumber();
     const cpu = ActionResourcesDictionary.basicResourceCpuTokensNumber();
 

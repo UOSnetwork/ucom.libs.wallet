@@ -5,7 +5,7 @@ const WalletApi = require("../../wallet/api/wallet-api");
 const BlockchainRegistry = require("../../blockchain-registry");
 class MultiSignatureValidator {
     static async validateCreation(authorAccountName, multiSignatureAccountName) {
-        const ram = ActionResourcesDictionary.basicResourceRam();
+        const ram = ActionResourcesDictionary.basicResourceRamForMultiSignature();
         const net = ActionResourcesDictionary.basicResourceNetTokensNumber();
         const cpu = ActionResourcesDictionary.basicResourceCpuTokensNumber();
         const existing = await WalletApi.getRawAccountData(multiSignatureAccountName);

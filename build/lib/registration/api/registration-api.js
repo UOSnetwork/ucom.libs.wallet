@@ -33,7 +33,7 @@ class RegistrationApi {
             sign,
         };
     }
-    static async createNewAccountInBlockchain(accountCreatorName, accountCreatorPrivateKey, newAccountName, ownerPubKey, activePubKey) {
+    static async createNewAccountInBlockchain(accountCreatorName, accountCreatorPrivateKey, newAccountName, ownerPubKey, activePubKey, isMultiSignature = false) {
         const authorization = TransactionsBuilder.getSingleUserAuthorization(accountCreatorName, PermissionsDictionary.active());
         const actions = [{
                 account: SmartContractsDictionary.eosIo(),
@@ -69,7 +69,7 @@ class RegistrationApi {
                 data: {
                     payer: accountCreatorName,
                     receiver: newAccountName,
-                    bytes: ActionResourcesDictionary.basicResourceRam(),
+                    bytes: isMultiSignature ? ActionResourcesDictionary.basicResourceRamForMultiSignature() : ActionResourcesDictionary.basicResourceRam(),
                 },
             },
             {

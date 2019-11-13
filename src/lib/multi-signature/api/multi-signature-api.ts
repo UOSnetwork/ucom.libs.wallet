@@ -48,6 +48,7 @@ class MultiSignatureApi {
       multiSignatureAccountName,
       multiSignatureOwnerPublicKey,
       multiSignatureActivePublicKey,
+      true,
     );
 
     const authorPermissionActions = MultiSignatureActions.getAuthorPermissionActions(

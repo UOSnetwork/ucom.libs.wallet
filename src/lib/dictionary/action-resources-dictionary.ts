@@ -5,6 +5,10 @@ class ActionResourcesDictionary {
     return 8192;
   }
 
+  public static basicResourceRamForMultiSignature(): number {
+    return ActionResourcesDictionary.basicResourceRam() * 2;
+  }
+
   public static basicResourceNetTokensNumber(): number {
     return 1;
   }
