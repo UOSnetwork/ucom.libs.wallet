@@ -19,7 +19,7 @@ class UosAccountsPropertiesApi {
 
   public static async getAllAccountsTableRows(indexBy: string | null = null, flatten = true): Promise<any> {
     let lowerBound = 0;
-    const limit = 500;
+    const limit = 1000;
 
     let result: any = [];
     do {
@@ -32,8 +32,8 @@ class UosAccountsPropertiesApi {
 
       lowerBound += limit;
 
-      if (lowerBound >= 100000) {
-        throw new Error('Overflow trigger');
+      if (lowerBound >= 500000) {
+        throw new Error('Increase limit for getAllAccountsTableRows method');
       }
 
       // eslint-disable-next-line no-constant-condition
