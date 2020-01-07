@@ -12,7 +12,7 @@ class UosAccountsPropertiesApi {
     }
     static async getAllAccountsTableRows(indexBy = null, flatten = true) {
         let lowerBound = 0;
-        const limit = 500;
+        const limit = 1000;
         let result = [];
         do {
             const response = await this.getAccountsTableRows(lowerBound, limit);
@@ -21,8 +21,8 @@ class UosAccountsPropertiesApi {
             }
             result = Array.prototype.concat(result, response.accounts);
             lowerBound += limit;
-            if (lowerBound >= 100000) {
-                throw new Error('Overflow trigger');
+            if (lowerBound >= 500000) {
+                throw new Error('Increase limit for getAllAccountsTableRows method');
             }
             // eslint-disable-next-line no-constant-condition
         } while (true);
