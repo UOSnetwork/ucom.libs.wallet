@@ -26,6 +26,14 @@ class TransactionSender {
         const action = this.getClaimEmissionAction(accountName, permission);
         return EosClient.sendTransaction(privateKey, [action]);
     }
+    static async withdrawTimeLocked(accountName, privateKey, permission) {
+        const action = this.getWithdrawTimeLockedAction(accountName, permission);
+        return EosClient.sendTransaction(privateKey, [action]);
+    }
+    static async withdrawActivityLocked(accountName, privateKey, permission) {
+        const action = this.getWithdrawActivityLockedAction(accountName, permission);
+        return EosClient.sendTransaction(privateKey, [action]);
+    }
     /**
      * @param {string} accountName
      * @param {string} privateKey
@@ -240,6 +248,22 @@ class TransactionSender {
         const actionName = SmartContractsActionsDictionary.withdrawal();
         const data = {
             owner: accountNameFrom,
+        };
+        return TransactionsBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data, permission);
+    }
+    static getWithdrawTimeLockedAction(accountNameFrom, permission) {
+        const smartContract = SmartContractsDictionary.timeLocked();
+        const actionName = SmartContractsActionsDictionary.withdraw();
+        const data = {
+            acc_name: accountNameFrom,
+        };
+        return TransactionsBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data, permission);
+    }
+    static getWithdrawActivityLockedAction(accountNameFrom, permission) {
+        const smartContract = SmartContractsDictionary.activityLocked();
+        const actionName = SmartContractsActionsDictionary.withdraw();
+        const data = {
+            acc_name: accountNameFrom,
         };
         return TransactionsBuilder.getSingleUserAction(accountNameFrom, smartContract, actionName, data, permission);
     }

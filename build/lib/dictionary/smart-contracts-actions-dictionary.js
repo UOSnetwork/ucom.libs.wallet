@@ -27,6 +27,9 @@ class SmartContractsActionsDictionary {
     static voteProducer() {
         return 'voteproducer';
     }
+    static withdraw() {
+        return 'withdraw';
+    }
     static withdrawal() {
         return 'withdrawal';
     }
