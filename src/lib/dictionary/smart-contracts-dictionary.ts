@@ -46,6 +46,14 @@ class SmartContractsDictionary {
   public static tstActivity(): string {
     return 'tst.activity';
   }
+
+  public static timeLocked(): string {
+    return 'uostimelock1';
+  }
+
+  public static activityLocked(): string {
+    return 'uosactvlock1';
+  }
 }
 
 export = SmartContractsDictionary;
