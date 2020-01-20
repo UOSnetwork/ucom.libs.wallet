@@ -9,11 +9,19 @@ import AccountInfo = require('./account-info');
 
 const SMART_CONTRACT__EMISSION  = 'uos.calcs';
 const TABLE_NAME__EMISSION      = 'account';
+const TABLE_NAME__EMISSION_TOTAL = 'totals';
 const TABLE_NAME__RAM_MARKET    = 'rammarket';
 
 const SMART_CONTRACT__EOSIO = 'eosio';
 
 const TABLE_ROWS_LIMIT_ALL = 999999;
+
+const SMART_CONTRACT__TIME_LOCK  = 'uostimelock1';
+const SMART_CONTRACT__ACTIVITY_LOCK  = 'uosactvlock1';
+const TABLE_NAME__BALANCE      = 'balance';
+const UOS_TIMELOCK_START = '2020-01-01';
+const UOS_TIMELOCK_END = '2021-01-01';
+const UOS_ACTIVITY_LOCK_MULTIPLIER = 2;
 
 const _ = require('lodash');
 
@@ -198,6 +206,31 @@ class BlockchainRegistry {
     return connectorBalance / (smartTokenOutstandingSupply * connectorWeight);
   }
 
+  /**
+   *
+   * @param {string} accountName
+   * @return {Promise<number>}
+   */
+  static async getTotalEmissionAmount(accountName) {
+    const rpc = EosClient.getRpcClient();
+
+    const response = await rpc.get_table_rows({
+      code:   SMART_CONTRACT__EMISSION,
+      scope:  SMART_CONTRACT__EMISSION,
+      table:  TABLE_NAME__EMISSION_TOTAL,
+      lower_bound: accountName,
+      limit: 1,
+      json:   true,
+    });
+
+    if (response.rows.length === 0) {
+      return 0;
+    }
+
+    const em = response.rows[0].total_emission;
+
+    return Math.trunc(em * 100) / 100;
+  }
 
   /**
    *
@@ -221,6 +254,60 @@ class BlockchainRegistry {
     const em = response.rows[0].account_sum;
 
     return Math.trunc(em * 100) / 100;
+  }
+
+  /**
+   *
+   * @param {string} accountName
+   * @param {string} contractName
+   * @return {Promise<object>}
+   */
+  static async getVestedLockedBalance(accountName, contractName) {
+    const rpc = EosClient.getRpcClient();
+
+    const response = await rpc.get_table_rows({
+      code:   contractName,
+      scope:  contractName,
+      table:  TABLE_NAME__BALANCE,
+      lower_bound: accountName,
+      upper_bound: accountName,
+      limit: 1,
+      json:   true,
+    });
+
+    let r = {
+      total: 0,
+      withdrawal: 0,
+    };
+
+    if (response.rows.length === 0) {
+      return r;
+    }
+
+    r = {
+      total: Math.trunc(response.rows[0].deposit * 100) / 100,
+      withdrawal: Math.trunc(response.rows[0].withdrawal * 100) / 100,
+    };
+
+    return r;
+  }
+
+  /**
+   *
+   * @param {string} accountName
+   * @return {Promise<object>}
+   */
+  static async getTimeLockedBalance(accountName) {
+    return this.getVestedLockedBalance(accountName, SMART_CONTRACT__TIME_LOCK);
+  }
+
+  /**
+   *
+   * @param {string} accountName
+   * @return {Promise<object>}
+   */
+  static async getActivityLockedBalance(accountName) {
+    return this.getVestedLockedBalance(accountName, SMART_CONTRACT__ACTIVITY_LOCK);
   }
 
   /**
@@ -276,6 +363,104 @@ class BlockchainRegistry {
     }
   }
 
+  /**
+   *
+   * @param {string} accountName
+   * @return {Promise<number>}
+   */
+  static async getTotalEmission(accountName) {
+    try {
+      return await BlockchainRegistry.getTotalEmissionAmount(accountName);
+    } catch (error) {
+      console.error('Get unclaimed emission amount error. Emission will be set to 0 for GET response. Error is:', error);
+
+      return 0;
+    }
+  }
+
+  /**
+   *
+   * @param {string} accountName
+   * @return {Promise<object>}
+   */
+  static async getTimeUnlocked(accountName) {
+    try {
+      const timeBalance = await BlockchainRegistry.getTimeLockedBalance(accountName);
+      const totalAmount = {
+        total: 0,
+        unlocked: 0,
+      };
+      if (timeBalance.total > 0) {
+        const start = new Date(UOS_TIMELOCK_START).getTime();
+        const end = new Date(UOS_TIMELOCK_END).getTime();
+        const now = new Date().getTime();
+
+        let unlocked = timeBalance.total * ((now - start) / (end - start)) - timeBalance.withdrawal;
+
+        if (unlocked < 0) unlocked = 0;
+
+        totalAmount.total = Math.trunc(timeBalance.total * 100) / 100;
+        totalAmount.unlocked = Math.trunc(unlocked * 100) / 100;
+      }
+
+      return totalAmount;
+    } catch (error) {
+      console.error('Get unclaimed time locked amount error. Amount will be set to 0 for GET response. Error is:', error);
+
+      return {
+        total: 0,
+        unlocked: 0,
+      };
+    }
+  }
+
+  /**
+   *
+   * @param {string} accountName
+   * @return {Promise<object>}
+   */
+  static async getActivityUnlocked(accountName) {
+    try {
+      const activityBalance = await BlockchainRegistry.getActivityLockedBalance(accountName);
+      const totalAmount = {
+        total: 0,
+        unlocked: 0,
+      };
+
+      if (activityBalance.total > 0) {
+        const totalEmission = await BlockchainRegistry.getTotalEmission(accountName);
+
+        const start = new Date(UOS_TIMELOCK_START).getTime();
+        const end = new Date(UOS_TIMELOCK_END).getTime();
+        const now = new Date().getTime();
+
+        const amountByTime = activityBalance.total * ((now - start) / (end - start));
+
+        const totalEmissionUnlocked = totalEmission * UOS_ACTIVITY_LOCK_MULTIPLIER;
+
+        let unlocked = amountByTime;
+
+        if (totalEmissionUnlocked < unlocked) unlocked = totalEmissionUnlocked;
+
+        unlocked -= activityBalance.withdrawal;
+
+        if (unlocked < 0) unlocked = 0;
+
+        totalAmount.total = Math.trunc(activityBalance.total * 100) / 100;
+        totalAmount.unlocked = Math.trunc(unlocked * 100) / 100;
+      }
+
+      return totalAmount;
+    } catch (error) {
+      console.error('Get unclaimed activity locked amount error. Amount will be set to 0 for GET response. Error is:', error);
+
+      return {
+        total: 0,
+        unlocked: 0,
+      };
+    }
+  }
+
   public static async getRawAccountData(accountName: string): Promise<IAccountData> {
     const rpc = EosClient.getRpcClient();
 
@@ -297,6 +482,12 @@ class BlockchainRegistry {
 
     const emission = await this.getEmission(accountName);
     info.setEmission(emission);
+
+    const timelock = await this.getTimeUnlocked(accountName);
+    info.setTimeLock(timelock);
+
+    const activitylock = await this.getActivityUnlocked(accountName);
+    info.setActivityLock(activitylock);
 
     let response;
     try {
