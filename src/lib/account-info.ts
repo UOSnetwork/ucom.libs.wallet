@@ -89,8 +89,10 @@ class AccountInfo {
    * @param {object} value
    */
   setTimeLock(value) {
-    this.info.tokens.timelock.total = value.total;
-    this.info.tokens.timelock.unlocked = value.unlocked;
+    this.info.tokens.timelock = {
+      total: value.total,
+      unlocked: value.unlocked,
+    };
   }
 
   /**
@@ -98,8 +100,10 @@ class AccountInfo {
    * @param {object} value
    */
   setActivityLock(value) {
-    this.info.tokens.activitylock.total = value.total;
-    this.info.tokens.activitylock.unlocked = value.unlocked;
+    this.info.tokens.activitylock = {
+      total: value.total,
+      unlocked: value.unlocked,
+    };
   }
 
   /**
