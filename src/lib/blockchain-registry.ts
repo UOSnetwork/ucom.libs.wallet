@@ -22,6 +22,7 @@ const TABLE_NAME__BALANCE      = 'balance';
 const UOS_TIMELOCK_START = '2020-01-01';
 const UOS_TIMELOCK_END = '2021-01-01';
 const UOS_ACTIVITY_LOCK_MULTIPLIER = 2;
+const UOS_TOKEN_DECIMALS = 4;
 
 const _ = require('lodash');
 
@@ -219,6 +220,7 @@ class BlockchainRegistry {
       scope:  SMART_CONTRACT__EMISSION,
       table:  TABLE_NAME__EMISSION_TOTAL,
       lower_bound: accountName,
+      upper_bound: accountName,
       limit: 1,
       json:   true,
     });
@@ -227,9 +229,7 @@ class BlockchainRegistry {
       return 0;
     }
 
-    const em = response.rows[0].total_emission;
-
-    return Math.trunc(em * 100) / 100;
+    return parseFloat(response.rows[0].total_emission);
   }
 
   /**
@@ -285,8 +285,8 @@ class BlockchainRegistry {
     }
 
     r = {
-      total: Math.trunc(response.rows[0].deposit * 100) / 100,
-      withdrawal: Math.trunc(response.rows[0].withdrawal * 100) / 100,
+      total: response.rows[0].deposit,
+      withdrawal: response.rows[0].withdrawal,
     };
 
     return r;
@@ -395,12 +395,12 @@ class BlockchainRegistry {
         const end = new Date(UOS_TIMELOCK_END).getTime();
         const now = new Date().getTime();
 
-        let unlocked = timeBalance.total * ((now - start) / (end - start)) - timeBalance.withdrawal;
+        let unlocked = Math.ceil(timeBalance.total * ((now - start) / (end - start)) - timeBalance.withdrawal);
 
         if (unlocked < 0) unlocked = 0;
 
-        totalAmount.total = Math.trunc(timeBalance.total * 100) / 100;
-        totalAmount.unlocked = Math.trunc(unlocked * 100) / 100;
+        totalAmount.total = Math.trunc((timeBalance.total / 10 ** UOS_TOKEN_DECIMALS) * 100) / 100;
+        totalAmount.unlocked = Math.trunc((unlocked / 10 ** UOS_TOKEN_DECIMALS) * 100) / 100;
       }
 
       return totalAmount;
@@ -428,7 +428,8 @@ class BlockchainRegistry {
       };
 
       if (activityBalance.total > 0) {
-        const totalEmission = await BlockchainRegistry.getTotalEmission(accountName);
+        let totalEmission = await BlockchainRegistry.getTotalEmission(accountName);
+        totalEmission = Math.ceil(totalEmission * 10 ** UOS_TOKEN_DECIMALS);
 
         const start = new Date(UOS_TIMELOCK_START).getTime();
         const end = new Date(UOS_TIMELOCK_END).getTime();
@@ -446,8 +447,8 @@ class BlockchainRegistry {
 
         if (unlocked < 0) unlocked = 0;
 
-        totalAmount.total = Math.trunc(activityBalance.total * 100) / 100;
-        totalAmount.unlocked = Math.trunc(unlocked * 100) / 100;
+        totalAmount.total = Math.trunc((activityBalance.total / 10 ** UOS_TOKEN_DECIMALS) * 100) / 100;
+        totalAmount.unlocked = Math.trunc((unlocked / 10 ** UOS_TOKEN_DECIMALS) * 100) / 100;
       }
 
       return totalAmount;
