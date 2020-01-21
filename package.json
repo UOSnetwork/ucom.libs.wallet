@@ -1,6 +1,6 @@
 {
   "name": "ucom-libs-wallet",
-  "version": "2.42.0",
+  "version": "2.43.0",
   "description": "NPM package to implement UOS wallet",
   "main": "index.js",
   "scripts": {
@@ -36,30 +36,30 @@
     "moment": "^2.24.0",
     "node-fetch": "^2.6.0",
     "ucom.libs.common": "^1.26.0",
-    "uniqid": "^5.0.3"
+    "uniqid": "^5.2.0"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.20",
-    "@types/node": "^12.11.7",
-    "@typescript-eslint/eslint-plugin": "^2.6.0",
-    "@typescript-eslint/parser": "^2.6.0",
+    "@types/jest": "^24.0.25",
+    "@types/node": "^13.1.4",
+    "@typescript-eslint/eslint-plugin": "^2.15.0",
+    "@typescript-eslint/parser": "^2.15.0",
     "delay": "^4.3.0",
-    "eslint": "^6.6.0",
+    "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jest": "^23.0.2",
-    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-jest": "^23.3.0",
+    "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-optimize-regex": "^1.1.7",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-security": "^1.4.0",
-    "eslint-plugin-sonarjs": "^0.4.0",
+    "eslint-plugin-sonarjs": "^0.5.0",
     "eslint-plugin-typescript": "^0.14.0",
-    "eslint-plugin-unicorn": "^12.1.0",
+    "eslint-plugin-unicorn": "^15.0.1",
     "eslint-plugin-you-dont-need-lodash-underscore": "^6.8.0",
     "jest": "^24.9.0",
     "jest-expect-message": "^1.0.2",
-    "ts-jest": "^24.1.0",
+    "ts-jest": "^24.3.0",
     "tsutils": "^3.17.1",
-    "typescript": "^3.6.4"
+    "typescript": "^3.7.4"
   }
 }

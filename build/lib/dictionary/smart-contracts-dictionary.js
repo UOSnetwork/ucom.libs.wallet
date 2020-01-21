@@ -36,5 +36,11 @@ class SmartContractsDictionary {
     static tstActivity() {
         return 'tst.activity';
     }
+    static timeLocked() {
+        return 'uostimelock1';
+    }
+    static activityLocked() {
+        return 'uosactvlock1';
+    }
 }
 module.exports = SmartContractsDictionary;

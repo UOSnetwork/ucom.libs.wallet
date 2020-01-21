@@ -107,6 +107,14 @@ class WalletApi {
         await BlockchainRegistry.doesAccountExist(accountName);
         return TransactionSender.claimEmission(accountName, privateKey, permission);
     }
+    static async withdrawTimeLocked(accountName, privateKey, permission = PermissionsDictionary.active()) {
+        await BlockchainRegistry.doesAccountExist(accountName);
+        return TransactionSender.withdrawTimeLocked(accountName, privateKey, permission);
+    }
+    static async withdrawActivityLocked(accountName, privateKey, permission = PermissionsDictionary.active()) {
+        await BlockchainRegistry.doesAccountExist(accountName);
+        return TransactionSender.withdrawActivityLocked(accountName, privateKey, permission);
+    }
     /**
      *
      * @param {string} accountNameFrom

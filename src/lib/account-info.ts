@@ -86,6 +86,28 @@ class AccountInfo {
 
   /**
    *
+   * @param {object} value
+   */
+  setTimeLock(value) {
+    this.info.tokens.timelock = {
+      total: value.total,
+      unlocked: value.unlocked,
+    };
+  }
+
+  /**
+   *
+   * @param {object} value
+   */
+  setActivityLock(value) {
+    this.info.tokens.activitylock = {
+      total: value.total,
+      unlocked: value.unlocked,
+    };
+  }
+
+  /**
+   *
    * @param {number} totalBytes
    * @param {number} usedBytes
    */

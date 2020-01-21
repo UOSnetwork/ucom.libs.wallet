@@ -35,6 +35,10 @@ class SmartContractsActionsDictionary {
     return 'voteproducer';
   }
 
+  public static withdraw(): string {
+    return 'withdraw';
+  }
+
   public static withdrawal(): string {
     return 'withdrawal';
   }
