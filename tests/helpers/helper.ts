@@ -400,7 +400,7 @@ class Helper {
    */
   static checkStateStructure(data) {
     const tokensFields = [
-      'active', 'emission', 'staked', 'staked_delegated', 'unstaking_request',
+      'active', 'emission', 'timelock', 'activitylock', 'staked', 'staked_delegated', 'unstaking_request',
     ];
 
     expect(data.tokens).toBeDefined();
@@ -411,6 +411,10 @@ class Helper {
     expect(data.tokens.active).toBeGreaterThan(0);
     expect(data.tokens.staked_delegated).toBeGreaterThan(0);
     expect(data.tokens.emission).toBeGreaterThanOrEqual(0);
+    expect(data.tokens.timelock.total).toBeGreaterThanOrEqual(0);
+    expect(data.tokens.timelock.unlocked).toBeGreaterThanOrEqual(0);
+    expect(data.tokens.activitylock.total).toBeGreaterThanOrEqual(0);
+    expect(data.tokens.activitylock.unlocked).toBeGreaterThanOrEqual(0);
 
     this.checkUnstakingRequest(data.tokens.unstaking_request, 'tokens');
 
@@ -424,7 +428,7 @@ class Helper {
       expect(resource.dimension, `There is no dimension field for ${expected}`).toBeDefined();
 
       // @ts-ignore
-      expect(resource.used, `Wrong value for resource ${expected}`).toBeGreaterThan(0);
+      expect(resource.used, `Wrong value for resource ${expected}`).toBeGreaterThanOrEqual(0);
       // @ts-ignore
       expect(resource.free, `Wrong value for resource ${expected}`).toBeGreaterThan(0);
       // @ts-ignore
