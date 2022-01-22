@@ -34,7 +34,7 @@
     "eosjs-ecc": "^4.0.7",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.1.1",
     "ucom.libs.common": "^1.26.0",
     "uniqid": "^5.2.0"
   },
